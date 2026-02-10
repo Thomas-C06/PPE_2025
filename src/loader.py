@@ -1,4 +1,4 @@
-"""Market data loader for GeoQuant AI."""
+"""Chargeur de donnees de marche pour GeoQuant AI."""
 
 from __future__ import annotations
 
@@ -14,13 +14,13 @@ import yfinance as yf
 @dataclass
 class PriceLoader:
     """
-    Download, process, and persist market price data.
+    Telecharge, traite et sauvegarde les donnees de prix de marche.
 
     Attributes:
-        tickers: List of tickers to download.
-        start_date: Start date in YYYY-MM-DD.
-        end_date: End date in YYYY-MM-DD.
-        base_dir: Base directory of the GeoQuant_AI project.
+        tickers: Liste des tickers a telecharger.
+        start_date: Date de debut au format YYYY-MM-DD.
+        end_date: Date de fin au format YYYY-MM-DD.
+        base_dir: Repertoire de base du projet GeoQuant_AI.
     """
 
     tickers: list[str]
@@ -30,10 +30,10 @@ class PriceLoader:
 
     def _ensure_dirs(self) -> tuple[Path, Path]:
         """
-        Ensure required folders exist.
+        Verifie que les dossiers requis existent.
 
         Returns:
-            A tuple (raw_dir, processed_dir).
+            Un tuple (raw_dir, processed_dir).
         """
         raw_dir = self.base_dir / "data" / "raw"
         processed_dir = self.base_dir / "data" / "processed"
@@ -43,13 +43,13 @@ class PriceLoader:
 
     def fetch_data(self) -> Dict[str, pd.DataFrame]:
         """
-        Fetch price data from Yahoo Finance.
+        Telecharge les donnees de prix depuis Yahoo Finance.
 
         Returns:
-            A dictionary mapping ticker -> DataFrame.
+            Un dictionnaire mappant ticker -> DataFrame.
 
         Raises:
-            RuntimeError: If data download fails or returns empty data.
+            RuntimeError: Si le telechargement echoue ou retourne des donnees vides.
         """
         data: Dict[str, pd.DataFrame] = {}
 
@@ -76,13 +76,13 @@ class PriceLoader:
 
     def compute_returns(self, data: Dict[str, pd.DataFrame]) -> Dict[str, pd.DataFrame]:
         """
-        Compute simple and log returns for each ticker.
+        Calcule les rendements simples et logarithmiques pour chaque ticker.
 
         Args:
-            data: Dictionary mapping ticker -> DataFrame.
+            data: Dictionnaire mappant ticker -> DataFrame.
 
         Returns:
-            Dictionary of processed DataFrames.
+            Dictionnaire des DataFrames traites.
         """
         processed: Dict[str, pd.DataFrame] = {}
 
@@ -105,11 +105,11 @@ class PriceLoader:
         processed_data: Dict[str, pd.DataFrame],
     ) -> None:
         """
-        Save raw and processed data to CSV.
+        Sauvegarde les donnees brutes et traitees en CSV.
 
         Args:
-            raw_data: Dictionary of raw DataFrames.
-            processed_data: Dictionary of processed DataFrames.
+            raw_data: Dictionnaire des DataFrames bruts.
+            processed_data: Dictionnaire des DataFrames traites.
         """
         raw_dir, processed_dir = self._ensure_dirs()
 

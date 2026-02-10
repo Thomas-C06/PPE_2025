@@ -1,4 +1,4 @@
-"""Entry point for GeoQuant AI market data pipeline."""
+"""Point d'entree du pipeline de donnees de marche GeoQuant AI."""
 
 from __future__ import annotations
 
@@ -9,7 +9,7 @@ from loader import PriceLoader
 
 
 def main() -> None:
-    """Orchestrate data download, processing, and persistence."""
+    """Orchestre le telechargement, le traitement et la sauvegarde des donnees."""
     base_dir = Path(__file__).resolve().parents[1]
 
     loader = PriceLoader(
@@ -24,7 +24,7 @@ def main() -> None:
     loader.save_data(raw_data, processed_data)
 
     for ticker, df in processed_data.items():
-        print(f"\nPreview for {ticker}:")
+        print(f"\nApercu pour {ticker}:")
         print(df.head())
 
 

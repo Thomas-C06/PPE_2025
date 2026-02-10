@@ -1,4 +1,4 @@
-"""Global configuration for GeoQuant AI."""
+"""Configuration globale pour GeoQuant AI."""
 
 from __future__ import annotations
 

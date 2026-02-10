@@ -1,1 +1,1 @@
-"""GeoQuant AI package."""
+"""Package GeoQuant AI."""

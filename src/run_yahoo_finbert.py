@@ -6,6 +6,8 @@ from datetime import datetime
 from yahoo_news import fetch_yahoo_news, news_to_text
 from finbert_sentiment import FinBertSentiment
 
+from dotenv import load_dotenv
+load_dotenv()
 
 def main():
     symbol = "TSLA"  # change ici

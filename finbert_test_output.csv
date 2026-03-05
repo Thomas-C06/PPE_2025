@@ -1,0 +1,6 @@
+text,label,score,p_positive,p_negative,p_neutral
+Apple shares rise after strong earnings and upbeat guidance.,positive,0.7815253734588623,0.7815253734588623,0.11635025590658188,0.10212443023920059
+The company warned investors about declining revenue and higher costs.,negative,0.9708351492881775,0.00886065885424614,0.9708351492881775,0.020304089412093163
+Markets were mixed today as traders awaited the Fed decision.,negative,0.8808578252792358,0.03719433397054672,0.8808578252792358,0.08194785565137863
+Tesla faces lawsuit over alleged misleading statements.,negative,0.9311410784721375,0.009903044439852238,0.9311410784721375,0.05895592272281647
+Gold prices surge amid global uncertainty.,negative,0.7150234580039978,0.15063811838626862,0.7150234580039978,0.13433846831321716

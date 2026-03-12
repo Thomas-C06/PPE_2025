@@ -99,6 +99,63 @@ class PriceLoader:
 
         return processed
 
+    def compute_technical_features(
+        self,
+        data: Dict[str, pd.DataFrame],
+    ) -> Dict[str, pd.DataFrame]:
+        """
+        Add technical indicators to each ticker's processed DataFrame.
+
+        Indicators added:
+            - MA20, MA50, MA200  : Simple moving averages
+            - RSI_14             : Relative Strength Index (14-day, Wilder EMA)
+            - Volatility_20      : Rolling 20-day annualised volatility
+            - Drawdown           : Rolling drawdown from the running maximum
+
+        Args:
+            data: Dictionary mapping ticker -> processed DataFrame
+                  (output of compute_returns).
+
+        Returns:
+            Dictionary with the same keys, DataFrames enriched with
+            technical indicator columns.
+        """
+        enriched: Dict[str, pd.DataFrame] = {}
+
+        for ticker, df in data.items():
+            df = df.copy()
+
+            price_col = "Adj Close" if "Adj Close" in df.columns else "Close"
+            prices = df[price_col]
+
+            # Moving averages
+            df["MA20"]  = prices.rolling(window=20,  min_periods=1).mean()
+            df["MA50"]  = prices.rolling(window=50,  min_periods=1).mean()
+            df["MA200"] = prices.rolling(window=200, min_periods=1).mean()
+
+            # RSI 14 (Wilder EMA method)
+            delta    = prices.diff()
+            gain     = delta.clip(lower=0)
+            loss     = -delta.clip(upper=0)
+            avg_gain = gain.ewm(com=13, adjust=False, min_periods=14).mean()
+            avg_loss = loss.ewm(com=13, adjust=False, min_periods=14).mean()
+            rs       = avg_gain / avg_loss.replace(0, np.nan)
+            df["RSI_14"] = 100 - (100 / (1 + rs))
+
+            # Volatilité glissante 20j (annualisée)
+            log_ret = np.log(prices / prices.shift(1))
+            df["Volatility_20"] = (
+                log_ret.rolling(window=20, min_periods=5).std() * np.sqrt(252)
+            )
+
+            # Drawdown depuis le plus haut
+            running_max    = prices.cummax()
+            df["Drawdown"] = (prices - running_max) / running_max
+
+            enriched[ticker] = df
+
+        return enriched
+
     def save_data(
         self,
         raw_data: Dict[str, pd.DataFrame],

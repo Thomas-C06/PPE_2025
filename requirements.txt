@@ -1,0 +1,8 @@
+yfinance
+pandas
+numpy
+transformers
+torch
+aiohttp
+requests
+python-dotenv

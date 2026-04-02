@@ -1,0 +1,1045 @@
+date,SP500_Close,headline,source
+2015-01-05,2020.5799560546875,Manufacturing PMI contracts for third consecutive month,Wall Street Journal
+2015-01-06,2002.6099853515625,Oil prices surge as Middle East tensions escalate,AP Finance
+2015-01-08,2062.139892578125,Unemployment rate falls to multi-decade low,AP Finance
+2015-01-14,2011.27001953125,IMF warns of global recession risk following energy crisis,Forbes
+2015-01-15,1992.6700439453125,Unemployment rate falls to multi-decade low,Bloomberg
+2015-01-16,2019.4200439453125,Emerging market currencies under pressure from strong dollar,Wall Street Journal
+2015-01-22,2063.14990234375,Nasdaq enters correction territory amid rate hike fears,Financial Times
+2015-01-26,2057.090087890625,"Bitcoin falls below $20,000 as crypto winter deepens",Bloomberg
+2015-01-27,2029.550048828125,Renewable energy stocks surge on new climate legislation,Reuters
+2015-01-29,2021.25,Renewable energy stocks surge on new climate legislation,MarketWatch
+2015-02-02,2020.8499755859375,Bank stocks surge after stress test results released,Bloomberg
+2015-02-03,2050.030029296875,Banking sector faces headwinds from rising credit defaults,Financial Times
+2015-02-05,2062.52001953125,"Wage growth accelerates, fueling inflation concerns",CNBC
+2015-02-09,2046.739990234375,Tesla shares fall after disappointing delivery numbers,Forbes
+2015-02-10,2068.590087890625,Amazon announces major layoffs amid slowing growth,MarketWatch
+2015-02-17,2100.340087890625,Pharmaceutical company announces breakthrough cancer treatment,Financial Times
+2015-02-18,2099.679931640625,"Retail inventory levels rise, suggesting demand slowdown",CNBC
+2015-02-24,2115.47998046875,Oil majors post record profits as energy prices soar,Forbes
+2015-03-04,2098.530029296875,Manufacturing PMI contracts for third consecutive month,Forbes
+2015-03-06,2071.260009765625,Retail sales data signals consumer slowdown,The Economist
+2015-03-09,2079.429931640625,Retail sales data signals consumer slowdown,Bloomberg
+2015-03-11,2040.239990234375,Tech stocks rally on strong earnings from major firms,CNBC
+2015-03-13,2053.39990234375,"Retail inventory levels rise, suggesting demand slowdown",Reuters
+2015-03-16,2081.18994140625,US inflation cools to lowest level in two years,Wall Street Journal
+2015-03-18,2099.5,IMF warns of global recession risk following energy crisis,Wall Street Journal
+2015-03-19,2089.27001953125,"Bitcoin falls below $20,000 as crypto winter deepens",Wall Street Journal
+2015-03-20,2108.10009765625,Dollar strengthens against euro on hawkish Fed comments,The Economist
+2015-03-23,2104.419921875,"Central bank holds rates steady, signals pause in tightening",AP Finance
+2015-03-24,2091.5,Dollar strengthens against euro on hawkish Fed comments,Wall Street Journal
+2015-04-06,2080.6201171875,Retail sales data signals consumer slowdown,MarketWatch
+2015-04-07,2076.330078125,Wall Street closes higher after positive jobs report,Financial Times
+2015-04-08,2081.89990234375,Nasdaq enters correction territory amid rate hike fears,MarketWatch
+2015-04-09,2091.179931640625,Amazon announces major layoffs amid slowing growth,Reuters
+2015-04-10,2102.06005859375,Federal Reserve raises interest rates amid inflation concerns,Forbes
+2015-04-13,2092.429931640625,Oil majors post record profits as energy prices soar,The Economist
+2015-04-15,2106.6298828125,Apple reports record quarterly revenue despite supply chain issues,Wall Street Journal
+2015-04-17,2081.179931640625,Retail sales data signals consumer slowdown,AP Finance
+2015-04-28,2114.760009765625,"OPEC cuts oil production, sending crude prices higher",Reuters
+2015-04-29,2106.85009765625,Semiconductor shortage eases as chip production ramps up,The Economist
+2015-05-01,2108.2900390625,Gold hits all-time high as investors seek safe haven assets,Business Insider
+2015-05-12,2099.1201171875,"Bond yields hit 15-year high, pressuring equity valuations",Forbes
+2015-05-15,2122.72998046875,S&P 500 drops 3% as inflation data disappoints investors,Financial Times
+2015-05-20,2125.85009765625,Renewable energy stocks surge on new climate legislation,The Economist
+2015-05-22,2126.06005859375,Federal Reserve raises interest rates amid inflation concerns,MarketWatch
+2015-05-26,2104.199951171875,"Bitcoin falls below $20,000 as crypto winter deepens",Business Insider
+2015-05-27,2123.47998046875,US imposes new sanctions on Russia over Ukraine conflict,Business Insider
+2015-05-28,2120.7900390625,Manufacturing PMI contracts for third consecutive month,The Economist
+2015-05-29,2107.389892578125,GDP growth beats expectations in strong Q2 report,Wall Street Journal
+2015-06-03,2114.070068359375,"OPEC cuts oil production, sending crude prices higher",CNBC
+2015-06-05,2092.830078125,IMF warns of global recession risk following energy crisis,Business Insider
+2015-06-09,2080.14990234375,"Central bank holds rates steady, signals pause in tightening",MarketWatch
+2015-06-10,2105.199951171875,Housing market shows signs of cooling after rate hikes,Bloomberg
+2015-06-11,2108.860107421875,Germany enters recession as energy costs weigh on industry,Wall Street Journal
+2015-06-16,2096.2900390625,IMF warns of global recession risk following energy crisis,Bloomberg
+2015-06-17,2100.43994140625,Federal Reserve raises interest rates amid inflation concerns,Reuters
+2015-06-18,2121.239990234375,Housing market shows signs of cooling after rate hikes,Reuters
+2015-06-19,2109.989990234375,Tech stocks rally on strong earnings from major firms,CNBC
+2015-06-24,2108.580078125,Tech stocks rally on strong earnings from major firms,MarketWatch
+2015-06-25,2102.31005859375,Tech stocks rally on strong earnings from major firms,Wall Street Journal
+2015-06-29,2057.639892578125,Renewable energy stocks surge on new climate legislation,CNBC
+2015-06-30,2063.110107421875,Trade deficit widens as imports outpace exports,Bloomberg
+2015-07-02,2076.780029296875,Trade deficit widens as imports outpace exports,Business Insider
+2015-07-07,2081.340087890625,"Wage growth accelerates, fueling inflation concerns",Reuters
+2015-07-08,2046.6800537109375,Tesla shares fall after disappointing delivery numbers,Financial Times
+2015-07-17,2126.639892578125,"Wage growth accelerates, fueling inflation concerns",Business Insider
+2015-07-20,2128.280029296875,S&P 500 drops 3% as inflation data disappoints investors,MarketWatch
+2015-07-22,2114.14990234375,"Bitcoin falls below $20,000 as crypto winter deepens",Reuters
+2015-07-29,2108.570068359375,Semiconductor shortage eases as chip production ramps up,Reuters
+2015-08-04,2093.320068359375,"Bitcoin falls below $20,000 as crypto winter deepens",CNBC
+2015-08-07,2077.570068359375,Merger talks between two major airlines collapse,Reuters
+2015-08-11,2084.070068359375,Wall Street closes higher after positive jobs report,MarketWatch
+2015-08-12,2086.050048828125,Pharmaceutical company announces breakthrough cancer treatment,Business Insider
+2015-08-19,2079.610107421875,Tesla shares fall after disappointing delivery numbers,Business Insider
+2015-08-24,1893.2099609375,US imposes new sanctions on Russia over Ukraine conflict,Financial Times
+2015-08-25,1867.6099853515625,Tesla shares fall after disappointing delivery numbers,AP Finance
+2015-08-27,1987.6600341796875,Merger talks between two major airlines collapse,The Economist
+2015-09-01,1913.8499755859375,Manufacturing PMI contracts for third consecutive month,AP Finance
+2015-09-02,1948.8599853515625,Banking sector faces headwinds from rising credit defaults,CNBC
+2015-09-08,1969.4100341796875,Dollar strengthens against euro on hawkish Fed comments,Bloomberg
+2015-09-09,1942.0400390625,"Bond yields hit 15-year high, pressuring equity valuations",Financial Times
+2015-09-14,1953.030029296875,"Central bank holds rates steady, signals pause in tightening",AP Finance
+2015-09-18,1958.030029296875,Consumer confidence index drops sharply in August survey,AP Finance
+2015-09-21,1966.969970703125,"Bitcoin falls below $20,000 as crypto winter deepens",MarketWatch
+2015-09-23,1938.760009765625,Housing market shows signs of cooling after rate hikes,Business Insider
+2015-09-28,1881.77001953125,Merger talks between two major airlines collapse,Financial Times
+2015-09-29,1884.0899658203125,Emerging market currencies under pressure from strong dollar,Bloomberg
+2015-10-05,1987.050048828125,Semiconductor shortage eases as chip production ramps up,Wall Street Journal
+2015-10-06,1979.9200439453125,GDP growth beats expectations in strong Q2 report,CNBC
+2015-10-16,2033.1099853515625,Trade deficit widens as imports outpace exports,Forbes
+2015-10-19,2033.6600341796875,Consumer confidence index drops sharply in August survey,Bloomberg
+2015-10-20,2030.77001953125,"Central bank holds rates steady, signals pause in tightening",MarketWatch
+2015-10-21,2018.93994140625,"Retail inventory levels rise, suggesting demand slowdown",Forbes
+2015-10-23,2075.14990234375,US inflation cools to lowest level in two years,Wall Street Journal
+2015-10-26,2071.179931640625,Emerging market currencies under pressure from strong dollar,The Economist
+2015-10-27,2065.889892578125,Semiconductor shortage eases as chip production ramps up,CNBC
+2015-10-29,2089.409912109375,Bank stocks surge after stress test results released,CNBC
+2015-10-30,2079.360107421875,Pharmaceutical company announces breakthrough cancer treatment,Forbes
+2015-11-03,2109.7900390625,Germany enters recession as energy costs weigh on industry,Wall Street Journal
+2015-11-04,2102.31005859375,Banking sector faces headwinds from rising credit defaults,Bloomberg
+2015-11-06,2099.199951171875,Semiconductor shortage eases as chip production ramps up,AP Finance
+2015-11-09,2078.580078125,Bank stocks surge after stress test results released,Reuters
+2015-11-10,2081.719970703125,Oil majors post record profits as energy prices soar,Business Insider
+2015-11-11,2075.0,Dollar strengthens against euro on hawkish Fed comments,CNBC
+2015-11-13,2023.0400390625,Nasdaq enters correction territory amid rate hike fears,Wall Street Journal
+2015-11-16,2053.18994140625,European Central Bank signals aggressive rate hike path,Reuters
+2015-11-25,2088.8701171875,Tech stocks rally on strong earnings from major firms,MarketWatch
+2015-11-27,2090.110107421875,Amazon announces major layoffs amid slowing growth,Business Insider
+2015-12-01,2102.6298828125,IMF warns of global recession risk following energy crisis,Financial Times
+2015-12-10,2052.22998046875,Unemployment rate falls to multi-decade low,AP Finance
+2015-12-15,2043.4100341796875,Federal Reserve raises interest rates amid inflation concerns,Forbes
+2015-12-16,2073.070068359375,US inflation cools to lowest level in two years,The Economist
+2015-12-17,2041.8900146484375,Banking sector faces headwinds from rising credit defaults,CNBC
+2015-12-21,2021.1500244140625,Wall Street closes higher after positive jobs report,Business Insider
+2015-12-23,2064.2900390625,Bank stocks surge after stress test results released,CNBC
+2015-12-30,2063.360107421875,IMF warns of global recession risk following energy crisis,MarketWatch
+2015-12-31,2043.93994140625,North Korea fires ballistic missile toward Japan,AP Finance
+2016-01-04,2012.6600341796875,Banking sector faces headwinds from rising credit defaults,Bloomberg
+2016-01-07,1943.0899658203125,Manufacturing PMI contracts for third consecutive month,CNBC
+2016-01-11,1923.6700439453125,"Retail inventory levels rise, suggesting demand slowdown",Reuters
+2016-01-12,1938.6800537109375,Semiconductor shortage eases as chip production ramps up,Reuters
+2016-01-15,1880.3299560546875,"Central bank holds rates steady, signals pause in tightening",Forbes
+2016-01-20,1859.3299560546875,Unemployment rate falls to multi-decade low,Reuters
+2016-01-25,1877.0799560546875,S&P 500 drops 3% as inflation data disappoints investors,Bloomberg
+2016-01-26,1903.6300048828125,Emerging market currencies under pressure from strong dollar,The Economist
+2016-01-27,1882.949951171875,Renewable energy stocks surge on new climate legislation,Financial Times
+2016-01-28,1893.3599853515625,Bank stocks surge after stress test results released,AP Finance
+2016-01-29,1940.239990234375,China-US trade war escalates with new tariffs,Reuters
+2016-02-01,1939.3800048828125,"OPEC cuts oil production, sending crude prices higher",Bloomberg
+2016-02-03,1912.530029296875,IMF warns of global recession risk following energy crisis,Business Insider
+2016-02-05,1880.050048828125,Apple reports record quarterly revenue despite supply chain issues,CNBC
+2016-02-08,1853.43994140625,Amazon announces major layoffs amid slowing growth,Wall Street Journal
+2016-02-11,1829.0799560546875,Apple reports record quarterly revenue despite supply chain issues,Wall Street Journal
+2016-02-12,1864.780029296875,Tech stocks rally on strong earnings from major firms,Wall Street Journal
+2016-02-18,1917.8299560546875,Renewable energy stocks surge on new climate legislation,Reuters
+2016-02-19,1917.780029296875,US imposes new sanctions on Russia over Ukraine conflict,Forbes
+2016-02-22,1945.5,US imposes new sanctions on Russia over Ukraine conflict,Financial Times
+2016-02-24,1929.800048828125,"Retail inventory levels rise, suggesting demand slowdown",Financial Times
+2016-02-25,1951.699951171875,North Korea fires ballistic missile toward Japan,Financial Times
+2016-02-26,1948.050048828125,Brexit deal uncertainty rattles European markets,Business Insider
+2016-03-01,1978.3499755859375,Pharmaceutical company announces breakthrough cancer treatment,Wall Street Journal
+2016-03-03,1993.4000244140625,China-US trade war escalates with new tariffs,Reuters
+2016-03-09,1989.260009765625,"Bitcoin falls below $20,000 as crypto winter deepens",MarketWatch
+2016-03-10,1989.5699462890625,"OPEC cuts oil production, sending crude prices higher",Reuters
+2016-03-16,2027.219970703125,European Central Bank signals aggressive rate hike path,Reuters
+2016-03-17,2040.5899658203125,Dollar strengthens against euro on hawkish Fed comments,The Economist
+2016-03-18,2049.580078125,Renewable energy stocks surge on new climate legislation,AP Finance
+2016-03-21,2051.60009765625,US inflation cools to lowest level in two years,CNBC
+2016-03-24,2035.93994140625,Dollar strengthens against euro on hawkish Fed comments,AP Finance
+2016-03-28,2037.050048828125,Pharmaceutical company announces breakthrough cancer treatment,Bloomberg
+2016-03-30,2063.949951171875,Consumer confidence index drops sharply in August survey,The Economist
+2016-04-04,2066.1298828125,GDP growth beats expectations in strong Q2 report,AP Finance
+2016-04-05,2045.1700439453125,Germany enters recession as energy costs weigh on industry,CNBC
+2016-04-06,2066.659912109375,Merger talks between two major airlines collapse,Business Insider
+2016-04-13,2082.419921875,Emerging market currencies under pressure from strong dollar,The Economist
+2016-04-15,2080.72998046875,Manufacturing PMI contracts for third consecutive month,Reuters
+2016-04-18,2094.340087890625,Manufacturing PMI contracts for third consecutive month,Reuters
+2016-04-20,2102.39990234375,Trade deficit widens as imports outpace exports,Forbes
+2016-04-22,2091.580078125,Brexit deal uncertainty rattles European markets,The Economist
+2016-04-25,2087.7900390625,Gold hits all-time high as investors seek safe haven assets,The Economist
+2016-04-27,2095.14990234375,IMF warns of global recession risk following energy crisis,The Economist
+2016-05-02,2081.429931640625,Apple reports record quarterly revenue despite supply chain issues,Wall Street Journal
+2016-05-03,2063.3701171875,Oil prices surge as Middle East tensions escalate,Reuters
+2016-05-05,2050.6298828125,Germany enters recession as energy costs weigh on industry,The Economist
+2016-05-09,2058.68994140625,Brexit deal uncertainty rattles European markets,Business Insider
+2016-05-10,2084.389892578125,"Bond yields hit 15-year high, pressuring equity valuations",CNBC
+2016-05-12,2064.110107421875,Housing market shows signs of cooling after rate hikes,AP Finance
+2016-05-13,2046.6099853515625,Brexit deal uncertainty rattles European markets,Forbes
+2016-05-17,2047.2099609375,Gold hits all-time high as investors seek safe haven assets,CNBC
+2016-05-18,2047.6300048828125,Renewable energy stocks surge on new climate legislation,Financial Times
+2016-05-19,2040.0400390625,Gold hits all-time high as investors seek safe haven assets,AP Finance
+2016-05-25,2090.5400390625,Oil prices surge as Middle East tensions escalate,Bloomberg
+2016-05-27,2099.06005859375,S&P 500 drops 3% as inflation data disappoints investors,AP Finance
+2016-05-31,2096.949951171875,Tesla shares fall after disappointing delivery numbers,CNBC
+2016-06-02,2105.260009765625,Bank stocks surge after stress test results released,The Economist
+2016-06-03,2099.1298828125,GDP growth beats expectations in strong Q2 report,Wall Street Journal
+2016-06-09,2115.47998046875,North Korea fires ballistic missile toward Japan,The Economist
+2016-06-10,2096.070068359375,Brexit deal uncertainty rattles European markets,MarketWatch
+2016-06-13,2079.06005859375,Wall Street closes higher after positive jobs report,CNBC
+2016-06-14,2075.320068359375,Retail sales data signals consumer slowdown,Financial Times
+2016-06-21,2088.89990234375,US inflation cools to lowest level in two years,Bloomberg
+2016-06-22,2085.449951171875,European Central Bank signals aggressive rate hike path,The Economist
+2016-06-24,2037.4100341796875,Apple reports record quarterly revenue despite supply chain issues,Wall Street Journal
+2016-06-27,2000.5400390625,Merger talks between two major airlines collapse,MarketWatch
+2016-06-28,2036.0899658203125,Nasdaq enters correction territory amid rate hike fears,Business Insider
+2016-06-29,2070.77001953125,Semiconductor shortage eases as chip production ramps up,Forbes
+2016-06-30,2098.860107421875,European Central Bank signals aggressive rate hike path,Business Insider
+2016-07-05,2088.550048828125,US inflation cools to lowest level in two years,The Economist
+2016-07-13,2152.429931640625,China-US trade war escalates with new tariffs,Business Insider
+2016-07-14,2163.75,US inflation cools to lowest level in two years,MarketWatch
+2016-07-22,2175.030029296875,"OPEC cuts oil production, sending crude prices higher",Bloomberg
+2016-07-26,2169.179931640625,North Korea fires ballistic missile toward Japan,MarketWatch
+2016-07-28,2170.06005859375,GDP growth beats expectations in strong Q2 report,Bloomberg
+2016-07-29,2173.60009765625,Oil prices surge as Middle East tensions escalate,Financial Times
+2016-08-01,2170.840087890625,Wall Street closes higher after positive jobs report,AP Finance
+2016-08-03,2163.7900390625,Pharmaceutical company announces breakthrough cancer treatment,Wall Street Journal
+2016-08-04,2164.25,"Retail inventory levels rise, suggesting demand slowdown",MarketWatch
+2016-08-09,2181.739990234375,Renewable energy stocks surge on new climate legislation,Business Insider
+2016-08-12,2184.050048828125,"OPEC cuts oil production, sending crude prices higher",Business Insider
+2016-08-16,2178.14990234375,Wall Street closes higher after positive jobs report,MarketWatch
+2016-08-17,2182.219970703125,"OPEC cuts oil production, sending crude prices higher",Wall Street Journal
+2016-08-19,2183.8701171875,Manufacturing PMI contracts for third consecutive month,The Economist
+2016-08-22,2182.639892578125,"Retail inventory levels rise, suggesting demand slowdown",Reuters
+2016-08-23,2186.89990234375,Housing market shows signs of cooling after rate hikes,MarketWatch
+2016-08-24,2175.43994140625,Bank stocks surge after stress test results released,Bloomberg
+2016-08-26,2169.0400390625,"OPEC cuts oil production, sending crude prices higher",AP Finance
+2016-08-31,2170.949951171875,Banking sector faces headwinds from rising credit defaults,Reuters
+2016-09-02,2179.97998046875,Renewable energy stocks surge on new climate legislation,MarketWatch
+2016-09-07,2186.159912109375,Tech stocks rally on strong earnings from major firms,Financial Times
+2016-09-08,2181.300048828125,S&P 500 drops 3% as inflation data disappoints investors,Reuters
+2016-09-14,2125.77001953125,Amazon announces major layoffs amid slowing growth,Bloomberg
+2016-09-15,2147.260009765625,Retail sales data signals consumer slowdown,Wall Street Journal
+2016-09-20,2139.760009765625,Amazon announces major layoffs amid slowing growth,Business Insider
+2016-09-21,2163.1201171875,Wall Street closes higher after positive jobs report,Financial Times
+2016-09-26,2146.10009765625,Merger talks between two major airlines collapse,Bloomberg
+2016-09-30,2168.27001953125,Bank stocks surge after stress test results released,Financial Times
+2016-10-07,2153.739990234375,North Korea fires ballistic missile toward Japan,MarketWatch
+2016-10-13,2132.550048828125,Dollar strengthens against euro on hawkish Fed comments,CNBC
+2016-10-17,2126.5,Banking sector faces headwinds from rising credit defaults,CNBC
+2016-10-18,2139.60009765625,S&P 500 drops 3% as inflation data disappoints investors,Bloomberg
+2016-10-19,2144.2900390625,Tech stocks rally on strong earnings from major firms,The Economist
+2016-10-20,2141.340087890625,Nasdaq enters correction territory amid rate hike fears,Bloomberg
+2016-10-24,2151.330078125,S&P 500 drops 3% as inflation data disappoints investors,The Economist
+2016-10-25,2143.159912109375,China-US trade war escalates with new tariffs,The Economist
+2016-10-26,2139.429931640625,Consumer confidence index drops sharply in August survey,CNBC
+2016-10-27,2133.0400390625,Gold hits all-time high as investors seek safe haven assets,Wall Street Journal
+2016-10-28,2126.409912109375,Wall Street closes higher after positive jobs report,CNBC
+2016-11-02,2097.93994140625,US inflation cools to lowest level in two years,The Economist
+2016-11-10,2167.47998046875,S&P 500 drops 3% as inflation data disappoints investors,Business Insider
+2016-11-11,2164.449951171875,Federal Reserve raises interest rates amid inflation concerns,Business Insider
+2016-11-15,2180.389892578125,IMF warns of global recession risk following energy crisis,AP Finance
+2016-11-18,2181.89990234375,"Bitcoin falls below $20,000 as crypto winter deepens",Bloomberg
+2016-11-22,2202.93994140625,Bank stocks surge after stress test results released,MarketWatch
+2016-11-23,2204.719970703125,Amazon announces major layoffs amid slowing growth,Business Insider
+2016-11-28,2201.719970703125,Pharmaceutical company announces breakthrough cancer treatment,Business Insider
+2016-12-06,2212.22998046875,Consumer confidence index drops sharply in August survey,Wall Street Journal
+2016-12-09,2259.530029296875,Oil prices surge as Middle East tensions escalate,Wall Street Journal
+2016-12-12,2256.9599609375,Dollar strengthens against euro on hawkish Fed comments,Wall Street Journal
+2016-12-16,2258.070068359375,US imposes new sanctions on Russia over Ukraine conflict,Wall Street Journal
+2016-12-21,2265.179931640625,US imposes new sanctions on Russia over Ukraine conflict,Forbes
+2016-12-22,2260.9599609375,European Central Bank signals aggressive rate hike path,CNBC
+2016-12-30,2238.830078125,Oil majors post record profits as energy prices soar,The Economist
+2017-01-04,2270.75,US inflation cools to lowest level in two years,Wall Street Journal
+2017-01-11,2275.320068359375,Semiconductor shortage eases as chip production ramps up,Bloomberg
+2017-01-19,2263.68994140625,Consumer confidence index drops sharply in August survey,AP Finance
+2017-01-20,2271.31005859375,Manufacturing PMI contracts for third consecutive month,Financial Times
+2017-01-24,2280.070068359375,Bank stocks surge after stress test results released,The Economist
+2017-01-26,2296.679931640625,Consumer confidence index drops sharply in August survey,Forbes
+2017-01-27,2294.68994140625,Emerging market currencies under pressure from strong dollar,Reuters
+2017-01-30,2280.89990234375,"Central bank holds rates steady, signals pause in tightening",Reuters
+2017-02-03,2297.419921875,Bank stocks surge after stress test results released,Bloomberg
+2017-02-07,2293.080078125,Bank stocks surge after stress test results released,MarketWatch
+2017-02-08,2294.669921875,Bank stocks surge after stress test results released,CNBC
+2017-02-09,2307.8701171875,"OPEC cuts oil production, sending crude prices higher",Reuters
+2017-02-13,2328.25,North Korea fires ballistic missile toward Japan,AP Finance
+2017-02-15,2349.25,European Central Bank signals aggressive rate hike path,The Economist
+2017-02-16,2347.219970703125,Manufacturing PMI contracts for third consecutive month,CNBC
+2017-02-17,2351.159912109375,Nasdaq enters correction territory amid rate hike fears,CNBC
+2017-02-22,2362.820068359375,China-US trade war escalates with new tariffs,AP Finance
+2017-02-23,2363.81005859375,Nasdaq enters correction territory amid rate hike fears,Wall Street Journal
+2017-02-27,2369.75,Federal Reserve raises interest rates amid inflation concerns,MarketWatch
+2017-03-02,2381.919921875,Renewable energy stocks surge on new climate legislation,CNBC
+2017-03-03,2383.1201171875,Housing market shows signs of cooling after rate hikes,Financial Times
+2017-03-06,2375.31005859375,Gold hits all-time high as investors seek safe haven assets,CNBC
+2017-03-08,2362.97998046875,Dollar strengthens against euro on hawkish Fed comments,Wall Street Journal
+2017-03-13,2373.469970703125,Gold hits all-time high as investors seek safe haven assets,Bloomberg
+2017-03-15,2385.260009765625,S&P 500 drops 3% as inflation data disappoints investors,Bloomberg
+2017-03-17,2378.25,Nasdaq enters correction territory amid rate hike fears,Wall Street Journal
+2017-03-20,2373.469970703125,"Central bank holds rates steady, signals pause in tightening",Wall Street Journal
+2017-03-22,2348.449951171875,Pharmaceutical company announces breakthrough cancer treatment,Forbes
+2017-03-27,2341.590087890625,US inflation cools to lowest level in two years,Business Insider
+2017-03-30,2368.06005859375,China-US trade war escalates with new tariffs,Wall Street Journal
+2017-04-03,2358.840087890625,Banking sector faces headwinds from rising credit defaults,MarketWatch
+2017-04-12,2344.929931640625,"OPEC cuts oil production, sending crude prices higher",Financial Times
+2017-04-13,2328.949951171875,US inflation cools to lowest level in two years,Business Insider
+2017-04-17,2349.010009765625,Pharmaceutical company announces breakthrough cancer treatment,Wall Street Journal
+2017-04-20,2355.840087890625,Tesla shares fall after disappointing delivery numbers,Reuters
+2017-04-21,2348.68994140625,Federal Reserve raises interest rates amid inflation concerns,The Economist
+2017-04-26,2387.449951171875,"Retail inventory levels rise, suggesting demand slowdown",CNBC
+2017-05-01,2388.330078125,"Bond yields hit 15-year high, pressuring equity valuations",Business Insider
+2017-05-02,2391.169921875,North Korea fires ballistic missile toward Japan,Forbes
+2017-05-05,2399.2900390625,European Central Bank signals aggressive rate hike path,MarketWatch
+2017-05-08,2399.3798828125,Nasdaq enters correction territory amid rate hike fears,Business Insider
+2017-05-12,2390.89990234375,Oil prices surge as Middle East tensions escalate,AP Finance
+2017-05-16,2400.669921875,Bank stocks surge after stress test results released,Reuters
+2017-05-17,2357.030029296875,"Central bank holds rates steady, signals pause in tightening",Reuters
+2017-05-19,2381.72998046875,Brexit deal uncertainty rattles European markets,CNBC
+2017-05-22,2394.02001953125,Trade deficit widens as imports outpace exports,Reuters
+2017-05-23,2398.419921875,GDP growth beats expectations in strong Q2 report,Bloomberg
+2017-05-24,2404.389892578125,Trade deficit widens as imports outpace exports,The Economist
+2017-05-25,2415.070068359375,IMF warns of global recession risk following energy crisis,The Economist
+2017-06-02,2439.070068359375,Emerging market currencies under pressure from strong dollar,The Economist
+2017-06-08,2433.7900390625,Tech stocks rally on strong earnings from major firms,MarketWatch
+2017-06-09,2431.77001953125,"Wage growth accelerates, fueling inflation concerns",Business Insider
+2017-06-13,2440.35009765625,Wall Street closes higher after positive jobs report,Forbes
+2017-06-16,2433.14990234375,GDP growth beats expectations in strong Q2 report,CNBC
+2017-06-19,2453.4599609375,Wall Street closes higher after positive jobs report,The Economist
+2017-06-22,2434.5,Oil majors post record profits as energy prices soar,AP Finance
+2017-06-28,2440.68994140625,Federal Reserve raises interest rates amid inflation concerns,AP Finance
+2017-06-29,2419.699951171875,"Bitcoin falls below $20,000 as crypto winter deepens",Reuters
+2017-07-03,2429.010009765625,"OPEC cuts oil production, sending crude prices higher",MarketWatch
+2017-07-07,2425.179931640625,China-US trade war escalates with new tariffs,Financial Times
+2017-07-11,2425.530029296875,Unemployment rate falls to multi-decade low,Bloomberg
+2017-07-12,2443.25,Oil majors post record profits as energy prices soar,CNBC
+2017-07-13,2447.830078125,Renewable energy stocks surge on new climate legislation,Reuters
+2017-07-20,2473.449951171875,"Bond yields hit 15-year high, pressuring equity valuations",Wall Street Journal
+2017-07-24,2469.909912109375,Semiconductor shortage eases as chip production ramps up,The Economist
+2017-08-02,2477.570068359375,Retail sales data signals consumer slowdown,CNBC
+2017-08-03,2472.159912109375,Wall Street closes higher after positive jobs report,AP Finance
+2017-08-04,2476.830078125,US inflation cools to lowest level in two years,The Economist
+2017-08-07,2480.909912109375,"Wage growth accelerates, fueling inflation concerns",Financial Times
+2017-08-10,2438.2099609375,Amazon announces major layoffs amid slowing growth,Financial Times
+2017-08-11,2441.320068359375,Wall Street closes higher after positive jobs report,Bloomberg
+2017-08-14,2465.840087890625,Bank stocks surge after stress test results released,Business Insider
+2017-08-17,2430.010009765625,Renewable energy stocks surge on new climate legislation,The Economist
+2017-08-23,2444.0400390625,Dollar strengthens against euro on hawkish Fed comments,MarketWatch
+2017-08-28,2444.239990234375,Gold hits all-time high as investors seek safe haven assets,Financial Times
+2017-08-31,2471.64990234375,Wall Street closes higher after positive jobs report,Reuters
+2017-09-01,2476.550048828125,"Bitcoin falls below $20,000 as crypto winter deepens",Forbes
+2017-09-05,2457.85009765625,Apple reports record quarterly revenue despite supply chain issues,AP Finance
+2017-09-08,2461.429931640625,Merger talks between two major airlines collapse,Reuters
+2017-09-11,2488.110107421875,Housing market shows signs of cooling after rate hikes,Business Insider
+2017-09-12,2496.47998046875,European Central Bank signals aggressive rate hike path,Business Insider
+2017-09-13,2498.3701171875,Unemployment rate falls to multi-decade low,Wall Street Journal
+2017-09-18,2503.8701171875,US inflation cools to lowest level in two years,CNBC
+2017-09-19,2506.64990234375,"Wage growth accelerates, fueling inflation concerns",Reuters
+2017-09-20,2508.239990234375,"Central bank holds rates steady, signals pause in tightening",Wall Street Journal
+2017-09-26,2496.840087890625,"OPEC cuts oil production, sending crude prices higher",The Economist
+2017-09-27,2507.0400390625,Oil majors post record profits as energy prices soar,MarketWatch
+2017-09-28,2510.06005859375,China-US trade war escalates with new tariffs,MarketWatch
+2017-09-29,2519.360107421875,Renewable energy stocks surge on new climate legislation,CNBC
+2017-10-02,2529.1201171875,"Retail inventory levels rise, suggesting demand slowdown",Financial Times
+2017-10-03,2534.580078125,Renewable energy stocks surge on new climate legislation,Forbes
+2017-10-11,2555.239990234375,Wall Street closes higher after positive jobs report,Business Insider
+2017-10-17,2559.360107421875,Trade deficit widens as imports outpace exports,Wall Street Journal
+2017-10-19,2562.10009765625,Oil majors post record profits as energy prices soar,Wall Street Journal
+2017-10-23,2564.97998046875,"Retail inventory levels rise, suggesting demand slowdown",Reuters
+2017-10-24,2569.1298828125,US imposes new sanctions on Russia over Ukraine conflict,Bloomberg
+2017-10-25,2557.14990234375,North Korea fires ballistic missile toward Japan,Wall Street Journal
+2017-10-30,2572.830078125,Trade deficit widens as imports outpace exports,Financial Times
+2017-11-02,2579.85009765625,Brexit deal uncertainty rattles European markets,Bloomberg
+2017-11-03,2587.840087890625,North Korea fires ballistic missile toward Japan,The Economist
+2017-11-06,2591.1298828125,IMF warns of global recession risk following energy crisis,Forbes
+2017-11-08,2594.3798828125,Emerging market currencies under pressure from strong dollar,Reuters
+2017-11-10,2582.300048828125,European Central Bank signals aggressive rate hike path,Business Insider
+2017-11-13,2584.840087890625,US imposes new sanctions on Russia over Ukraine conflict,CNBC
+2017-11-14,2578.8701171875,Amazon announces major layoffs amid slowing growth,The Economist
+2017-11-16,2585.639892578125,Gold hits all-time high as investors seek safe haven assets,Financial Times
+2017-11-20,2582.139892578125,"Retail inventory levels rise, suggesting demand slowdown",Wall Street Journal
+2017-11-21,2599.030029296875,Dollar strengthens against euro on hawkish Fed comments,Financial Times
+2017-11-22,2597.080078125,Housing market shows signs of cooling after rate hikes,Bloomberg
+2017-11-27,2601.419921875,S&P 500 drops 3% as inflation data disappoints investors,MarketWatch
+2017-12-05,2629.570068359375,Renewable energy stocks surge on new climate legislation,CNBC
+2017-12-06,2629.27001953125,"Bond yields hit 15-year high, pressuring equity valuations",AP Finance
+2017-12-12,2664.110107421875,US inflation cools to lowest level in two years,MarketWatch
+2017-12-15,2675.81005859375,Federal Reserve raises interest rates amid inflation concerns,Bloomberg
+2017-12-20,2679.25,Tesla shares fall after disappointing delivery numbers,AP Finance
+2017-12-21,2684.570068359375,Germany enters recession as energy costs weigh on industry,Wall Street Journal
+2017-12-28,2687.5400390625,Unemployment rate falls to multi-decade low,Reuters
+2018-01-03,2713.06005859375,"Wage growth accelerates, fueling inflation concerns",MarketWatch
+2018-01-08,2747.7099609375,Dollar strengthens against euro on hawkish Fed comments,Reuters
+2018-01-16,2776.419921875,China-US trade war escalates with new tariffs,Wall Street Journal
+2018-01-17,2802.56005859375,Wall Street closes higher after positive jobs report,Forbes
+2018-01-18,2798.030029296875,GDP growth beats expectations in strong Q2 report,Reuters
+2018-01-19,2810.300048828125,Apple reports record quarterly revenue despite supply chain issues,MarketWatch
+2018-01-24,2837.5400390625,Amazon announces major layoffs amid slowing growth,Financial Times
+2018-01-30,2822.429931640625,Retail sales data signals consumer slowdown,Reuters
+2018-01-31,2823.81005859375,Banking sector faces headwinds from rising credit defaults,Reuters
+2018-02-02,2762.1298828125,"Central bank holds rates steady, signals pause in tightening",The Economist
+2018-02-12,2656.0,Federal Reserve raises interest rates amid inflation concerns,Wall Street Journal
+2018-02-13,2662.93994140625,Manufacturing PMI contracts for third consecutive month,AP Finance
+2018-02-14,2698.6298828125,Unemployment rate falls to multi-decade low,Reuters
+2018-02-16,2732.219970703125,Consumer confidence index drops sharply in August survey,AP Finance
+2018-02-27,2744.280029296875,Merger talks between two major airlines collapse,CNBC
+2018-03-12,2783.02001953125,Housing market shows signs of cooling after rate hikes,CNBC
+2018-03-22,2643.68994140625,Oil prices surge as Middle East tensions escalate,Financial Times
+2018-03-28,2605.0,"Central bank holds rates steady, signals pause in tightening",AP Finance
+2018-04-02,2581.8798828125,"Bond yields hit 15-year high, pressuring equity valuations",AP Finance
+2018-04-03,2614.449951171875,Pharmaceutical company announces breakthrough cancer treatment,Business Insider
+2018-04-04,2644.68994140625,Oil majors post record profits as energy prices soar,CNBC
+2018-04-10,2656.8701171875,Semiconductor shortage eases as chip production ramps up,MarketWatch
+2018-04-11,2642.18994140625,Renewable energy stocks surge on new climate legislation,AP Finance
+2018-04-12,2663.989990234375,China-US trade war escalates with new tariffs,Business Insider
+2018-04-18,2708.639892578125,Banking sector faces headwinds from rising credit defaults,CNBC
+2018-04-19,2693.1298828125,Federal Reserve raises interest rates amid inflation concerns,Reuters
+2018-04-20,2670.139892578125,North Korea fires ballistic missile toward Japan,AP Finance
+2018-04-23,2670.2900390625,"Wage growth accelerates, fueling inflation concerns",Business Insider
+2018-04-27,2669.909912109375,Apple reports record quarterly revenue despite supply chain issues,Forbes
+2018-04-30,2648.050048828125,"Central bank holds rates steady, signals pause in tightening",The Economist
+2018-05-02,2635.669921875,European Central Bank signals aggressive rate hike path,Financial Times
+2018-05-03,2629.72998046875,"Bond yields hit 15-year high, pressuring equity valuations",AP Finance
+2018-05-04,2663.419921875,Federal Reserve raises interest rates amid inflation concerns,CNBC
+2018-05-08,2671.919921875,Gold hits all-time high as investors seek safe haven assets,MarketWatch
+2018-05-09,2697.7900390625,"OPEC cuts oil production, sending crude prices higher",Financial Times
+2018-05-10,2723.070068359375,Brexit deal uncertainty rattles European markets,CNBC
+2018-05-14,2730.1298828125,"OPEC cuts oil production, sending crude prices higher",Forbes
+2018-05-17,2720.1298828125,Nasdaq enters correction territory amid rate hike fears,Wall Street Journal
+2018-05-22,2724.43994140625,European Central Bank signals aggressive rate hike path,The Economist
+2018-05-24,2727.760009765625,"Wage growth accelerates, fueling inflation concerns",Wall Street Journal
+2018-05-30,2724.010009765625,Germany enters recession as energy costs weigh on industry,Reuters
+2018-06-01,2734.6201171875,Brexit deal uncertainty rattles European markets,Bloomberg
+2018-06-06,2772.35009765625,"Retail inventory levels rise, suggesting demand slowdown",Financial Times
+2018-06-13,2775.6298828125,Manufacturing PMI contracts for third consecutive month,MarketWatch
+2018-06-14,2782.489990234375,Semiconductor shortage eases as chip production ramps up,Bloomberg
+2018-06-15,2779.659912109375,Dollar strengthens against euro on hawkish Fed comments,CNBC
+2018-06-18,2773.75,"Bond yields hit 15-year high, pressuring equity valuations",AP Finance
+2018-06-19,2762.590087890625,North Korea fires ballistic missile toward Japan,Financial Times
+2018-06-27,2699.6298828125,Tesla shares fall after disappointing delivery numbers,Bloomberg
+2018-06-28,2716.31005859375,Dollar strengthens against euro on hawkish Fed comments,MarketWatch
+2018-06-29,2718.3701171875,"Retail inventory levels rise, suggesting demand slowdown",Reuters
+2018-07-10,2793.840087890625,"Wage growth accelerates, fueling inflation concerns",Reuters
+2018-07-13,2801.31005859375,Renewable energy stocks surge on new climate legislation,Financial Times
+2018-07-16,2798.429931640625,European Central Bank signals aggressive rate hike path,Bloomberg
+2018-07-17,2809.550048828125,Merger talks between two major airlines collapse,Business Insider
+2018-07-19,2804.489990234375,"Bitcoin falls below $20,000 as crypto winter deepens",Reuters
+2018-07-26,2837.43994140625,North Korea fires ballistic missile toward Japan,Reuters
+2018-07-30,2802.60009765625,"Central bank holds rates steady, signals pause in tightening",MarketWatch
+2018-08-03,2840.35009765625,US inflation cools to lowest level in two years,Wall Street Journal
+2018-08-09,2853.580078125,Consumer confidence index drops sharply in August survey,The Economist
+2018-08-10,2833.280029296875,Trade deficit widens as imports outpace exports,AP Finance
+2018-08-15,2818.3701171875,Tech stocks rally on strong earnings from major firms,MarketWatch
+2018-08-16,2840.68994140625,Oil prices surge as Middle East tensions escalate,Reuters
+2018-08-21,2862.9599609375,US imposes new sanctions on Russia over Ukraine conflict,Wall Street Journal
+2018-08-23,2856.97998046875,"Central bank holds rates steady, signals pause in tightening",Bloomberg
+2018-08-28,2897.52001953125,IMF warns of global recession risk following energy crisis,Business Insider
+2018-08-29,2914.0400390625,Merger talks between two major airlines collapse,Business Insider
+2018-08-30,2901.1298828125,Tesla shares fall after disappointing delivery numbers,Financial Times
+2018-09-04,2896.719970703125,Housing market shows signs of cooling after rate hikes,MarketWatch
+2018-09-05,2888.60009765625,Merger talks between two major airlines collapse,Wall Street Journal
+2018-09-06,2878.050048828125,Wall Street closes higher after positive jobs report,MarketWatch
+2018-09-10,2877.1298828125,"Bond yields hit 15-year high, pressuring equity valuations",MarketWatch
+2018-09-12,2888.919921875,IMF warns of global recession risk following energy crisis,Forbes
+2018-09-14,2904.97998046875,"Wage growth accelerates, fueling inflation concerns",The Economist
+2018-09-18,2904.31005859375,Unemployment rate falls to multi-decade low,Wall Street Journal
+2018-09-19,2907.949951171875,"OPEC cuts oil production, sending crude prices higher",AP Finance
+2018-09-21,2929.669921875,Apple reports record quarterly revenue despite supply chain issues,Financial Times
+2018-09-25,2915.56005859375,"OPEC cuts oil production, sending crude prices higher",MarketWatch
+2018-09-26,2905.969970703125,"Wage growth accelerates, fueling inflation concerns",MarketWatch
+2018-09-27,2914.0,Renewable energy stocks surge on new climate legislation,AP Finance
+2018-09-28,2913.97998046875,Housing market shows signs of cooling after rate hikes,Wall Street Journal
+2018-10-01,2924.590087890625,Merger talks between two major airlines collapse,Business Insider
+2018-10-02,2923.429931640625,Tesla shares fall after disappointing delivery numbers,MarketWatch
+2018-10-05,2885.570068359375,"Retail inventory levels rise, suggesting demand slowdown",Business Insider
+2018-10-09,2880.340087890625,Federal Reserve raises interest rates amid inflation concerns,CNBC
+2018-10-10,2785.679931640625,Trade deficit widens as imports outpace exports,Wall Street Journal
+2018-10-25,2705.570068359375,Tesla shares fall after disappointing delivery numbers,Financial Times
+2018-10-29,2641.25,"Wage growth accelerates, fueling inflation concerns",Bloomberg
+2018-10-31,2711.739990234375,Manufacturing PMI contracts for third consecutive month,Reuters
+2018-11-05,2738.31005859375,European Central Bank signals aggressive rate hike path,AP Finance
+2018-11-07,2813.889892578125,"Wage growth accelerates, fueling inflation concerns",Business Insider
+2018-11-19,2690.72998046875,Housing market shows signs of cooling after rate hikes,AP Finance
+2018-11-21,2649.929931640625,Wall Street closes higher after positive jobs report,Reuters
+2018-11-26,2673.449951171875,Wall Street closes higher after positive jobs report,The Economist
+2018-11-27,2682.169921875,Merger talks between two major airlines collapse,Reuters
+2018-11-28,2743.7900390625,Amazon announces major layoffs amid slowing growth,AP Finance
+2018-11-29,2737.800048828125,Unemployment rate falls to multi-decade low,Forbes
+2018-12-06,2695.949951171875,"OPEC cuts oil production, sending crude prices higher",Reuters
+2018-12-07,2633.080078125,Consumer confidence index drops sharply in August survey,AP Finance
+2018-12-10,2637.719970703125,Banking sector faces headwinds from rising credit defaults,The Economist
+2018-12-11,2636.780029296875,North Korea fires ballistic missile toward Japan,MarketWatch
+2018-12-13,2650.5400390625,"Bitcoin falls below $20,000 as crypto winter deepens",CNBC
+2018-12-17,2545.93994140625,European Central Bank signals aggressive rate hike path,Forbes
+2018-12-21,2416.6201171875,Tech stocks rally on strong earnings from major firms,Bloomberg
+2018-12-24,2351.10009765625,"Retail inventory levels rise, suggesting demand slowdown",Business Insider
+2018-12-26,2467.699951171875,GDP growth beats expectations in strong Q2 report,Reuters
+2018-12-28,2485.739990234375,European Central Bank signals aggressive rate hike path,MarketWatch
+2018-12-31,2506.85009765625,Apple reports record quarterly revenue despite supply chain issues,Forbes
+2019-01-03,2447.889892578125,"Central bank holds rates steady, signals pause in tightening",CNBC
+2019-01-04,2531.93994140625,Housing market shows signs of cooling after rate hikes,Forbes
+2019-01-07,2549.68994140625,North Korea fires ballistic missile toward Japan,Wall Street Journal
+2019-01-09,2584.9599609375,Amazon announces major layoffs amid slowing growth,CNBC
+2019-01-15,2610.300048828125,Federal Reserve raises interest rates amid inflation concerns,Wall Street Journal
+2019-01-16,2616.10009765625,"OPEC cuts oil production, sending crude prices higher",CNBC
+2019-01-17,2635.9599609375,Federal Reserve raises interest rates amid inflation concerns,AP Finance
+2019-01-18,2670.7099609375,Dollar strengthens against euro on hawkish Fed comments,Reuters
+2019-01-24,2642.330078125,Semiconductor shortage eases as chip production ramps up,MarketWatch
+2019-01-29,2640.0,Unemployment rate falls to multi-decade low,The Economist
+2019-01-31,2704.10009765625,Apple reports record quarterly revenue despite supply chain issues,Wall Street Journal
+2019-02-04,2724.8701171875,Housing market shows signs of cooling after rate hikes,Forbes
+2019-02-06,2731.610107421875,Banking sector faces headwinds from rising credit defaults,Financial Times
+2019-02-07,2706.050048828125,"Central bank holds rates steady, signals pause in tightening",The Economist
+2019-02-08,2707.8798828125,Gold hits all-time high as investors seek safe haven assets,Forbes
+2019-02-12,2744.72998046875,China-US trade war escalates with new tariffs,Business Insider
+2019-02-13,2753.030029296875,Brexit deal uncertainty rattles European markets,MarketWatch
+2019-02-21,2774.8798828125,Banking sector faces headwinds from rising credit defaults,Bloomberg
+2019-02-22,2792.669921875,"Central bank holds rates steady, signals pause in tightening",Financial Times
+2019-02-26,2793.89990234375,Gold hits all-time high as investors seek safe haven assets,Business Insider
+2019-02-27,2792.3798828125,US inflation cools to lowest level in two years,AP Finance
+2019-03-12,2791.52001953125,"OPEC cuts oil production, sending crude prices higher",Bloomberg
+2019-03-15,2822.47998046875,Renewable energy stocks surge on new climate legislation,Financial Times
+2019-03-18,2832.93994140625,GDP growth beats expectations in strong Q2 report,Wall Street Journal
+2019-03-20,2824.22998046875,Germany enters recession as energy costs weigh on industry,MarketWatch
+2019-03-21,2854.8798828125,US inflation cools to lowest level in two years,Business Insider
+2019-03-25,2798.360107421875,"Central bank holds rates steady, signals pause in tightening",CNBC
+2019-03-26,2818.4599609375,US inflation cools to lowest level in two years,AP Finance
+2019-03-29,2834.39990234375,"OPEC cuts oil production, sending crude prices higher",AP Finance
+2019-04-04,2879.389892578125,China-US trade war escalates with new tariffs,The Economist
+2019-04-08,2895.77001953125,Emerging market currencies under pressure from strong dollar,MarketWatch
+2019-04-12,2907.409912109375,North Korea fires ballistic missile toward Japan,Wall Street Journal
+2019-04-15,2905.580078125,"Bond yields hit 15-year high, pressuring equity valuations",Bloomberg
+2019-04-18,2905.030029296875,Tech stocks rally on strong earnings from major firms,Wall Street Journal
+2019-04-24,2927.25,Emerging market currencies under pressure from strong dollar,Business Insider
+2019-04-25,2926.169921875,Trade deficit widens as imports outpace exports,Wall Street Journal
+2019-04-26,2939.8798828125,Nasdaq enters correction territory amid rate hike fears,MarketWatch
+2019-04-30,2945.830078125,Oil prices surge as Middle East tensions escalate,Financial Times
+2019-05-02,2917.52001953125,Retail sales data signals consumer slowdown,Business Insider
+2019-05-06,2932.469970703125,Germany enters recession as energy costs weigh on industry,Wall Street Journal
+2019-05-22,2856.27001953125,Banking sector faces headwinds from rising credit defaults,AP Finance
+2019-05-24,2826.06005859375,Oil prices surge as Middle East tensions escalate,Wall Street Journal
+2019-05-28,2802.389892578125,"Retail inventory levels rise, suggesting demand slowdown",The Economist
+2019-05-29,2783.02001953125,Bank stocks surge after stress test results released,AP Finance
+2019-05-31,2752.06005859375,Emerging market currencies under pressure from strong dollar,MarketWatch
+2019-06-06,2843.489990234375,Merger talks between two major airlines collapse,Business Insider
+2019-06-10,2886.72998046875,GDP growth beats expectations in strong Q2 report,CNBC
+2019-06-12,2879.840087890625,Merger talks between two major airlines collapse,Bloomberg
+2019-06-13,2891.639892578125,Retail sales data signals consumer slowdown,Business Insider
+2019-06-17,2889.669921875,"Bond yields hit 15-year high, pressuring equity valuations",AP Finance
+2019-06-18,2917.75,Bank stocks surge after stress test results released,Forbes
+2019-06-25,2917.3798828125,US inflation cools to lowest level in two years,Forbes
+2019-06-28,2941.760009765625,Semiconductor shortage eases as chip production ramps up,Financial Times
+2019-07-03,2995.820068359375,"Bond yields hit 15-year high, pressuring equity valuations",Forbes
+2019-07-05,2990.409912109375,Unemployment rate falls to multi-decade low,Bloomberg
+2019-07-08,2975.949951171875,Renewable energy stocks surge on new climate legislation,Reuters
+2019-07-11,2999.909912109375,"Central bank holds rates steady, signals pause in tightening",Forbes
+2019-07-12,3013.77001953125,"Wage growth accelerates, fueling inflation concerns",Forbes
+2019-07-16,3004.0400390625,"Bond yields hit 15-year high, pressuring equity valuations",AP Finance
+2019-07-17,2984.419921875,Semiconductor shortage eases as chip production ramps up,The Economist
+2019-07-18,2995.110107421875,Dollar strengthens against euro on hawkish Fed comments,AP Finance
+2019-07-19,2976.610107421875,North Korea fires ballistic missile toward Japan,MarketWatch
+2019-07-23,3005.469970703125,Emerging market currencies under pressure from strong dollar,Forbes
+2019-07-25,3003.669921875,Bank stocks surge after stress test results released,Business Insider
+2019-07-26,3025.860107421875,Tesla shares fall after disappointing delivery numbers,Reuters
+2019-07-29,3020.969970703125,European Central Bank signals aggressive rate hike path,MarketWatch
+2019-07-30,3013.179931640625,Federal Reserve raises interest rates amid inflation concerns,CNBC
+2019-08-02,2932.050048828125,Wall Street closes higher after positive jobs report,Forbes
+2019-08-13,2926.320068359375,"OPEC cuts oil production, sending crude prices higher",CNBC
+2019-08-14,2840.60009765625,Semiconductor shortage eases as chip production ramps up,Bloomberg
+2019-08-19,2923.64990234375,Retail sales data signals consumer slowdown,Reuters
+2019-08-20,2900.510009765625,Manufacturing PMI contracts for third consecutive month,Financial Times
+2019-08-21,2924.429931640625,Retail sales data signals consumer slowdown,Wall Street Journal
+2019-08-22,2922.949951171875,S&P 500 drops 3% as inflation data disappoints investors,AP Finance
+2019-08-27,2869.159912109375,"Wage growth accelerates, fueling inflation concerns",Financial Times
+2019-08-29,2924.580078125,IMF warns of global recession risk following energy crisis,MarketWatch
+2019-09-03,2906.27001953125,Wall Street closes higher after positive jobs report,Wall Street Journal
+2019-09-06,2978.7099609375,Tech stocks rally on strong earnings from major firms,Bloomberg
+2019-09-09,2978.429931640625,Retail sales data signals consumer slowdown,The Economist
+2019-09-12,3009.570068359375,US inflation cools to lowest level in two years,Forbes
+2019-09-16,2997.9599609375,Consumer confidence index drops sharply in August survey,CNBC
+2019-09-18,3006.72998046875,"OPEC cuts oil production, sending crude prices higher",Bloomberg
+2019-09-19,3006.7900390625,US inflation cools to lowest level in two years,Business Insider
+2019-09-20,2992.070068359375,Dollar strengthens against euro on hawkish Fed comments,Business Insider
+2019-09-23,2991.780029296875,Emerging market currencies under pressure from strong dollar,Business Insider
+2019-09-25,2984.8701171875,GDP growth beats expectations in strong Q2 report,Business Insider
+2019-09-27,2961.7900390625,Federal Reserve raises interest rates amid inflation concerns,AP Finance
+2019-10-04,2952.010009765625,S&P 500 drops 3% as inflation data disappoints investors,Forbes
+2019-10-07,2938.7900390625,Germany enters recession as energy costs weigh on industry,MarketWatch
+2019-10-08,2893.06005859375,Federal Reserve raises interest rates amid inflation concerns,Forbes
+2019-10-11,2970.27001953125,Merger talks between two major airlines collapse,MarketWatch
+2019-10-15,2995.679931640625,Emerging market currencies under pressure from strong dollar,MarketWatch
+2019-10-16,2989.68994140625,Germany enters recession as energy costs weigh on industry,Bloomberg
+2019-10-17,2997.949951171875,Unemployment rate falls to multi-decade low,The Economist
+2019-10-18,2986.199951171875,Oil majors post record profits as energy prices soar,Bloomberg
+2019-10-22,2995.989990234375,"Bond yields hit 15-year high, pressuring equity valuations",MarketWatch
+2019-10-25,3022.550048828125,"Bond yields hit 15-year high, pressuring equity valuations",Wall Street Journal
+2019-10-29,3036.889892578125,Tech stocks rally on strong earnings from major firms,Reuters
+2019-10-30,3046.77001953125,Gold hits all-time high as investors seek safe haven assets,MarketWatch
+2019-11-11,3087.010009765625,Bank stocks surge after stress test results released,MarketWatch
+2019-11-12,3091.840087890625,Gold hits all-time high as investors seek safe haven assets,AP Finance
+2019-11-13,3094.0400390625,Wall Street closes higher after positive jobs report,Wall Street Journal
+2019-11-15,3120.4599609375,Merger talks between two major airlines collapse,Reuters
+2019-11-18,3122.030029296875,Trade deficit widens as imports outpace exports,CNBC
+2019-11-20,3108.4599609375,US inflation cools to lowest level in two years,Bloomberg
+2019-11-25,3133.639892578125,"Bitcoin falls below $20,000 as crypto winter deepens",Wall Street Journal
+2019-11-27,3153.6298828125,"OPEC cuts oil production, sending crude prices higher",Business Insider
+2019-12-02,3113.8701171875,Federal Reserve raises interest rates amid inflation concerns,MarketWatch
+2019-12-03,3093.199951171875,US imposes new sanctions on Russia over Ukraine conflict,Financial Times
+2019-12-04,3112.760009765625,Merger talks between two major airlines collapse,Bloomberg
+2019-12-11,3141.6298828125,Dollar strengthens against euro on hawkish Fed comments,Business Insider
+2019-12-12,3168.570068359375,Trade deficit widens as imports outpace exports,Wall Street Journal
+2019-12-17,3192.52001953125,Germany enters recession as energy costs weigh on industry,Financial Times
+2019-12-23,3224.010009765625,US inflation cools to lowest level in two years,Forbes
+2019-12-24,3223.3798828125,Dollar strengthens against euro on hawkish Fed comments,Financial Times
+2019-12-27,3240.02001953125,US imposes new sanctions on Russia over Ukraine conflict,AP Finance
+2019-12-30,3221.2900390625,"Bond yields hit 15-year high, pressuring equity valuations",Bloomberg
+2019-12-31,3230.780029296875,Manufacturing PMI contracts for third consecutive month,The Economist
+2020-01-02,3257.85009765625,Trade deficit widens as imports outpace exports,MarketWatch
+2020-01-03,3234.85009765625,Apple reports record quarterly revenue despite supply chain issues,Forbes
+2020-01-10,3265.35009765625,Bank stocks surge after stress test results released,Wall Street Journal
+2020-01-13,3288.1298828125,Brexit deal uncertainty rattles European markets,Reuters
+2020-01-17,3329.6201171875,Merger talks between two major airlines collapse,The Economist
+2020-01-22,3321.75,Oil majors post record profits as energy prices soar,CNBC
+2020-01-30,3283.659912109375,Emerging market currencies under pressure from strong dollar,Forbes
+2020-01-31,3225.52001953125,Bank stocks surge after stress test results released,Reuters
+2020-02-03,3248.919921875,Bank stocks surge after stress test results released,Forbes
+2020-02-06,3345.780029296875,Amazon announces major layoffs amid slowing growth,MarketWatch
+2020-02-07,3327.7099609375,US inflation cools to lowest level in two years,Forbes
+2020-02-13,3373.93994140625,Semiconductor shortage eases as chip production ramps up,CNBC
+2020-02-21,3337.75,China-US trade war escalates with new tariffs,MarketWatch
+2020-02-24,3225.889892578125,"OPEC cuts oil production, sending crude prices higher",Financial Times
+2020-02-25,3128.2099609375,Consumer confidence index drops sharply in August survey,AP Finance
+2020-02-26,3116.389892578125,US inflation cools to lowest level in two years,Business Insider
+2020-03-02,3090.22998046875,"Retail inventory levels rise, suggesting demand slowdown",Bloomberg
+2020-03-03,3003.3701171875,Renewable energy stocks surge on new climate legislation,Bloomberg
+2020-03-04,3130.1201171875,Housing market shows signs of cooling after rate hikes,Business Insider
+2020-03-12,2480.639892578125,Manufacturing PMI contracts for third consecutive month,Reuters
+2020-03-18,2398.10009765625,Federal Reserve raises interest rates amid inflation concerns,Wall Street Journal
+2020-03-19,2409.389892578125,Nasdaq enters correction territory amid rate hike fears,Reuters
+2020-03-24,2447.330078125,Retail sales data signals consumer slowdown,The Economist
+2020-03-25,2475.56005859375,Banking sector faces headwinds from rising credit defaults,Reuters
+2020-03-31,2584.590087890625,Semiconductor shortage eases as chip production ramps up,Forbes
+2020-04-03,2488.64990234375,"Central bank holds rates steady, signals pause in tightening",CNBC
+2020-04-06,2663.679931640625,Amazon announces major layoffs amid slowing growth,Bloomberg
+2020-04-13,2761.6298828125,Tech stocks rally on strong earnings from major firms,CNBC
+2020-04-15,2783.360107421875,IMF warns of global recession risk following energy crisis,CNBC
+2020-04-17,2874.56005859375,European Central Bank signals aggressive rate hike path,AP Finance
+2020-04-20,2823.159912109375,Oil prices surge as Middle East tensions escalate,AP Finance
+2020-04-22,2799.31005859375,Semiconductor shortage eases as chip production ramps up,The Economist
+2020-04-23,2797.800048828125,US inflation cools to lowest level in two years,AP Finance
+2020-04-24,2836.739990234375,Nasdaq enters correction territory amid rate hike fears,Bloomberg
+2020-04-27,2878.47998046875,US imposes new sanctions on Russia over Ukraine conflict,The Economist
+2020-04-29,2939.510009765625,Pharmaceutical company announces breakthrough cancer treatment,Business Insider
+2020-05-05,2868.43994140625,Renewable energy stocks surge on new climate legislation,CNBC
+2020-05-07,2881.18994140625,Retail sales data signals consumer slowdown,Wall Street Journal
+2020-05-08,2929.800048828125,"OPEC cuts oil production, sending crude prices higher",CNBC
+2020-05-12,2870.1201171875,GDP growth beats expectations in strong Q2 report,Business Insider
+2020-05-13,2820.0,"Retail inventory levels rise, suggesting demand slowdown",MarketWatch
+2020-05-21,2948.510009765625,US inflation cools to lowest level in two years,AP Finance
+2020-05-28,3029.72998046875,"Retail inventory levels rise, suggesting demand slowdown",The Economist
+2020-06-01,3055.72998046875,Germany enters recession as energy costs weigh on industry,Reuters
+2020-06-04,3112.35009765625,"Wage growth accelerates, fueling inflation concerns",Bloomberg
+2020-06-05,3193.929931640625,Tech stocks rally on strong earnings from major firms,Bloomberg
+2020-06-08,3232.389892578125,S&P 500 drops 3% as inflation data disappoints investors,Financial Times
+2020-06-18,3115.340087890625,"Retail inventory levels rise, suggesting demand slowdown",Reuters
+2020-06-23,3131.2900390625,S&P 500 drops 3% as inflation data disappoints investors,AP Finance
+2020-06-30,3100.2900390625,Unemployment rate falls to multi-decade low,Business Insider
+2020-07-01,3115.860107421875,Banking sector faces headwinds from rising credit defaults,MarketWatch
+2020-07-06,3179.719970703125,Oil majors post record profits as energy prices soar,Wall Street Journal
+2020-07-10,3185.0400390625,Retail sales data signals consumer slowdown,Reuters
+2020-07-13,3155.219970703125,Pharmaceutical company announces breakthrough cancer treatment,Financial Times
+2020-07-20,3251.840087890625,"Retail inventory levels rise, suggesting demand slowdown",AP Finance
+2020-07-23,3235.659912109375,Manufacturing PMI contracts for third consecutive month,Business Insider
+2020-07-28,3218.43994140625,North Korea fires ballistic missile toward Japan,Business Insider
+2020-07-29,3258.43994140625,European Central Bank signals aggressive rate hike path,Wall Street Journal
+2020-07-30,3246.219970703125,European Central Bank signals aggressive rate hike path,AP Finance
+2020-07-31,3271.1201171875,Manufacturing PMI contracts for third consecutive month,Business Insider
+2020-08-05,3327.77001953125,Retail sales data signals consumer slowdown,Wall Street Journal
+2020-08-06,3349.159912109375,US inflation cools to lowest level in two years,MarketWatch
+2020-08-10,3360.469970703125,Wall Street closes higher after positive jobs report,MarketWatch
+2020-08-11,3333.68994140625,Gold hits all-time high as investors seek safe haven assets,Bloomberg
+2020-08-19,3374.85009765625,Retail sales data signals consumer slowdown,CNBC
+2020-08-21,3397.159912109375,IMF warns of global recession risk following energy crisis,The Economist
+2020-08-25,3443.6201171875,Germany enters recession as energy costs weigh on industry,Wall Street Journal
+2020-08-28,3508.010009765625,"OPEC cuts oil production, sending crude prices higher",Wall Street Journal
+2020-09-01,3526.64990234375,Amazon announces major layoffs amid slowing growth,Forbes
+2020-09-02,3580.840087890625,"Bond yields hit 15-year high, pressuring equity valuations",Business Insider
+2020-09-04,3426.9599609375,Emerging market currencies under pressure from strong dollar,Reuters
+2020-09-08,3331.840087890625,Housing market shows signs of cooling after rate hikes,CNBC
+2020-09-11,3340.969970703125,Tesla shares fall after disappointing delivery numbers,AP Finance
+2020-09-14,3383.5400390625,Semiconductor shortage eases as chip production ramps up,AP Finance
+2020-09-15,3401.199951171875,Pharmaceutical company announces breakthrough cancer treatment,Forbes
+2020-09-16,3385.489990234375,Federal Reserve raises interest rates amid inflation concerns,Forbes
+2020-09-17,3357.010009765625,IMF warns of global recession risk following energy crisis,Bloomberg
+2020-09-22,3315.570068359375,Oil prices surge as Middle East tensions escalate,Financial Times
+2020-09-24,3246.590087890625,Retail sales data signals consumer slowdown,Bloomberg
+2020-09-25,3298.4599609375,Brexit deal uncertainty rattles European markets,The Economist
+2020-09-28,3351.60009765625,Brexit deal uncertainty rattles European markets,The Economist
+2020-10-01,3380.800048828125,Nasdaq enters correction territory amid rate hike fears,Business Insider
+2020-10-07,3419.43994140625,Federal Reserve raises interest rates amid inflation concerns,Financial Times
+2020-10-12,3534.219970703125,European Central Bank signals aggressive rate hike path,AP Finance
+2020-10-13,3511.929931640625,IMF warns of global recession risk following energy crisis,Financial Times
+2020-10-19,3426.919921875,Nasdaq enters correction territory amid rate hike fears,AP Finance
+2020-10-30,3269.9599609375,Germany enters recession as energy costs weigh on industry,Wall Street Journal
+2020-11-03,3369.159912109375,Tech stocks rally on strong earnings from major firms,The Economist
+2020-11-04,3443.43994140625,"OPEC cuts oil production, sending crude prices higher",Business Insider
+2020-11-05,3510.449951171875,Unemployment rate falls to multi-decade low,The Economist
+2020-11-06,3509.43994140625,European Central Bank signals aggressive rate hike path,Reuters
+2020-11-09,3550.5,Semiconductor shortage eases as chip production ramps up,Reuters
+2020-11-12,3537.010009765625,Banking sector faces headwinds from rising credit defaults,Bloomberg
+2020-11-16,3626.909912109375,US imposes new sanctions on Russia over Ukraine conflict,Reuters
+2020-11-17,3609.530029296875,"Central bank holds rates steady, signals pause in tightening",CNBC
+2020-11-20,3557.5400390625,Apple reports record quarterly revenue despite supply chain issues,Business Insider
+2020-11-27,3638.35009765625,European Central Bank signals aggressive rate hike path,Wall Street Journal
+2020-11-30,3621.6298828125,Consumer confidence index drops sharply in August survey,MarketWatch
+2020-12-01,3662.449951171875,Semiconductor shortage eases as chip production ramps up,MarketWatch
+2020-12-02,3669.010009765625,Wall Street closes higher after positive jobs report,Bloomberg
+2020-12-07,3691.9599609375,North Korea fires ballistic missile toward Japan,Financial Times
+2020-12-10,3668.10009765625,Brexit deal uncertainty rattles European markets,Wall Street Journal
+2020-12-11,3663.4599609375,IMF warns of global recession risk following energy crisis,AP Finance
+2020-12-14,3647.489990234375,Unemployment rate falls to multi-decade low,Forbes
+2020-12-15,3694.6201171875,Semiconductor shortage eases as chip production ramps up,Wall Street Journal
+2020-12-18,3709.409912109375,"Bond yields hit 15-year high, pressuring equity valuations",Business Insider
+2020-12-21,3694.919921875,IMF warns of global recession risk following energy crisis,MarketWatch
+2020-12-23,3690.010009765625,Wall Street closes higher after positive jobs report,Bloomberg
+2020-12-28,3735.360107421875,Banking sector faces headwinds from rising credit defaults,MarketWatch
+2020-12-29,3727.0400390625,Germany enters recession as energy costs weigh on industry,Wall Street Journal
+2021-01-06,3748.139892578125,Consumer confidence index drops sharply in August survey,AP Finance
+2021-01-08,3824.679931640625,Germany enters recession as energy costs weigh on industry,Reuters
+2021-01-11,3799.610107421875,Oil prices surge as Middle East tensions escalate,MarketWatch
+2021-01-12,3801.18994140625,Housing market shows signs of cooling after rate hikes,Wall Street Journal
+2021-01-14,3795.5400390625,Housing market shows signs of cooling after rate hikes,CNBC
+2021-01-15,3768.25,"Bitcoin falls below $20,000 as crypto winter deepens",Forbes
+2021-01-22,3841.469970703125,US inflation cools to lowest level in two years,Wall Street Journal
+2021-01-26,3849.6201171875,Banking sector faces headwinds from rising credit defaults,CNBC
+2021-01-27,3750.77001953125,Federal Reserve raises interest rates amid inflation concerns,CNBC
+2021-01-28,3787.3798828125,Unemployment rate falls to multi-decade low,MarketWatch
+2021-02-04,3871.739990234375,IMF warns of global recession risk following energy crisis,Financial Times
+2021-02-05,3886.830078125,"Central bank holds rates steady, signals pause in tightening",MarketWatch
+2021-02-10,3909.8798828125,"Bond yields hit 15-year high, pressuring equity valuations",AP Finance
+2021-02-19,3906.7099609375,Tesla shares fall after disappointing delivery numbers,Wall Street Journal
+2021-02-23,3881.3701171875,GDP growth beats expectations in strong Q2 report,AP Finance
+2021-02-25,3829.340087890625,Retail sales data signals consumer slowdown,Bloomberg
+2021-03-04,3768.469970703125,Nasdaq enters correction territory amid rate hike fears,Forbes
+2021-03-05,3841.93994140625,China-US trade war escalates with new tariffs,Financial Times
+2021-03-09,3875.43994140625,"Bitcoin falls below $20,000 as crypto winter deepens",Wall Street Journal
+2021-03-10,3898.81005859375,Apple reports record quarterly revenue despite supply chain issues,Financial Times
+2021-03-15,3968.93994140625,Renewable energy stocks surge on new climate legislation,The Economist
+2021-03-16,3962.7099609375,Apple reports record quarterly revenue despite supply chain issues,Forbes
+2021-04-01,4019.8701171875,Wall Street closes higher after positive jobs report,MarketWatch
+2021-04-07,4079.949951171875,Unemployment rate falls to multi-decade low,Business Insider
+2021-04-09,4128.7998046875,"Wage growth accelerates, fueling inflation concerns",Wall Street Journal
+2021-04-13,4141.58984375,Germany enters recession as energy costs weigh on industry,AP Finance
+2021-04-19,4163.259765625,Pharmaceutical company announces breakthrough cancer treatment,AP Finance
+2021-04-20,4134.93994140625,Apple reports record quarterly revenue despite supply chain issues,Bloomberg
+2021-04-21,4173.419921875,Unemployment rate falls to multi-decade low,AP Finance
+2021-04-22,4134.97998046875,"OPEC cuts oil production, sending crude prices higher",AP Finance
+2021-04-26,4187.6201171875,Gold hits all-time high as investors seek safe haven assets,MarketWatch
+2021-04-29,4211.47021484375,Bank stocks surge after stress test results released,Business Insider
+2021-05-03,4192.66015625,"Wage growth accelerates, fueling inflation concerns",Wall Street Journal
+2021-05-06,4201.6201171875,US imposes new sanctions on Russia over Ukraine conflict,Business Insider
+2021-05-07,4232.60009765625,Merger talks between two major airlines collapse,AP Finance
+2021-05-10,4188.43017578125,GDP growth beats expectations in strong Q2 report,AP Finance
+2021-05-19,4115.68017578125,"Retail inventory levels rise, suggesting demand slowdown",MarketWatch
+2021-05-20,4159.1201171875,Wall Street closes higher after positive jobs report,Reuters
+2021-05-21,4155.85986328125,Dollar strengthens against euro on hawkish Fed comments,Wall Street Journal
+2021-05-27,4200.8798828125,Bank stocks surge after stress test results released,The Economist
+2021-06-02,4208.1201171875,"Retail inventory levels rise, suggesting demand slowdown",CNBC
+2021-06-03,4192.85009765625,European Central Bank signals aggressive rate hike path,MarketWatch
+2021-06-09,4219.5498046875,Brexit deal uncertainty rattles European markets,AP Finance
+2021-06-14,4255.14990234375,Oil majors post record profits as energy prices soar,Wall Street Journal
+2021-06-16,4223.7001953125,Banking sector faces headwinds from rising credit defaults,Wall Street Journal
+2021-06-17,4221.85986328125,Tech stocks rally on strong earnings from major firms,Forbes
+2021-06-22,4246.43994140625,Apple reports record quarterly revenue despite supply chain issues,AP Finance
+2021-06-24,4266.490234375,Banking sector faces headwinds from rising credit defaults,Reuters
+2021-06-28,4290.60986328125,"Retail inventory levels rise, suggesting demand slowdown",Financial Times
+2021-06-29,4291.7998046875,Emerging market currencies under pressure from strong dollar,AP Finance
+2021-06-30,4297.5,Unemployment rate falls to multi-decade low,Reuters
+2021-07-02,4352.33984375,"Bitcoin falls below $20,000 as crypto winter deepens",AP Finance
+2021-07-13,4369.2099609375,Tech stocks rally on strong earnings from major firms,CNBC
+2021-07-16,4327.16015625,"Central bank holds rates steady, signals pause in tightening",CNBC
+2021-07-20,4323.06005859375,US imposes new sanctions on Russia over Ukraine conflict,MarketWatch
+2021-07-23,4411.7900390625,Bank stocks surge after stress test results released,Business Insider
+2021-07-26,4422.2998046875,European Central Bank signals aggressive rate hike path,AP Finance
+2021-07-28,4400.64013671875,Trade deficit widens as imports outpace exports,Financial Times
+2021-07-29,4419.14990234375,Merger talks between two major airlines collapse,Wall Street Journal
+2021-07-30,4395.259765625,"Bitcoin falls below $20,000 as crypto winter deepens",Forbes
+2021-08-04,4402.66015625,Banking sector faces headwinds from rising credit defaults,CNBC
+2021-08-10,4436.75,Bank stocks surge after stress test results released,AP Finance
+2021-08-11,4442.41015625,Gold hits all-time high as investors seek safe haven assets,The Economist
+2021-08-12,4460.830078125,Housing market shows signs of cooling after rate hikes,Bloomberg
+2021-08-13,4468.0,US inflation cools to lowest level in two years,Bloomberg
+2021-08-16,4479.7099609375,Wall Street closes higher after positive jobs report,AP Finance
+2021-08-18,4400.27001953125,Nasdaq enters correction territory amid rate hike fears,AP Finance
+2021-08-19,4405.7998046875,Housing market shows signs of cooling after rate hikes,The Economist
+2021-08-23,4479.52978515625,S&P 500 drops 3% as inflation data disappoints investors,Wall Street Journal
+2021-08-24,4486.22998046875,Apple reports record quarterly revenue despite supply chain issues,MarketWatch
+2021-08-26,4470.0,Housing market shows signs of cooling after rate hikes,Financial Times
+2021-08-27,4509.3701171875,Retail sales data signals consumer slowdown,The Economist
+2021-09-03,4535.43017578125,European Central Bank signals aggressive rate hike path,MarketWatch
+2021-09-07,4520.02978515625,Nasdaq enters correction territory amid rate hike fears,Reuters
+2021-09-08,4514.06982421875,Unemployment rate falls to multi-decade low,MarketWatch
+2021-09-09,4493.27978515625,Unemployment rate falls to multi-decade low,Business Insider
+2021-09-10,4458.580078125,Unemployment rate falls to multi-decade low,Wall Street Journal
+2021-09-14,4443.0498046875,Nasdaq enters correction territory amid rate hike fears,MarketWatch
+2021-09-15,4480.7001953125,North Korea fires ballistic missile toward Japan,Bloomberg
+2021-09-20,4357.72998046875,"Wage growth accelerates, fueling inflation concerns",The Economist
+2021-09-21,4354.18994140625,Merger talks between two major airlines collapse,Wall Street Journal
+2021-09-27,4443.10986328125,Semiconductor shortage eases as chip production ramps up,The Economist
+2021-09-29,4359.4599609375,Dollar strengthens against euro on hawkish Fed comments,Bloomberg
+2021-10-01,4357.0400390625,Retail sales data signals consumer slowdown,Financial Times
+2021-10-04,4300.4599609375,"Central bank holds rates steady, signals pause in tightening",The Economist
+2021-10-06,4363.5498046875,Tesla shares fall after disappointing delivery numbers,Bloomberg
+2021-10-07,4399.759765625,China-US trade war escalates with new tariffs,The Economist
+2021-10-11,4361.18994140625,Emerging market currencies under pressure from strong dollar,CNBC
+2021-10-12,4350.64990234375,"Bond yields hit 15-year high, pressuring equity valuations",Reuters
+2021-10-14,4438.259765625,Oil prices surge as Middle East tensions escalate,Business Insider
+2021-10-18,4486.4599609375,Semiconductor shortage eases as chip production ramps up,Financial Times
+2021-10-22,4544.89990234375,"Bitcoin falls below $20,000 as crypto winter deepens",Reuters
+2021-10-25,4566.47998046875,European Central Bank signals aggressive rate hike path,The Economist
+2021-10-27,4551.68017578125,US imposes new sanctions on Russia over Ukraine conflict,MarketWatch
+2021-10-28,4596.419921875,Manufacturing PMI contracts for third consecutive month,AP Finance
+2021-10-29,4605.3798828125,Consumer confidence index drops sharply in August survey,Bloomberg
+2021-11-01,4613.669921875,GDP growth beats expectations in strong Q2 report,Reuters
+2021-11-02,4630.64990234375,Oil prices surge as Middle East tensions escalate,MarketWatch
+2021-11-03,4660.56982421875,Gold hits all-time high as investors seek safe haven assets,AP Finance
+2021-11-11,4649.27001953125,Federal Reserve raises interest rates amid inflation concerns,AP Finance
+2021-11-12,4682.85009765625,S&P 500 drops 3% as inflation data disappoints investors,MarketWatch
+2021-11-16,4700.89990234375,IMF warns of global recession risk following energy crisis,MarketWatch
+2021-11-17,4688.669921875,Trade deficit widens as imports outpace exports,Forbes
+2021-11-18,4704.5400390625,Pharmaceutical company announces breakthrough cancer treatment,MarketWatch
+2021-11-19,4697.9599609375,Trade deficit widens as imports outpace exports,MarketWatch
+2021-11-23,4690.7001953125,Gold hits all-time high as investors seek safe haven assets,Forbes
+2021-12-01,4513.0400390625,Tech stocks rally on strong earnings from major firms,Forbes
+2021-12-02,4577.10009765625,Federal Reserve raises interest rates amid inflation concerns,MarketWatch
+2021-12-06,4591.669921875,Brexit deal uncertainty rattles European markets,Wall Street Journal
+2021-12-07,4686.75,China-US trade war escalates with new tariffs,Reuters
+2021-12-13,4668.97021484375,Brexit deal uncertainty rattles European markets,Reuters
+2021-12-14,4634.08984375,North Korea fires ballistic missile toward Japan,Reuters
+2021-12-15,4709.85009765625,Federal Reserve raises interest rates amid inflation concerns,AP Finance
+2021-12-20,4568.02001953125,Retail sales data signals consumer slowdown,Financial Times
+2021-12-23,4725.7900390625,Oil majors post record profits as energy prices soar,Bloomberg
+2021-12-27,4791.18994140625,Brexit deal uncertainty rattles European markets,Financial Times
+2021-12-28,4786.35009765625,US inflation cools to lowest level in two years,The Economist
+2021-12-30,4778.72998046875,Manufacturing PMI contracts for third consecutive month,Reuters
+2022-01-03,4796.56005859375,"Bond yields hit 15-year high, pressuring equity valuations",Forbes
+2022-01-04,4793.5400390625,"Central bank holds rates steady, signals pause in tightening",Forbes
+2022-01-06,4696.0498046875,Merger talks between two major airlines collapse,Forbes
+2022-01-10,4670.2900390625,Bank stocks surge after stress test results released,Bloomberg
+2022-01-12,4726.35009765625,Oil prices surge as Middle East tensions escalate,CNBC
+2022-01-13,4659.02978515625,IMF warns of global recession risk following energy crisis,Bloomberg
+2022-01-14,4662.85009765625,Nasdaq enters correction territory amid rate hike fears,The Economist
+2022-01-20,4482.72998046875,Nasdaq enters correction territory amid rate hike fears,Financial Times
+2022-01-21,4397.93994140625,US inflation cools to lowest level in two years,Wall Street Journal
+2022-01-26,4349.93017578125,Consumer confidence index drops sharply in August survey,Forbes
+2022-01-27,4326.509765625,Pharmaceutical company announces breakthrough cancer treatment,Financial Times
+2022-02-01,4546.5400390625,Housing market shows signs of cooling after rate hikes,Business Insider
+2022-02-10,4504.080078125,Brexit deal uncertainty rattles European markets,Wall Street Journal
+2022-02-16,4475.009765625,Manufacturing PMI contracts for third consecutive month,MarketWatch
+2022-02-18,4348.8701171875,US inflation cools to lowest level in two years,AP Finance
+2022-02-24,4288.7001953125,Bank stocks surge after stress test results released,Financial Times
+2022-02-25,4384.64990234375,Trade deficit widens as imports outpace exports,AP Finance
+2022-02-28,4373.93994140625,"Retail inventory levels rise, suggesting demand slowdown",MarketWatch
+2022-03-01,4306.259765625,Amazon announces major layoffs amid slowing growth,Forbes
+2022-03-04,4328.8701171875,Germany enters recession as energy costs weigh on industry,AP Finance
+2022-03-08,4170.7001953125,Gold hits all-time high as investors seek safe haven assets,MarketWatch
+2022-03-14,4173.10986328125,Banking sector faces headwinds from rising credit defaults,The Economist
+2022-03-16,4357.85986328125,"Bond yields hit 15-year high, pressuring equity valuations",Wall Street Journal
+2022-03-17,4411.669921875,Banking sector faces headwinds from rising credit defaults,Business Insider
+2022-03-21,4461.18017578125,Gold hits all-time high as investors seek safe haven assets,CNBC
+2022-03-23,4456.240234375,Banking sector faces headwinds from rising credit defaults,Forbes
+2022-03-24,4520.16015625,Renewable energy stocks surge on new climate legislation,Bloomberg
+2022-03-28,4575.52001953125,Amazon announces major layoffs amid slowing growth,Financial Times
+2022-03-29,4631.60009765625,Banking sector faces headwinds from rising credit defaults,Forbes
+2022-03-30,4602.4501953125,Oil prices surge as Middle East tensions escalate,Wall Street Journal
+2022-04-08,4488.27978515625,Oil prices surge as Middle East tensions escalate,The Economist
+2022-04-11,4412.52978515625,"Retail inventory levels rise, suggesting demand slowdown",Reuters
+2022-04-12,4397.4501953125,European Central Bank signals aggressive rate hike path,Reuters
+2022-04-13,4446.58984375,Gold hits all-time high as investors seek safe haven assets,Financial Times
+2022-04-26,4175.2001953125,"Bond yields hit 15-year high, pressuring equity valuations",AP Finance
+2022-04-27,4183.9599609375,Consumer confidence index drops sharply in August survey,Financial Times
+2022-04-29,4131.93017578125,Retail sales data signals consumer slowdown,Forbes
+2022-05-09,3991.239990234375,Bank stocks surge after stress test results released,CNBC
+2022-05-13,4023.889892578125,North Korea fires ballistic missile toward Japan,MarketWatch
+2022-05-18,3923.679931640625,US inflation cools to lowest level in two years,Financial Times
+2022-05-19,3900.7900390625,"Wage growth accelerates, fueling inflation concerns",The Economist
+2022-05-24,3941.47998046875,Bank stocks surge after stress test results released,MarketWatch
+2022-05-25,3978.72998046875,Emerging market currencies under pressure from strong dollar,CNBC
+2022-05-27,4158.240234375,Brexit deal uncertainty rattles European markets,Bloomberg
+2022-06-03,4108.5400390625,"Central bank holds rates steady, signals pause in tightening",Financial Times
+2022-06-06,4121.43017578125,"Central bank holds rates steady, signals pause in tightening",Forbes
+2022-06-07,4160.68017578125,"Wage growth accelerates, fueling inflation concerns",Forbes
+2022-06-08,4115.77001953125,Semiconductor shortage eases as chip production ramps up,AP Finance
+2022-06-09,4017.820068359375,Banking sector faces headwinds from rising credit defaults,Business Insider
+2022-06-13,3749.6298828125,China-US trade war escalates with new tariffs,Business Insider
+2022-06-15,3789.989990234375,Oil prices surge as Middle East tensions escalate,The Economist
+2022-06-17,3674.840087890625,Nasdaq enters correction territory amid rate hike fears,Reuters
+2022-06-24,3911.739990234375,Apple reports record quarterly revenue despite supply chain issues,AP Finance
+2022-06-28,3821.550048828125,Trade deficit widens as imports outpace exports,AP Finance
+2022-06-30,3785.3798828125,Gold hits all-time high as investors seek safe haven assets,MarketWatch
+2022-07-05,3831.389892578125,"Wage growth accelerates, fueling inflation concerns",AP Finance
+2022-07-08,3899.3798828125,"Wage growth accelerates, fueling inflation concerns",CNBC
+2022-07-11,3854.429931640625,Bank stocks surge after stress test results released,CNBC
+2022-07-13,3801.780029296875,"OPEC cuts oil production, sending crude prices higher",AP Finance
+2022-07-14,3790.3798828125,"Bond yields hit 15-year high, pressuring equity valuations",The Economist
+2022-07-15,3863.159912109375,European Central Bank signals aggressive rate hike path,Forbes
+2022-07-20,3959.89990234375,Brexit deal uncertainty rattles European markets,Forbes
+2022-07-21,3998.949951171875,Oil majors post record profits as energy prices soar,Business Insider
+2022-07-25,3966.840087890625,US inflation cools to lowest level in two years,Wall Street Journal
+2022-07-26,3921.050048828125,Tesla shares fall after disappointing delivery numbers,Forbes
+2022-07-28,4072.429931640625,Merger talks between two major airlines collapse,Bloomberg
+2022-07-29,4130.2900390625,North Korea fires ballistic missile toward Japan,The Economist
+2022-08-02,4091.18994140625,Amazon announces major layoffs amid slowing growth,CNBC
+2022-08-04,4151.93994140625,"Retail inventory levels rise, suggesting demand slowdown",MarketWatch
+2022-08-09,4122.47021484375,"Central bank holds rates steady, signals pause in tightening",Financial Times
+2022-08-10,4210.240234375,"Wage growth accelerates, fueling inflation concerns",The Economist
+2022-08-11,4207.27001953125,IMF warns of global recession risk following energy crisis,Financial Times
+2022-08-12,4280.14990234375,Nasdaq enters correction territory amid rate hike fears,Wall Street Journal
+2022-08-16,4305.2001953125,Wall Street closes higher after positive jobs report,MarketWatch
+2022-08-17,4274.0400390625,Semiconductor shortage eases as chip production ramps up,Reuters
+2022-08-19,4228.47998046875,"Bitcoin falls below $20,000 as crypto winter deepens",Reuters
+2022-08-24,4140.77001953125,US inflation cools to lowest level in two years,Wall Street Journal
+2022-08-25,4199.1201171875,Germany enters recession as energy costs weigh on industry,Wall Street Journal
+2022-08-26,4057.659912109375,Trade deficit widens as imports outpace exports,CNBC
+2022-08-29,4030.610107421875,Apple reports record quarterly revenue despite supply chain issues,AP Finance
+2022-08-30,3986.159912109375,US inflation cools to lowest level in two years,Wall Street Journal
+2022-09-01,3966.85009765625,Emerging market currencies under pressure from strong dollar,MarketWatch
+2022-09-06,3908.18994140625,European Central Bank signals aggressive rate hike path,Forbes
+2022-09-08,4006.179931640625,Tech stocks rally on strong earnings from major firms,CNBC
+2022-09-09,4067.360107421875,S&P 500 drops 3% as inflation data disappoints investors,The Economist
+2022-09-13,3932.68994140625,Semiconductor shortage eases as chip production ramps up,Business Insider
+2022-09-16,3873.330078125,"Retail inventory levels rise, suggesting demand slowdown",MarketWatch
+2022-09-19,3899.889892578125,"Retail inventory levels rise, suggesting demand slowdown",Wall Street Journal
+2022-09-21,3789.929931640625,China-US trade war escalates with new tariffs,MarketWatch
+2022-09-22,3757.989990234375,Tesla shares fall after disappointing delivery numbers,Bloomberg
+2022-09-23,3693.22998046875,Gold hits all-time high as investors seek safe haven assets,CNBC
+2022-09-27,3647.2900390625,Merger talks between two major airlines collapse,AP Finance
+2022-09-30,3585.6201171875,Housing market shows signs of cooling after rate hikes,Bloomberg
+2022-10-03,3678.429931640625,"Bitcoin falls below $20,000 as crypto winter deepens",Forbes
+2022-10-06,3744.52001953125,European Central Bank signals aggressive rate hike path,MarketWatch
+2022-10-10,3612.389892578125,Renewable energy stocks surge on new climate legislation,Financial Times
+2022-10-12,3577.030029296875,Consumer confidence index drops sharply in August survey,Reuters
+2022-10-18,3719.97998046875,"Central bank holds rates steady, signals pause in tightening",AP Finance
+2022-10-20,3665.780029296875,"Bond yields hit 15-year high, pressuring equity valuations",CNBC
+2022-10-25,3859.110107421875,"Bond yields hit 15-year high, pressuring equity valuations",CNBC
+2022-11-08,3828.110107421875,"Retail inventory levels rise, suggesting demand slowdown",Financial Times
+2022-11-14,3957.25,Unemployment rate falls to multi-decade low,Financial Times
+2022-11-16,3958.7900390625,S&P 500 drops 3% as inflation data disappoints investors,Financial Times
+2022-11-21,3949.93994140625,"Bitcoin falls below $20,000 as crypto winter deepens",CNBC
+2022-11-25,4026.1201171875,Semiconductor shortage eases as chip production ramps up,Wall Street Journal
+2022-11-29,3957.6298828125,Brexit deal uncertainty rattles European markets,MarketWatch
+2022-12-02,4071.699951171875,Apple reports record quarterly revenue despite supply chain issues,Bloomberg
+2022-12-05,3998.840087890625,Nasdaq enters correction territory amid rate hike fears,Wall Street Journal
+2022-12-06,3941.260009765625,Nasdaq enters correction territory amid rate hike fears,MarketWatch
+2022-12-07,3933.919921875,Pharmaceutical company announces breakthrough cancer treatment,Wall Street Journal
+2022-12-14,3995.320068359375,Retail sales data signals consumer slowdown,Wall Street Journal
+2022-12-16,3852.360107421875,GDP growth beats expectations in strong Q2 report,CNBC
+2022-12-23,3844.820068359375,Gold hits all-time high as investors seek safe haven assets,MarketWatch
+2022-12-27,3829.25,Federal Reserve raises interest rates amid inflation concerns,Reuters
+2022-12-28,3783.219970703125,"Bond yields hit 15-year high, pressuring equity valuations",CNBC
+2023-01-03,3824.139892578125,Housing market shows signs of cooling after rate hikes,Bloomberg
+2023-01-04,3852.969970703125,"Retail inventory levels rise, suggesting demand slowdown",The Economist
+2023-01-09,3892.090087890625,Germany enters recession as energy costs weigh on industry,Bloomberg
+2023-01-10,3919.25,China-US trade war escalates with new tariffs,AP Finance
+2023-01-24,4016.949951171875,US imposes new sanctions on Russia over Ukraine conflict,Forbes
+2023-01-26,4060.429931640625,"Bitcoin falls below $20,000 as crypto winter deepens",Business Insider
+2023-01-27,4070.56005859375,China-US trade war escalates with new tariffs,The Economist
+2023-01-30,4017.77001953125,Renewable energy stocks surge on new climate legislation,Business Insider
+2023-01-31,4076.60009765625,Manufacturing PMI contracts for third consecutive month,CNBC
+2023-02-08,4117.85986328125,Pharmaceutical company announces breakthrough cancer treatment,AP Finance
+2023-02-14,4136.1298828125,US imposes new sanctions on Russia over Ukraine conflict,MarketWatch
+2023-02-15,4147.60009765625,Oil majors post record profits as energy prices soar,Wall Street Journal
+2023-02-17,4079.090087890625,US imposes new sanctions on Russia over Ukraine conflict,Business Insider
+2023-02-24,3970.0400390625,Consumer confidence index drops sharply in August survey,Bloomberg
+2023-03-01,3951.389892578125,IMF warns of global recession risk following energy crisis,Business Insider
+2023-03-03,4045.639892578125,Apple reports record quarterly revenue despite supply chain issues,CNBC
+2023-03-06,4048.419921875,Banking sector faces headwinds from rising credit defaults,Wall Street Journal
+2023-03-08,3992.010009765625,Germany enters recession as energy costs weigh on industry,Forbes
+2023-03-09,3918.320068359375,"Bond yields hit 15-year high, pressuring equity valuations",Business Insider
+2023-03-13,3855.760009765625,Wall Street closes higher after positive jobs report,MarketWatch
+2023-03-23,3948.719970703125,Bank stocks surge after stress test results released,CNBC
+2023-03-24,3970.989990234375,GDP growth beats expectations in strong Q2 report,Business Insider
+2023-03-28,3971.27001953125,Semiconductor shortage eases as chip production ramps up,Wall Street Journal
+2023-03-29,4027.81005859375,Federal Reserve raises interest rates amid inflation concerns,Forbes
+2023-03-30,4050.830078125,US imposes new sanctions on Russia over Ukraine conflict,The Economist
+2023-04-04,4100.60009765625,Oil majors post record profits as energy prices soar,MarketWatch
+2023-04-05,4090.3798828125,Trade deficit widens as imports outpace exports,MarketWatch
+2023-04-12,4091.949951171875,European Central Bank signals aggressive rate hike path,Bloomberg
+2023-04-13,4146.22021484375,GDP growth beats expectations in strong Q2 report,AP Finance
+2023-04-14,4137.64013671875,Renewable energy stocks surge on new climate legislation,Financial Times
+2023-04-18,4154.8701171875,"Wage growth accelerates, fueling inflation concerns",Financial Times
+2023-04-21,4133.52001953125,"Wage growth accelerates, fueling inflation concerns",The Economist
+2023-04-24,4137.0400390625,Housing market shows signs of cooling after rate hikes,The Economist
+2023-04-25,4071.6298828125,Emerging market currencies under pressure from strong dollar,Business Insider
+2023-04-26,4055.989990234375,"Bitcoin falls below $20,000 as crypto winter deepens",Reuters
+2023-04-28,4169.47998046875,Trade deficit widens as imports outpace exports,AP Finance
+2023-05-01,4167.8701171875,Retail sales data signals consumer slowdown,Forbes
+2023-05-02,4119.580078125,European Central Bank signals aggressive rate hike path,Reuters
+2023-05-04,4061.219970703125,Retail sales data signals consumer slowdown,Bloomberg
+2023-05-05,4136.25,North Korea fires ballistic missile toward Japan,MarketWatch
+2023-05-08,4138.1201171875,Merger talks between two major airlines collapse,MarketWatch
+2023-05-17,4158.77001953125,Dollar strengthens against euro on hawkish Fed comments,CNBC
+2023-05-19,4191.97998046875,US imposes new sanctions on Russia over Ukraine conflict,Wall Street Journal
+2023-05-25,4151.27978515625,Banking sector faces headwinds from rising credit defaults,Financial Times
+2023-05-26,4205.4501953125,Unemployment rate falls to multi-decade low,MarketWatch
+2023-05-30,4205.52001953125,Apple reports record quarterly revenue despite supply chain issues,The Economist
+2023-05-31,4179.830078125,GDP growth beats expectations in strong Q2 report,AP Finance
+2023-06-02,4282.3701171875,European Central Bank signals aggressive rate hike path,Business Insider
+2023-06-05,4273.7900390625,Housing market shows signs of cooling after rate hikes,The Economist
+2023-06-07,4267.52001953125,Emerging market currencies under pressure from strong dollar,Wall Street Journal
+2023-06-13,4369.009765625,Germany enters recession as energy costs weigh on industry,Financial Times
+2023-06-16,4409.58984375,"OPEC cuts oil production, sending crude prices higher",Forbes
+2023-06-20,4388.7099609375,Oil majors post record profits as energy prices soar,AP Finance
+2023-06-21,4365.68994140625,Bank stocks surge after stress test results released,Financial Times
+2023-06-22,4381.89013671875,IMF warns of global recession risk following energy crisis,Bloomberg
+2023-06-26,4328.81982421875,Nasdaq enters correction territory amid rate hike fears,AP Finance
+2023-07-07,4398.9501953125,Brexit deal uncertainty rattles European markets,Business Insider
+2023-07-13,4510.0400390625,GDP growth beats expectations in strong Q2 report,Financial Times
+2023-07-17,4522.7900390625,"Bond yields hit 15-year high, pressuring equity valuations",Bloomberg
+2023-07-19,4565.72021484375,Banking sector faces headwinds from rising credit defaults,MarketWatch
+2023-07-20,4534.8701171875,"Central bank holds rates steady, signals pause in tightening",The Economist
+2023-07-24,4554.64013671875,Tesla shares fall after disappointing delivery numbers,Reuters
+2023-07-26,4566.75,US imposes new sanctions on Russia over Ukraine conflict,Business Insider
+2023-07-28,4582.22998046875,"Bitcoin falls below $20,000 as crypto winter deepens",Forbes
+2023-07-31,4588.9599609375,US imposes new sanctions on Russia over Ukraine conflict,The Economist
+2023-08-02,4513.39013671875,Housing market shows signs of cooling after rate hikes,Bloomberg
+2023-08-07,4518.43994140625,Merger talks between two major airlines collapse,CNBC
+2023-08-08,4499.3798828125,"Wage growth accelerates, fueling inflation concerns",Business Insider
+2023-08-15,4437.85986328125,"OPEC cuts oil production, sending crude prices higher",The Economist
+2023-08-17,4370.35986328125,Trade deficit widens as imports outpace exports,MarketWatch
+2023-08-18,4369.7099609375,"Wage growth accelerates, fueling inflation concerns",Wall Street Journal
+2023-08-21,4399.77001953125,Brexit deal uncertainty rattles European markets,Reuters
+2023-08-22,4387.5498046875,Oil prices surge as Middle East tensions escalate,Forbes
+2023-08-23,4436.009765625,Banking sector faces headwinds from rising credit defaults,Business Insider
+2023-08-24,4376.31005859375,"Central bank holds rates steady, signals pause in tightening",Bloomberg
+2023-08-28,4433.31005859375,Semiconductor shortage eases as chip production ramps up,Business Insider
+2023-08-30,4514.8701171875,Apple reports record quarterly revenue despite supply chain issues,The Economist
+2023-08-31,4507.66015625,IMF warns of global recession risk following energy crisis,MarketWatch
+2023-09-01,4515.77001953125,Renewable energy stocks surge on new climate legislation,Bloomberg
+2023-09-12,4461.89990234375,Retail sales data signals consumer slowdown,Wall Street Journal
+2023-09-14,4505.10009765625,"OPEC cuts oil production, sending crude prices higher",AP Finance
+2023-09-18,4453.52978515625,Merger talks between two major airlines collapse,Business Insider
+2023-09-21,4330.0,Apple reports record quarterly revenue despite supply chain issues,Bloomberg
+2023-09-22,4320.06005859375,Tesla shares fall after disappointing delivery numbers,Financial Times
+2023-09-25,4337.43994140625,"Wage growth accelerates, fueling inflation concerns",Forbes
+2023-09-26,4273.52978515625,Federal Reserve raises interest rates amid inflation concerns,Financial Times
+2023-09-27,4274.509765625,Retail sales data signals consumer slowdown,Bloomberg
+2023-09-29,4288.0498046875,US imposes new sanctions on Russia over Ukraine conflict,Financial Times
+2023-10-04,4263.75,"Wage growth accelerates, fueling inflation concerns",Business Insider
+2023-10-05,4258.18994140625,IMF warns of global recession risk following energy crisis,MarketWatch
+2023-10-11,4376.9501953125,Wall Street closes higher after positive jobs report,CNBC
+2023-10-12,4349.60986328125,Retail sales data signals consumer slowdown,Bloomberg
+2023-10-16,4373.6298828125,Bank stocks surge after stress test results released,Forbes
+2023-10-17,4373.2001953125,Oil majors post record profits as energy prices soar,Forbes
+2023-10-20,4224.16015625,"Central bank holds rates steady, signals pause in tightening",The Economist
+2023-10-24,4247.68017578125,Apple reports record quarterly revenue despite supply chain issues,Financial Times
+2023-10-25,4186.77001953125,Retail sales data signals consumer slowdown,The Economist
+2023-10-27,4117.3701171875,Brexit deal uncertainty rattles European markets,Forbes
+2023-11-02,4317.77978515625,Renewable energy stocks surge on new climate legislation,AP Finance
+2023-11-07,4378.3798828125,Housing market shows signs of cooling after rate hikes,Reuters
+2023-11-09,4347.35009765625,Germany enters recession as energy costs weigh on industry,Forbes
+2023-11-10,4415.240234375,Oil majors post record profits as energy prices soar,Bloomberg
+2023-11-14,4495.7001953125,Brexit deal uncertainty rattles European markets,Business Insider
+2023-11-22,4556.6201171875,Semiconductor shortage eases as chip production ramps up,Business Insider
+2023-11-24,4559.33984375,"Retail inventory levels rise, suggesting demand slowdown",Bloomberg
+2023-11-28,4554.89013671875,IMF warns of global recession risk following energy crisis,Forbes
+2023-11-30,4567.7998046875,Bank stocks surge after stress test results released,Forbes
+2023-12-04,4569.77978515625,Renewable energy stocks surge on new climate legislation,Business Insider
+2023-12-06,4549.33984375,Renewable energy stocks surge on new climate legislation,AP Finance
+2023-12-07,4585.58984375,Housing market shows signs of cooling after rate hikes,Bloomberg
+2023-12-14,4719.5498046875,Oil prices surge as Middle East tensions escalate,MarketWatch
+2023-12-19,4768.3701171875,Federal Reserve raises interest rates amid inflation concerns,AP Finance
+2023-12-21,4746.75,Tech stocks rally on strong earnings from major firms,Forbes
+2023-12-22,4754.6298828125,Apple reports record quarterly revenue despite supply chain issues,Bloomberg
+2023-12-26,4774.75,Consumer confidence index drops sharply in August survey,Business Insider
+2023-12-27,4781.580078125,Retail sales data signals consumer slowdown,The Economist
+2023-12-29,4769.830078125,Apple reports record quarterly revenue despite supply chain issues,Reuters

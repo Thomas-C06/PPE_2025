@@ -14,3 +14,8 @@ torch>=2.1
 # ── Interface (Bloc 4 — Streamlit dashboard) ──────────────────────────────────
 streamlit>=1.30
 plotly>=5.18
+
+# ── Utilitaires réseau / environnement ────────────────────────────────────────
+aiohttp>=3.8
+requests>=2.31
+python-dotenv>=1.0

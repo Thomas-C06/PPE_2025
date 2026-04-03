@@ -8,8 +8,9 @@ matplotlib>=3.7
 seaborn>=0.13
 
 # ── NLP (Bloc 2 — FinBERT) ────────────────────────────────────────────────────
-transformers>=4.35
+transformers>=4.40
 torch>=2.1
+tqdm>=4.66
 
 # ── Interface (Bloc 4 — Streamlit dashboard) ──────────────────────────────────
 streamlit>=1.30

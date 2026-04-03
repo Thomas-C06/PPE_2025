@@ -9,6 +9,7 @@ Il lit uniquement le dataset S&P 500 (dataset_final.csv) produit par le Bloc 1.
 
 from __future__ import annotations
 
+import sys
 from pathlib import Path
 from typing import Optional
 
@@ -25,6 +26,10 @@ import streamlit as st
 RACINE         = Path(__file__).resolve().parents[1]
 CHEMIN_DATASET = RACINE / "data" / "processed" / "dataset_final.csv"
 CHEMIN_NEWS    = RACINE / "data" / "raw" / "sample_news.csv"
+CHEMIN_GEO     = RACINE / "data" / "processed" / "geo_scores.csv"
+
+# Rend les modules src/ importables depuis app/
+sys.path.insert(0, str(RACINE / "src"))
 
 # ---------------------------------------------------------------------------
 # Configuration de la page (doit être le PREMIER appel Streamlit)
@@ -119,6 +124,15 @@ def charger_news_brutes() -> Optional[pd.DataFrame]:
     df = pd.read_csv(CHEMIN_NEWS, parse_dates=["date"])
     df = df.sort_values("date", ascending=False).reset_index(drop=True)
     return df
+
+
+@st.cache_data
+def charger_geo_scores() -> Optional[pd.DataFrame]:
+    """Charge geo_scores.csv produit par le Bloc 2 (geo_scorer.py)."""
+    if not CHEMIN_GEO.exists():
+        return None
+    geo = pd.read_csv(CHEMIN_GEO, parse_dates=["date"])
+    return geo.sort_values("date").reset_index(drop=True)
 
 
 # ===========================================================================
@@ -438,6 +452,83 @@ def construire_distribution_rendements(df: pd.DataFrame) -> go.Figure:
 
 
 # ===========================================================================
+# Graphiques Backtest (Bloc 3)
+# ===========================================================================
+
+def construire_graphique_equity(bh_curve: pd.Series, gq_curve: pd.Series,
+                                 dates: pd.Series) -> go.Figure:
+    """Courbes de valeur cumulee normalisees a 1 : Buy & Hold vs GeoQuant."""
+    fig = go.Figure()
+    fig.add_trace(go.Scatter(
+        x=dates, y=bh_curve,
+        name="Buy & Hold",
+        line=dict(color="#1f77b4", width=2),
+        hovertemplate="<b>%{x|%d %b %Y}</b><br>B&H : %{y:.3f}<extra></extra>",
+    ))
+    fig.add_trace(go.Scatter(
+        x=dates, y=gq_curve,
+        name="GeoQuant",
+        line=dict(color="#2ca02c", width=2),
+        hovertemplate="<b>%{x|%d %b %Y}</b><br>GeoQuant : %{y:.3f}<extra></extra>",
+    ))
+    fig.add_hline(y=1.0, line_dash="dot", line_color="#555", line_width=0.8)
+    fig.update_layout(
+        title="<b>Performance cumulee</b> -- Buy & Hold vs GeoQuant (base = 1)",
+        yaxis=dict(tickformat=".2f", gridcolor="#1e1e2e"),
+        xaxis=dict(gridcolor="#1e1e2e"),
+        plot_bgcolor="#0e1117", paper_bgcolor="#0e1117",
+        font=dict(color="#fafafa"),
+        legend=dict(orientation="h", y=1.08),
+        hovermode="x unified",
+        margin=dict(t=60, b=20, l=10, r=10),
+        height=380,
+    )
+    return fig
+
+
+def construire_graphique_signal(df: pd.DataFrame, col_prix: str) -> go.Figure:
+    """Prix SP500 avec zones vertes (Long) et grises (Cash) selon le signal GeoQuant."""
+    fig = go.Figure()
+
+    # Zones Long / Cash
+    in_long  = False
+    start_x  = None
+    for i, row in df.iterrows():
+        sig = int(row["signal"]) if not pd.isna(row["signal"]) else 0
+        if sig == 1 and not in_long:
+            start_x = row["date"]
+            in_long = True
+        elif sig == 0 and in_long:
+            fig.add_vrect(
+                x0=start_x, x1=row["date"],
+                fillcolor="rgba(44,160,44,0.10)", line_width=0,
+            )
+            in_long = False
+    if in_long and start_x is not None:
+        fig.add_vrect(
+            x0=start_x, x1=df["date"].iloc[-1],
+            fillcolor="rgba(44,160,44,0.10)", line_width=0,
+        )
+
+    fig.add_trace(go.Scatter(
+        x=df["date"], y=df[col_prix],
+        name="SP500", line=dict(color=COULEUR_PRIX, width=1.8),
+        hovertemplate="<b>%{x|%d %b %Y}</b><br>Cours : %{y:,.2f}<extra></extra>",
+    ))
+    fig.update_layout(
+        title="<b>Signaux de trading</b> -- Zones vertes = Long, blanc = Cash",
+        yaxis=dict(gridcolor="#1e1e2e"),
+        xaxis=dict(gridcolor="#1e1e2e"),
+        plot_bgcolor="#0e1117", paper_bgcolor="#0e1117",
+        font=dict(color="#fafafa"),
+        hovermode="x unified",
+        margin=dict(t=50, b=20, l=10, r=10),
+        height=300,
+    )
+    return fig
+
+
+# ===========================================================================
 # Barre laterale
 # ===========================================================================
 with st.sidebar:
@@ -490,9 +581,11 @@ with st.sidebar:
     st.divider()
     st.markdown("**Statut du pipeline**")
     st.markdown('<span class="badge-fait">BLOC 1</span> Data Engineering',  unsafe_allow_html=True)
-    st.markdown('<span class="badge-attente">BLOC 2</span> NLP / FinBERT',  unsafe_allow_html=True)
-    st.markdown('<span class="badge-attente">BLOC 3</span> Strategie',      unsafe_allow_html=True)
-    st.markdown('<span class="badge-encours">BLOC 4</span> Dashboard',      unsafe_allow_html=True)
+    _b2 = "badge-fait" if CHEMIN_GEO.exists() else "badge-attente"
+    st.markdown(f'<span class="{_b2}">BLOC 2</span> NLP / FinBERT',        unsafe_allow_html=True)
+    _b3 = "badge-fait" if CHEMIN_GEO.exists() else "badge-attente"
+    st.markdown(f'<span class="{_b3}">BLOC 3</span> Strategie',            unsafe_allow_html=True)
+    st.markdown('<span class="badge-fait">BLOC 4</span> Dashboard',         unsafe_allow_html=True)
 
 
 # ===========================================================================
@@ -685,52 +778,100 @@ with onglet_nlp:
 # ONGLET 3 -- Backtest
 # ---------------------------------------------------------------------------
 with onglet_backtest:
-    st.markdown("""
-<div class="bloc-placeholder">
-    <h3>⚔️ Bloc 3 -- Moteur de Strategie en attente</h3>
-    <p>Le backtesting comparatif <b>Buy &amp; Hold vs GeoQuant</b>
-    sera implemente ici.</p>
-    <br>
-    <p style="color:#666; font-size:0.8rem;">
-        Regle prevue : SI (MA50 > MA200) ET (Geo-Score > seuil) ALORS Long SINON Cash
-    </p>
-</div>""", unsafe_allow_html=True)
+    from strategy import Strategy
+    from backtest import run_backtest
+
+    geo_df = charger_geo_scores()
+
+    if geo_df is None:
+        st.warning(
+            "Le fichier `data/processed/geo_scores.csv` est absent. "
+            "Lancez `python src/run_geo_scorer.py` pour le generer."
+        )
+        st.stop()
+
+    # Fusionne geo_score dans le dataset filtre par la periode
+    df_bt = df.copy()
+    df_bt = df_bt.merge(
+        geo_df[["date", "geo_score"]], on="date", how="left"
+    )
+    df_bt["geo_score"] = df_bt["geo_score"].fillna(0.0)
+
+    # Applique la regle de trading avec le seuil courant de la sidebar
+    strat = Strategy(base_dir=RACINE, seuil_geo=seuil_geo)
+    df_bt = strat.apply(df_bt)
+
+    # Backtest
+    bh, gq = run_backtest(df_bt, price_col=col_prix)
+
+    # ── En-tete ──────────────────────────────────────────────────────────────
+    st.subheader("⚔️ Backtest -- Buy & Hold vs GeoQuant")
+    st.caption(
+        f"Regle : MA50 > MA200  ET  Geo-Score ≥ {seuil_geo:.2f}  →  Long  |  "
+        f"sinon Cash  •  Periode : {df_bt['date'].iloc[0].date()} → "
+        f"{df_bt['date'].iloc[-1].date()}"
+    )
+
+    # ── Metriques cles (2 x 6) ────────────────────────────────────────────
+    METRIQUES = [
+        ("Rendement total",  bh.total_return, gq.total_return, ".2%", True),
+        ("Rend. annualise",  bh.annualised,   gq.annualised,   ".2%", True),
+        ("Max Drawdown",     bh.max_drawdown, gq.max_drawdown, ".2%", False),
+        ("Sharpe Ratio",     bh.sharpe,       gq.sharpe,       ".2f", True),
+        ("Win Rate",         bh.win_rate,     gq.win_rate,     ".1%", True),
+        ("Nb trades",        float(bh.nb_trades), float(gq.nb_trades), ".0f", True),
+    ]
+
+    col_m = st.columns(len(METRIQUES))
+    for i, (label, val_bh, val_gq, fmt, higher_better) in enumerate(METRIQUES):
+        better = val_gq > val_bh if higher_better else val_gq > val_bh
+        delta_val = val_gq - val_bh
+        delta_fmt = f"+{delta_val:{fmt}}" if delta_val >= 0 else f"{delta_val:{fmt}}"
+        col_m[i].metric(
+            label=label,
+            value=f"{val_gq:{fmt}}",
+            delta=f"vs B&H {delta_fmt}",
+            delta_color="normal" if higher_better else "inverse",
+        )
 
     st.divider()
-    col_g, col_d = st.columns(2)
 
-    with col_g:
-        st.markdown("**Graphique comparatif *(a venir)***")
-        fig_vide = go.Figure()
-        fig_vide.add_annotation(
-            text="Disponible apres Bloc 3",
-            x=0.5, y=0.5, xref="paper", yref="paper",
-            showarrow=False, font=dict(size=16, color="#555"),
-        )
-        fig_vide.update_layout(
-            xaxis=dict(showgrid=False, zeroline=False, showticklabels=False),
-            yaxis=dict(showgrid=False, zeroline=False, showticklabels=False),
-            plot_bgcolor="#0e1117", paper_bgcolor="#1e1e2e",
-            height=280, margin=dict(t=20, b=20),
-        )
-        st.plotly_chart(fig_vide, use_container_width=True)
+    # ── Graphiques ────────────────────────────────────────────────────────
+    st.plotly_chart(
+        construire_graphique_equity(bh.equity_curve, gq.equity_curve, df_bt["date"]),
+        use_container_width=True,
+    )
 
-    with col_d:
-        st.markdown("**Metriques de performance *(a venir)***")
-        st.dataframe(pd.DataFrame({
-            "Metrique":   ["Rendement total", "Max Drawdown", "Sharpe Ratio", "Win Rate"],
-            "Buy & Hold": ["?", "?", "?", "?"],
-            "GeoQuant":   ["?", "?", "?", "?"],
-        }), use_container_width=True, hide_index=True)
+    st.plotly_chart(
+        construire_graphique_signal(df_bt, col_prix),
+        use_container_width=True,
+    )
 
     st.divider()
-    st.markdown("**Journal des trades virtuels *(a venir)***")
-    st.dataframe(pd.DataFrame({
-        "Date":   ["--", "--", "--"],
-        "Signal": ["--", "--", "--"],
-        "Prix":   ["--", "--", "--"],
-        "P&L":    ["--", "--", "--"],
-    }), use_container_width=True, hide_index=True)
+
+    # ── Tableau comparatif ────────────────────────────────────────────────
+    col_tbl, col_log = st.columns([1, 2])
+
+    with col_tbl:
+        st.markdown("**Metriques detaillees**")
+        rows = []
+        for label, val_bh, val_gq, fmt, _ in METRIQUES:
+            rows.append({
+                "Metrique":   label,
+                "Buy & Hold": f"{val_bh:{fmt}}",
+                "GeoQuant":   f"{val_gq:{fmt}}",
+            })
+        st.dataframe(pd.DataFrame(rows), use_container_width=True, hide_index=True)
+
+    with col_log:
+        st.markdown("**Journal des trades GeoQuant**")
+        if len(gq.trade_log) > 0:
+            log_display = gq.trade_log.copy()
+            if "Date" in log_display.columns:
+                log_display["Date"] = pd.to_datetime(log_display["Date"]).dt.strftime("%d %b %Y")
+            st.dataframe(log_display, use_container_width=True, hide_index=True)
+        else:
+            st.info("Aucun trade genere avec ce seuil.")
 
 
 # ---------------------------------------------------------------------------

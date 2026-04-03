@@ -61,13 +61,18 @@ class Strategy:
         """
         df = pd.read_csv(self._dataset_path, parse_dates=["date"])
 
+        # Supprime l'eventuelle colonne geo_score deja injectee par geo_scorer.py
+        # pour eviter le conflit geo_score_x / geo_score_y lors du merge
+        if "geo_score" in df.columns:
+            df = df.drop(columns=["geo_score"])
+
         if self._geo_path.exists():
             geo = pd.read_csv(self._geo_path, parse_dates=["date"])
             df = df.merge(geo[["date", "geo_score"]], on="date", how="left")
-            df["geo_score"] = df["geo_score"].fillna(0.0)
         else:
             df["geo_score"] = 0.0
 
+        df["geo_score"] = df["geo_score"].fillna(0.0)
         return df
 
     # ── Signal + position sizing ──────────────────────────────────────────────

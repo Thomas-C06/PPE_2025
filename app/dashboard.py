@@ -922,6 +922,8 @@ with onglet_nlp:
         geo_df_nlp = charger_geo_scores()
         if geo_df_nlp is not None:
             df_corr = df.copy()
+            if "geo_score" in df_corr.columns:
+                df_corr = df_corr.drop(columns=["geo_score"])
             df_corr = df_corr.merge(geo_df_nlp[["date", "geo_score"]], on="date", how="left")
             st.plotly_chart(
                 construire_graphique_correlation(df_corr),
@@ -947,6 +949,8 @@ with onglet_backtest:
 
     # Fusionne geo_score dans le dataset filtre
     df_bt = df.copy()
+    if "geo_score" in df_bt.columns:
+        df_bt = df_bt.drop(columns=["geo_score"])
     df_bt = df_bt.merge(geo_df[["date", "geo_score"]], on="date", how="left")
     df_bt["geo_score"] = df_bt["geo_score"].fillna(0.0)
 
@@ -1095,6 +1099,8 @@ with onglet_backtest:
     with st.spinner("Calcul en cours..."):
         # Utilise le dataset complet (non filtre par periode) pour la sensibilite
         df_sens = df_complet.copy()
+        if "geo_score" in df_sens.columns:
+            df_sens = df_sens.drop(columns=["geo_score"])
         df_sens = df_sens.merge(geo_df[["date", "geo_score"]], on="date", how="left")
         df_sens["geo_score"] = df_sens["geo_score"].fillna(0.0)
         st.plotly_chart(

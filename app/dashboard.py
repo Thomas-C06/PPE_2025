@@ -722,7 +722,7 @@ with st.sidebar:
     _b2 = "badge-fait" if CHEMIN_GEO.exists() else "badge-attente"
     st.markdown(f'<span class="{_b2}">BLOC 2</span> NLP / FinBERT',        unsafe_allow_html=True)
     _b3 = "badge-fait" if CHEMIN_GEO.exists() else "badge-attente"
-    st.markdown(f'<span class="{_b3}">BLOC 3</span> Strategie',            unsafe_allow_html=True)
+    st.markdown(f'<span class="{_b3}">BLOC 3</span> Strategie + Paper Trading', unsafe_allow_html=True)
     st.markdown('<span class="badge-fait">BLOC 4</span> Dashboard',         unsafe_allow_html=True)
 
 
@@ -772,10 +772,11 @@ st.divider()
 # ===========================================================================
 # Onglets principaux
 # ===========================================================================
-onglet_marche, onglet_nlp, onglet_backtest, onglet_tech, onglet_apropos = st.tabs([
+onglet_marche, onglet_nlp, onglet_backtest, onglet_paper, onglet_tech, onglet_apropos = st.tabs([
     "📊 Vue Marche",
     "🧠 Sentiment & NLP",
     "⚔️ Backtest",
+    "🟢 Paper Trading",
     "📈 Analyse Technique",
     "ℹ️ A Propos",
 ])
@@ -1111,7 +1112,226 @@ with onglet_backtest:
 
 
 # ---------------------------------------------------------------------------
-# ONGLET 4 -- Analyse Technique
+# ONGLET 4 -- Paper Trading
+# ---------------------------------------------------------------------------
+with onglet_paper:
+    from paper_trading import PaperTrader, CAPITAL_INITIAL
+
+    st.subheader("🟢 Paper Trading -- Simulation en temps reel")
+    st.caption(
+        "Le portefeuille virtuel applique la meme regle que le backtest "
+        "(Golden Cross + Geo-Score) sur les donnees et actualites du jour. "
+        "Aucun argent reel n'est engage."
+    )
+
+    # ── Parametres paper trading ──────────────────────────────────────────
+    pt_col1, pt_col2, pt_col3 = st.columns([1, 1, 1])
+    with pt_col1:
+        use_finbert_live = st.toggle(
+            "Analyser les news avec FinBERT",
+            value=False,
+            help="Desactiver pour un refresh rapide sans GPU (geo_score=0).",
+        )
+    with pt_col2:
+        auto_execute = st.toggle(
+            "Executer le signal automatiquement",
+            value=False,
+            help="Si actif, l'entree/sortie est effectuee lors du refresh.",
+        )
+    with pt_col3:
+        ticker_pt = st.selectbox(
+            "Actif surveille",
+            options=["^GSPC", "^FCHI", "BTC-USD"],
+            index=0,
+        )
+
+    trader = PaperTrader(base_dir=RACINE, ticker=ticker_pt, seuil_geo=seuil_geo)
+    portfolio = trader.load_portfolio()
+
+    # ── Boutons d'action ─────────────────────────────────────────────────
+    btn_col1, btn_col2, btn_col3 = st.columns([1, 1, 2])
+    refresh_clicked = btn_col1.button("🔄 Rafraichir le signal", use_container_width=True)
+    reset_clicked   = btn_col2.button("🗑️ Remettre a zero",      use_container_width=True,
+                                       type="secondary")
+
+    if reset_clicked:
+        portfolio = trader.reset_portfolio()
+        st.success("Portefeuille reinitialise — capital de depart : "
+                   f"{CAPITAL_INITIAL:,.0f} EUR virtuels.")
+
+    # ── Snapshot live ─────────────────────────────────────────────────────
+    snapshot = None
+    action_msg = None
+
+    if refresh_clicked:
+        with st.spinner("Recuperation du prix et des news en cours..."):
+            try:
+                snapshot = trader.get_live_snapshot(use_finbert=use_finbert_live)
+                if auto_execute:
+                    portfolio, action_msg = trader.execute_signal(snapshot, portfolio)
+                    trader.save_portfolio(portfolio)
+            except Exception as e:
+                st.error(f"Erreur lors du refresh : {e}")
+
+    # ── Metriques du portefeuille ─────────────────────────────────────────
+    st.divider()
+    st.markdown("### Portefeuille virtuel")
+
+    # Mise a jour de la valeur investie au prix courant si on a un snapshot
+    if snapshot and portfolio.nb_parts > 0:
+        portfolio.capital_investi = portfolio.nb_parts * snapshot.prix_actuel
+
+    valeur_totale    = portfolio.valeur_totale
+    rendement_total  = portfolio.rendement_total
+    win_rate_pt      = (portfolio.trades_gagnants / portfolio.nb_trades
+                        if portfolio.nb_trades > 0 else 0.0)
+
+    pm1, pm2, pm3, pm4, pm5 = st.columns(5)
+    pm1.metric("Capital total",      f"{valeur_totale:,.2f} EUR",
+               delta=f"{rendement_total:+.2%}", delta_color="normal")
+    pm2.metric("Capital cash",       f"{portfolio.capital_cash:,.2f} EUR")
+    pm3.metric("Position ouverte",   f"{portfolio.capital_investi:,.2f} EUR")
+    pm4.metric("Nb trades fermes",   str(portfolio.nb_trades))
+    pm5.metric("Win Rate",           f"{win_rate_pt:.1%}" if portfolio.nb_trades > 0 else "N/A")
+
+    if action_msg:
+        if "ENTREE" in action_msg:
+            st.success(f"✅ {action_msg}")
+        elif "SORTIE" in action_msg:
+            pnl_positive = "P&L : +" in action_msg
+            if pnl_positive:
+                st.success(f"✅ {action_msg}")
+            else:
+                st.warning(f"⚠️ {action_msg}")
+        else:
+            st.info(f"ℹ️ {action_msg}")
+
+    # ── Signal live ───────────────────────────────────────────────────────
+    if snapshot:
+        st.divider()
+        st.markdown("### Signal du moment")
+
+        sig_col1, sig_col2 = st.columns([1, 2])
+
+        with sig_col1:
+            # Indicateur signal
+            if snapshot.signal == 1:
+                st.markdown("""
+<div style="background:#1a3a1a; border:2px solid #2ca02c; border-radius:12px;
+     padding:20px; text-align:center;">
+    <div style="font-size:2.5rem;">🟢</div>
+    <div style="font-size:1.4rem; font-weight:700; color:#2ca02c;">LONG</div>
+    <div style="color:#aaa; font-size:0.9rem;">Position : {:.0%}</div>
+</div>""".format(snapshot.position), unsafe_allow_html=True)
+            else:
+                st.markdown("""
+<div style="background:#2a1a1a; border:2px solid #d62728; border-radius:12px;
+     padding:20px; text-align:center;">
+    <div style="font-size:2.5rem;">🔴</div>
+    <div style="font-size:1.4rem; font-weight:700; color:#d62728;">CASH</div>
+    <div style="color:#aaa; font-size:0.9rem;">Hors marche</div>
+</div>""", unsafe_allow_html=True)
+
+            st.markdown("")
+            st.dataframe(pd.DataFrame({
+                "Indicateur": ["Prix actuel", "MA 50", "MA 200",
+                               "Golden Cross", "Geo-Score", "News analysees"],
+                "Valeur": [
+                    f"{snapshot.prix_actuel:,.2f}",
+                    f"{snapshot.ma50:,.2f}",
+                    f"{snapshot.ma200:,.2f}",
+                    "✅ Oui" if snapshot.golden_cross else "❌ Non",
+                    f"{snapshot.geo_score:+.3f}",
+                    str(snapshot.nb_news),
+                ],
+            }), hide_index=True, use_container_width=True)
+
+        with sig_col2:
+            st.markdown(f"**Actualites analysees** ({snapshot.timestamp})")
+            if snapshot.headlines:
+                for i, h in enumerate(snapshot.headlines, 1):
+                    st.markdown(f"{i}. {h}")
+            else:
+                st.info("Aucune news recuperee. Verifiez votre connexion.")
+
+        if not auto_execute:
+            st.divider()
+            exec_col1, exec_col2 = st.columns([1, 3])
+            with exec_col1:
+                if st.button("▶️ Appliquer le signal", use_container_width=True,
+                             type="primary"):
+                    portfolio, action_msg = trader.execute_signal(snapshot, portfolio)
+                    trader.save_portfolio(portfolio)
+                    if "ENTREE" in action_msg:
+                        st.success(f"✅ {action_msg}")
+                    elif "SORTIE" in action_msg:
+                        st.warning(f"⚠️ {action_msg}")
+                    else:
+                        st.info(f"ℹ️ {action_msg}")
+                    st.rerun()
+    else:
+        st.info("Appuie sur **Rafraichir le signal** pour obtenir les donnees en temps reel.")
+
+    # ── Historique des trades ─────────────────────────────────────────────
+    st.divider()
+    st.markdown("### Historique des trades")
+
+    if portfolio.historique:
+        hist_df = pd.DataFrame(portfolio.historique)
+        # Formater pour l'affichage
+        cols_display = [c for c in ["date", "action", "prix", "valeur",
+                                     "pnl_eur", "pnl_pct", "geo_score"] if c in hist_df.columns]
+        hist_df = hist_df[cols_display].copy()
+        hist_df.columns = [c.replace("_", " ").title() for c in cols_display]
+        st.dataframe(hist_df, use_container_width=True, hide_index=True)
+
+        # Mini courbe d'equity du paper trading
+        if len(portfolio.historique) >= 2:
+            valeurs = [CAPITAL_INITIAL]
+            for trade in portfolio.historique:
+                if trade.get("action") == "SORTIE":
+                    dernier = valeurs[-1]
+                    pnl     = trade.get("pnl_eur", 0)
+                    valeurs.append(dernier + pnl)
+            if len(valeurs) > 1:
+                dates_trades = [CAPITAL_INITIAL] + [
+                    t["date"] for t in portfolio.historique if t.get("action") == "SORTIE"
+                ]
+                fig_pt = go.Figure()
+                fig_pt.add_trace(go.Scatter(
+                    y=valeurs,
+                    mode="lines+markers",
+                    line=dict(color="#2ca02c", width=2),
+                    marker=dict(size=8),
+                    name="Capital",
+                    hovertemplate="Trade %{x} : %{y:,.2f} EUR<extra></extra>",
+                ))
+                fig_pt.add_hline(y=CAPITAL_INITIAL, line_dash="dot",
+                                 line_color="#555", line_width=0.8,
+                                 annotation_text=f"Capital initial {CAPITAL_INITIAL:,.0f} EUR",
+                                 annotation_font_color="#888")
+                fig_pt.update_layout(
+                    title="<b>Evolution du capital</b> -- Paper Trading",
+                    yaxis=dict(ticksuffix=" EUR", gridcolor="#1e1e2e"),
+                    xaxis=dict(title="Trades", gridcolor="#1e1e2e"),
+                    plot_bgcolor="#0e1117", paper_bgcolor="#0e1117",
+                    font=dict(color="#fafafa"),
+                    height=280, margin=dict(t=50, b=20, l=10, r=10),
+                )
+                st.plotly_chart(fig_pt, use_container_width=True)
+    else:
+        st.info("Aucun trade execute pour l'instant.")
+
+    st.divider()
+    st.warning(
+        "**Disclaimer** : le Paper Trading utilise des prix en temps reel et des "
+        "news en direct, mais reste une simulation. Les signaux ne constituent pas "
+        "un conseil en investissement."
+    )
+
+
+# ---------------------------------------------------------------------------
+# ONGLET 5 -- Analyse Technique
 # ---------------------------------------------------------------------------
 with onglet_tech:
     colonnes_requises = ["RSI_14", "Drawdown", "Volatility_20", "Returns"]

@@ -32,6 +32,7 @@ from typing import Optional
 
 import pandas as pd
 
+from config import DATASET_FINAL_FILE, GEO_SCORES_FILE, NEWS_PROCESSED_FILE
 from finbert_sentiment import FinBertSentiment
 from sentiment_cache import load_cache, save_cache
 
@@ -70,18 +71,13 @@ class GeoScorer:
         if self.news_file is not None:
             p = Path(self.news_file)
             return p if p.is_absolute() else self.base_dir / p
-        return (
-            self.base_dir
-            / "data"
-            / "processed"
-            / "news_sp500_news_2024_processed.csv"
-        )
+        return self.base_dir / "data" / "processed" / NEWS_PROCESSED_FILE
 
     def _dataset_path(self) -> Path:
-        return self.base_dir / "data" / "processed" / "dataset_final.csv"
+        return self.base_dir / "data" / "processed" / DATASET_FINAL_FILE
 
     def _geo_scores_path(self) -> Path:
-        return self.base_dir / "data" / "processed" / "geo_scores.csv"
+        return self.base_dir / "data" / "processed" / GEO_SCORES_FILE
 
     def _get_clf(self) -> FinBertSentiment:
         """Lazy-load FinBERT (downloaded once, then cached by Hugging Face)."""
@@ -235,7 +231,8 @@ class GeoScorer:
 
         daily = daily.sort_values("date").reset_index(drop=True)
 
-        # Smoothing: rolling mean to reduce spike noise
+        # Smoothing lookback-only : la moyenne du jour J utilise J, J-1, J-2
+        # center=False garantit qu'on ne regarde que dans le passe (causal).
         daily["geo_score"] = (
             daily["geo_score_raw"]
             .rolling(window=self.smoothing_days, min_periods=1, center=False)

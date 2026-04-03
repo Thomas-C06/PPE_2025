@@ -1,22 +1,28 @@
 """Backtesting engine for GeoQuant AI -- Bloc 3.
 
 Simulates two strategies on historical data and computes performance metrics:
-    - Buy & Hold : always invested (baseline)
-    - GeoQuant   : follows the signal column (1=Long, 0=Cash)
+    - Buy & Hold : always invested at 100% (baseline)
+    - GeoQuant   : follows 'position' column (float 0.0-1.0 from strategy.py)
 
 Metrics computed:
     - Total return
-    - Annualised return
+    - Annualised CAGR
     - Max Drawdown
-    - Sharpe Ratio (annualised, risk-free rate = 0)
-    - Win Rate (% of invested days with positive return)
-    - Number of trades (signal transitions 0->1 or 1->0)
+    - Sharpe Ratio (annualised, configurable risk-free rate)
+    - Win Rate     (% of TRADES with positive P&L, not % of days)
+    - Number of trades (round-trips: entry + exit = 1 trade)
+
+Corrections vs v1:
+    - Win rate is now computed per trade (entry -> exit), not per day
+    - Transaction costs (costs_bps basis points per side) deducted on each trade
+    - Sharpe computed on excess returns (daily_ret - risk_free_daily)
+    - Position uses float sizing (0.0-1.0) not binary signal
 """
 
 from __future__ import annotations
 
 from dataclasses import dataclass
-from typing import Any, Dict
+from typing import Any, Dict, List, Tuple
 
 import numpy as np
 import pandas as pd
@@ -26,157 +32,234 @@ import pandas as pd
 class BacktestResult:
     """Container for backtest results of a single strategy."""
 
-    name:            str
-    total_return:    float          # e.g. 0.35  = +35 %
-    annualised:      float          # annualised CAGR
-    max_drawdown:    float          # e.g. -0.20 = -20 %
-    sharpe:          float
-    win_rate:        float          # fraction of invested days with positive return
-    nb_trades:       int
-    equity_curve:    pd.Series      # cumulative value starting at 1.0
-    daily_returns:   pd.Series
-    trade_log:       pd.DataFrame   # date | action | price | pnl_pct
+    name:          str
+    total_return:  float        # e.g. 0.35  = +35 %
+    annualised:    float        # CAGR
+    max_drawdown:  float        # e.g. -0.20 = -20 %
+    sharpe:        float        # annualised Sharpe on excess returns
+    win_rate:      float        # % of completed trades with positive P&L
+    nb_trades:     int          # number of round-trip trades
+    equity_curve:  pd.Series    # cumulative value starting at 1.0
+    daily_returns: pd.Series    # net daily returns (after costs)
+    trade_log:     pd.DataFrame # date | action | prix | pnl_pct | position
 
     def to_dict(self) -> Dict[str, Any]:
         return {
-            "Rendement total":    f"{self.total_return:+.2%}",
-            "Rend. annualise":    f"{self.annualised:+.2%}",
-            "Max Drawdown":       f"{self.max_drawdown:.2%}",
-            "Sharpe Ratio":       f"{self.sharpe:.2f}",
-            "Win Rate":           f"{self.win_rate:.1%}",
-            "Nb trades":          str(self.nb_trades),
+            "Rendement total": f"{self.total_return:+.2%}",
+            "Rend. annualise": f"{self.annualised:+.2%}",
+            "Max Drawdown":    f"{self.max_drawdown:.2%}",
+            "Sharpe Ratio":    f"{self.sharpe:.2f}",
+            "Win Rate":        f"{self.win_rate:.1%}",
+            "Nb trades":       str(self.nb_trades),
         }
 
 
+# ── Fonctions utilitaires ──────────────────────────────────────────────────────
+
 def _equity_curve(daily_rets: pd.Series) -> pd.Series:
-    """Return cumulative product starting at 1.0."""
     return (1 + daily_rets).cumprod()
 
 
 def _max_drawdown(equity: pd.Series) -> float:
-    """Compute maximum drawdown from an equity curve."""
     running_max = equity.cummax()
-    drawdown    = (equity - running_max) / running_max
-    return float(drawdown.min())
+    dd = (equity - running_max) / running_max
+    return float(dd.min())
 
 
-def _sharpe(daily_rets: pd.Series) -> float:
-    """Annualised Sharpe ratio (risk-free rate = 0)."""
-    std = daily_rets.std()
+def _sharpe(daily_rets: pd.Series, risk_free_annual: float = 0.0) -> float:
+    """
+    Annualised Sharpe ratio on excess returns.
+
+    Args:
+        daily_rets:        Series of daily strategy returns.
+        risk_free_annual:  Annual risk-free rate (e.g. 0.05 for 5%).
+    """
+    rf_daily = risk_free_annual / 252
+    excess   = daily_rets - rf_daily
+    std      = excess.std()
     if std == 0 or np.isnan(std):
         return 0.0
-    return float(daily_rets.mean() / std * np.sqrt(252))
+    return float(excess.mean() / std * np.sqrt(252))
 
 
-def _annualised_return(total_ret: float, n_days: int) -> float:
-    """CAGR from total return and number of calendar days."""
-    if n_days <= 0:
+def _annualised_return(total_ret: float, n_trading_days: int) -> float:
+    """CAGR using trading days (more accurate than calendar days)."""
+    if n_trading_days <= 0:
         return 0.0
-    years = n_days / 365.25
+    years = n_trading_days / 252
     return float((1 + total_ret) ** (1 / years) - 1)
 
 
-def _build_trade_log(
-    df: pd.DataFrame,
-    strategy_rets: pd.Series,
-    signal_col: str = "signal",
-    price_col: str  = "Close",
-) -> pd.DataFrame:
+def _apply_costs(
+    daily_rets: pd.Series,
+    position: pd.Series,
+    costs_bps: float,
+) -> pd.Series:
     """
-    Build a trade log from signal transitions.
+    Subtract transaction costs on each position change.
+
+    A cost of costs_bps basis points is applied per side (entry OR exit).
+    The cost is deducted from the daily return on the day of the trade.
 
     Args:
-        df:            Full dataset with 'date', signal_col and price_col.
-        strategy_rets: Daily returns of the strategy.
-        signal_col:    Column name for the signal (1=Long, 0=Cash).
-        price_col:     Column name for the price.
+        daily_rets: Series of raw daily returns.
+        position:   Float position series (0.0 to 1.0).
+        costs_bps:  Cost per side in basis points (10 bps = 0.10%).
+    """
+    cost_per_side = costs_bps / 10_000
+    pos_change    = position.diff().abs().fillna(0.0)
+    # cost = change_in_position * cost_per_side
+    cost_series   = pos_change * cost_per_side
+    return daily_rets - cost_series
+
+
+def _win_rate_and_log(
+    df: pd.DataFrame,
+    net_rets: pd.Series,
+    position: pd.Series,
+    price_col: str,
+) -> Tuple[float, pd.DataFrame, int]:
+    """
+    Compute per-trade win rate and build the trade log.
+
+    A trade is defined as the period between a position increase (entry)
+    and a return to 0 (exit). Win = exit value > entry value.
 
     Returns:
-        DataFrame with columns: date, action, price, pnl_pct.
+        (win_rate, trade_log_df, nb_trades)
     """
-    records = []
-    prev_sig = 0
+    records: List[dict] = []
+    trades_won  = 0
+    trades_total = 0
 
-    for i, row in df.iterrows():
-        sig = int(row[signal_col]) if signal_col in df.columns else 1
-        if sig != prev_sig:
-            action = "ENTREE" if sig == 1 else "SORTIE"
-            pnl    = float(strategy_rets.iloc[i]) if action == "SORTIE" else float("nan")
+    entry_price: float | None = None
+    entry_date              = None
+    entry_pos               = 0.0
+
+    pos_vals = position.values
+    prices   = df[price_col].values if price_col in df.columns else np.full(len(df), np.nan)
+    dates    = df["date"].values
+
+    for i in range(len(df)):
+        pos   = float(pos_vals[i])
+        price = float(prices[i])
+        date  = dates[i]
+
+        prev_pos = float(pos_vals[i - 1]) if i > 0 else 0.0
+
+        # ENTREE : position increases from 0 to >0
+        if prev_pos == 0.0 and pos > 0.0:
+            entry_price = price
+            entry_date  = date
+            entry_pos   = pos
             records.append({
-                "Date":   row["date"],
-                "Action": action,
-                "Prix":   round(float(row[price_col]), 2) if price_col in df.columns else float("nan"),
-                "P&L %":  f"{pnl:+.2%}" if not np.isnan(pnl) else "--",
+                "Date":     date,
+                "Action":   "ENTREE",
+                "Prix":     round(price, 2),
+                "Position": f"{pos:.0%}",
+                "P&L %":    "--",
             })
-            prev_sig = sig
 
-    return pd.DataFrame(records)
+        # SORTIE : position drops to 0
+        elif prev_pos > 0.0 and pos == 0.0 and entry_price is not None:
+            pnl = (price - entry_price) / entry_price
+            records.append({
+                "Date":     date,
+                "Action":   "SORTIE",
+                "Prix":     round(price, 2),
+                "Position": "0%",
+                "P&L %":    f"{pnl:+.2%}",
+            })
+            trades_total += 1
+            if pnl > 0:
+                trades_won += 1
+            entry_price = None
 
+    win_rate = trades_won / trades_total if trades_total > 0 else 0.0
+    trade_df = pd.DataFrame(records)
+    return win_rate, trade_df, trades_total
+
+
+# ── Fonction principale ────────────────────────────────────────────────────────
 
 def run_backtest(
     df: pd.DataFrame,
-    price_col: str = "Close",
-) -> tuple[BacktestResult, BacktestResult]:
+    price_col: str        = "Close",
+    costs_bps: float      = 10.0,
+    risk_free_annual: float = 0.0,
+) -> Tuple[BacktestResult, BacktestResult]:
     """
-    Run Buy & Hold and GeoQuant backtests on the dataset.
+    Run Buy & Hold and GeoQuant backtests.
 
     Args:
-        df:        DataFrame with columns: date, Returns, signal, (price_col).
-        price_col: Name of the price column for the trade log.
+        df:               DataFrame with: date, Returns, signal, position, price_col.
+        price_col:        Price column for trade log.
+        costs_bps:        Transaction cost per side in basis points (default 10 bps).
+        risk_free_annual: Annual risk-free rate for Sharpe (default 0%).
 
     Returns:
         Tuple (buy_hold_result, geoquant_result).
     """
     df = df.dropna(subset=["Returns"]).copy().reset_index(drop=True)
 
-    n_days = (df["date"].iloc[-1] - df["date"].iloc[0]).days
+    n_trading_days = len(df)
 
-    # ── Buy & Hold ────────────────────────────────────────────────────────────
-    bh_rets   = df["Returns"].fillna(0.0)
+    # ── Buy & Hold ─────────────────────────────────────────────────────────────
+    bh_pos    = pd.Series(1.0, index=df.index)
+    bh_raw    = df["Returns"].fillna(0.0)
+    bh_rets   = _apply_costs(bh_raw, bh_pos, costs_bps)
     bh_equity = _equity_curve(bh_rets)
     bh_total  = float(bh_equity.iloc[-1] - 1)
-    bh_wr     = float((bh_rets[bh_rets != 0] > 0).mean())
+
+    # Win rate B&H: % of positive days (conventional)
+    bh_wr = float((bh_rets > 0).mean())
 
     bh = BacktestResult(
         name          = "Buy & Hold",
         total_return  = bh_total,
-        annualised    = _annualised_return(bh_total, n_days),
+        annualised    = _annualised_return(bh_total, n_trading_days),
         max_drawdown  = _max_drawdown(bh_equity),
-        sharpe        = _sharpe(bh_rets),
+        sharpe        = _sharpe(bh_rets, risk_free_annual),
         win_rate      = bh_wr,
         nb_trades     = 1,
         equity_curve  = bh_equity,
         daily_returns = bh_rets,
-        trade_log     = pd.DataFrame({"Date": [df["date"].iloc[0]], "Action": ["ENTREE"],
-                                      "Prix": [round(float(df[price_col].iloc[0]), 2)
-                                               if price_col in df.columns else float("nan")],
-                                      "P&L %": ["--"]}),
+        trade_log     = pd.DataFrame({
+            "Date":     [df["date"].iloc[0]],
+            "Action":   ["ENTREE"],
+            "Prix":     [round(float(df[price_col].iloc[0]), 2)
+                         if price_col in df.columns else float("nan")],
+            "Position": ["100%"],
+            "P&L %":    ["--"],
+        }),
     )
 
-    # ── GeoQuant ──────────────────────────────────────────────────────────────
-    # Le signal du jour J est connu en fin de journee J, applique le jour J+1
-    signal_shifted = df["signal"].shift(1).fillna(0).astype(int)
-    gq_rets        = df["Returns"].fillna(0.0) * signal_shifted
-    gq_equity      = _equity_curve(gq_rets)
-    gq_total       = float(gq_equity.iloc[-1] - 1)
+    # ── GeoQuant ───────────────────────────────────────────────────────────────
+    # Position du jour J est connue en fin de journee J, appliquee le jour J+1
+    # Note: strategy.py a deja decale geo_score d'un jour; on decale ici la position
+    # d'un jour supplementaire pour la realisme de l'execution.
+    position_shifted = df["position"].shift(1).fillna(0.0)
 
-    invested_days  = signal_shifted == 1
-    gq_wr          = float((gq_rets[invested_days] > 0).mean()) if invested_days.any() else 0.0
+    gq_raw    = df["Returns"].fillna(0.0) * position_shifted
+    gq_rets   = _apply_costs(gq_raw, position_shifted, costs_bps)
+    gq_equity = _equity_curve(gq_rets)
+    gq_total  = float(gq_equity.iloc[-1] - 1)
 
-    signal_changes = (df["signal"].diff().abs() > 0).sum()
-    nb_trades      = int(signal_changes // 2) if signal_changes > 0 else 0
+    gq_wr, trade_log, nb_trades = _win_rate_and_log(
+        df, gq_rets, position_shifted, price_col
+    )
 
     gq = BacktestResult(
         name          = "GeoQuant",
         total_return  = gq_total,
-        annualised    = _annualised_return(gq_total, n_days),
+        annualised    = _annualised_return(gq_total, n_trading_days),
         max_drawdown  = _max_drawdown(gq_equity),
-        sharpe        = _sharpe(gq_rets),
+        sharpe        = _sharpe(gq_rets, risk_free_annual),
         win_rate      = gq_wr,
         nb_trades     = nb_trades,
         equity_curve  = gq_equity,
         daily_returns = gq_rets,
-        trade_log     = _build_trade_log(df, gq_rets, "signal", price_col),
+        trade_log     = trade_log,
     )
 
     return bh, gq

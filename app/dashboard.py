@@ -456,7 +456,8 @@ def construire_distribution_rendements(df: pd.DataFrame) -> go.Figure:
 # ===========================================================================
 
 def construire_graphique_equity(bh_curve: pd.Series, gq_curve: pd.Series,
-                                 dates: pd.Series) -> go.Figure:
+                                 dates: pd.Series,
+                                 label_split: Optional[str] = None) -> go.Figure:
     """Courbes de valeur cumulee normalisees a 1 : Buy & Hold vs GeoQuant."""
     fig = go.Figure()
     fig.add_trace(go.Scatter(
@@ -472,6 +473,14 @@ def construire_graphique_equity(bh_curve: pd.Series, gq_curve: pd.Series,
         hovertemplate="<b>%{x|%d %b %Y}</b><br>GeoQuant : %{y:.3f}<extra></extra>",
     ))
     fig.add_hline(y=1.0, line_dash="dot", line_color="#555", line_width=0.8)
+    if label_split:
+        fig.add_vline(
+            x=pd.Timestamp(label_split).timestamp() * 1000,
+            line_dash="dash", line_color="#ff7f0e", line_width=1.5,
+            annotation_text="Split IS / OOS",
+            annotation_font_color="#ff7f0e",
+            annotation_position="top left",
+        )
     fig.update_layout(
         title="<b>Performance cumulee</b> -- Buy & Hold vs GeoQuant (base = 1)",
         yaxis=dict(tickformat=".2f", gridcolor="#1e1e2e"),
@@ -487,18 +496,18 @@ def construire_graphique_equity(bh_curve: pd.Series, gq_curve: pd.Series,
 
 
 def construire_graphique_signal(df: pd.DataFrame, col_prix: str) -> go.Figure:
-    """Prix SP500 avec zones vertes (Long) et grises (Cash) selon le signal GeoQuant."""
+    """Prix SP500 avec zones vertes (Long) et grises (Cash) selon la position GeoQuant."""
     fig = go.Figure()
 
-    # Zones Long / Cash
+    pos_col = "position" if "position" in df.columns else "signal"
     in_long  = False
     start_x  = None
     for i, row in df.iterrows():
-        sig = int(row["signal"]) if not pd.isna(row["signal"]) else 0
-        if sig == 1 and not in_long:
+        pos = float(row[pos_col]) if not pd.isna(row[pos_col]) else 0.0
+        if pos > 0.0 and not in_long:
             start_x = row["date"]
             in_long = True
-        elif sig == 0 and in_long:
+        elif pos == 0.0 and in_long:
             fig.add_vrect(
                 x0=start_x, x1=row["date"],
                 fillcolor="rgba(44,160,44,0.10)", line_width=0,
@@ -516,7 +525,7 @@ def construire_graphique_signal(df: pd.DataFrame, col_prix: str) -> go.Figure:
         hovertemplate="<b>%{x|%d %b %Y}</b><br>Cours : %{y:,.2f}<extra></extra>",
     ))
     fig.update_layout(
-        title="<b>Signaux de trading</b> -- Zones vertes = Long, blanc = Cash",
+        title="<b>Signaux de trading</b> -- Zones vertes = Long (taille prop. position), blanc = Cash",
         yaxis=dict(gridcolor="#1e1e2e"),
         xaxis=dict(gridcolor="#1e1e2e"),
         plot_bgcolor="#0e1117", paper_bgcolor="#0e1117",
@@ -525,6 +534,125 @@ def construire_graphique_signal(df: pd.DataFrame, col_prix: str) -> go.Figure:
         margin=dict(t=50, b=20, l=10, r=10),
         height=300,
     )
+    return fig
+
+
+def construire_graphique_sensibilite(
+    df_full: pd.DataFrame,
+    seuil_courant: float,
+    costs_bps: float,
+    risk_free: float,
+) -> go.Figure:
+    """
+    Courbe rendement GeoQuant et Sharpe en fonction du seuil Geo-Score.
+    Permet de verifier que le seuil choisi n'est pas sur-ajuste.
+    """
+    from strategy import Strategy
+    from backtest import run_backtest as _run_bt
+
+    seuils   = np.arange(-1.0, 0.01, 0.05)
+    rets_gq  = []
+    sharpes  = []
+
+    for s in seuils:
+        strat_s = Strategy(base_dir=RACINE, seuil_geo=float(s))
+        df_s    = strat_s.apply(df_full)
+        _, gq_s = _run_bt(df_s, price_col="Adj Close" if "Adj Close" in df_s.columns else "Close",
+                          costs_bps=costs_bps, risk_free_annual=risk_free)
+        rets_gq.append(gq_s.total_return * 100)
+        sharpes.append(gq_s.sharpe)
+
+    fig = make_subplots(rows=2, cols=1, shared_xaxes=True,
+                        vertical_spacing=0.08,
+                        subplot_titles=("Rendement total GeoQuant (%)", "Sharpe Ratio"))
+
+    fig.add_trace(go.Scatter(
+        x=seuils, y=rets_gq, name="Rendement (%)",
+        line=dict(color="#2ca02c", width=2),
+        hovertemplate="Seuil %{x:.2f} -> %{y:.1f}%<extra></extra>",
+    ), row=1, col=1)
+
+    fig.add_trace(go.Scatter(
+        x=seuils, y=sharpes, name="Sharpe",
+        line=dict(color="#ff7f0e", width=2),
+        hovertemplate="Seuil %{x:.2f} -> Sharpe %{y:.2f}<extra></extra>",
+    ), row=2, col=1)
+
+    for row in (1, 2):
+        fig.add_vline(x=seuil_courant, line_dash="dash", line_color="red",
+                      line_width=1.2, row=row, col=1,
+                      annotation_text=f"Seuil actuel {seuil_courant:.2f}",
+                      annotation_font_color="red",
+                      annotation_position="top right")
+
+    fig.update_layout(
+        title="<b>Analyse de sensibilite</b> -- Performance selon le seuil Geo-Score",
+        plot_bgcolor="#0e1117", paper_bgcolor="#0e1117",
+        font=dict(color="#fafafa"),
+        showlegend=False,
+        margin=dict(t=60, b=20, l=10, r=10),
+        height=440,
+    )
+    fig.update_xaxes(gridcolor="#1e1e2e", title_text="Seuil Geo-Score", row=2, col=1)
+    fig.update_yaxes(gridcolor="#1e1e2e")
+    return fig
+
+
+def construire_graphique_correlation(df: pd.DataFrame) -> go.Figure:
+    """
+    Correlation glissante 60 jours entre geo_score[t-1] et Returns[t].
+    Valide que le Geo-Score a un vrai pouvoir predictif.
+    """
+    if "geo_score" not in df.columns or "Returns" not in df.columns:
+        return go.Figure()
+
+    df2 = df[["date", "geo_score", "Returns"]].dropna().copy()
+    df2["geo_lag"] = df2["geo_score"].shift(1)
+    df2 = df2.dropna()
+
+    rolling_corr = df2["geo_lag"].rolling(60).corr(df2["Returns"])
+
+    fig = make_subplots(rows=2, cols=1, shared_xaxes=True,
+                        vertical_spacing=0.06,
+                        row_heights=[0.45, 0.55],
+                        subplot_titles=("Correlation glissante 60j (Geo-Score -> Rendement J+1)",
+                                        "Nuage de points Geo-Score[t-1] vs Rendement[t]"))
+
+    fig.add_trace(go.Scatter(
+        x=df2["date"], y=rolling_corr,
+        name="Corr. 60j",
+        line=dict(color="#00b4d8", width=1.8),
+        fill="tozeroy", fillcolor="rgba(0,180,216,0.08)",
+        hovertemplate="<b>%{x|%d %b %Y}</b><br>Corr : %{y:.3f}<extra></extra>",
+    ), row=1, col=1)
+    fig.add_hline(y=0, line_color="#555", line_width=0.8, row=1, col=1)
+
+    colors = df2["Returns"].apply(lambda r: "#2ca02c" if r > 0 else "#d62728")
+    fig.add_trace(go.Scatter(
+        x=df2["geo_lag"], y=df2["Returns"] * 100,
+        mode="markers",
+        name="Observations",
+        marker=dict(color=colors, size=4, opacity=0.5),
+        hovertemplate="Geo-Score : %{x:.3f}<br>Rendement : %{y:.2f}%<extra></extra>",
+    ), row=2, col=1)
+
+    overall_corr = float(df2["geo_lag"].corr(df2["Returns"]))
+    fig.add_annotation(
+        text=f"Corr. globale : {overall_corr:.3f}",
+        x=0.98, y=0.02, xref="paper", yref="paper",
+        showarrow=False, font=dict(color="#aaa", size=12),
+        align="right",
+    )
+
+    fig.update_layout(
+        plot_bgcolor="#0e1117", paper_bgcolor="#0e1117",
+        font=dict(color="#fafafa"),
+        showlegend=False,
+        margin=dict(t=60, b=20, l=10, r=10),
+        height=500,
+    )
+    fig.update_xaxes(gridcolor="#1e1e2e")
+    fig.update_yaxes(gridcolor="#1e1e2e")
     return fig
 
 
@@ -556,15 +684,25 @@ with st.sidebar:
     else:
         plage_dates = (None, None)
 
-    # Seuil Geo-Score (utilise par le Bloc 3)
+    # Parametres Bloc 3
     st.divider()
-    st.markdown("**Seuil Geo-Score** (Bloc 3)")
+    st.markdown("**Parametres Bloc 3**")
     seuil_geo = st.slider(
-        "Si Geo-Score < seuil -> Cash",
+        "Seuil Geo-Score (Cash si < seuil)",
         min_value=-1.0, max_value=0.0, value=-0.5, step=0.05, format="%.2f",
-        help="Seuil en dessous duquel la strategie Bloc 3 coupe la position.",
+        help="Seuil en dessous duquel la strategie coupe la position.",
     )
-    st.caption(f"Seuil actuel : **{seuil_geo:.2f}**")
+    costs_bps = st.slider(
+        "Couts de transaction (bps / cote)",
+        min_value=0, max_value=50, value=10, step=5,
+        help="10 bps = 0.10% par entree OU sortie.",
+    )
+    risk_free_pct = st.slider(
+        "Taux sans risque annuel (%)",
+        min_value=0.0, max_value=6.0, value=0.0, step=0.5, format="%.1f%%",
+        help="Utilise pour le calcul du Sharpe Ratio.",
+    )
+    risk_free = risk_free_pct / 100.0
 
     # Toggles d'affichage
     st.divider()
@@ -773,6 +911,23 @@ with onglet_nlp:
     else:
         st.info("Aucune news disponible. Verifiez `data/raw/sample_news.csv`.")
 
+    # ── Correlation Geo-Score -> Rendements ───────────────────────────────
+    if geo_score_present:
+        st.divider()
+        st.subheader("Pouvoir predictif du Geo-Score")
+        st.caption(
+            "Correlation entre geo_score[t-1] et le rendement du lendemain. "
+            "Une correlation negative persistante valide le signal de protection."
+        )
+        geo_df_nlp = charger_geo_scores()
+        if geo_df_nlp is not None:
+            df_corr = df.copy()
+            df_corr = df_corr.merge(geo_df_nlp[["date", "geo_score"]], on="date", how="left")
+            st.plotly_chart(
+                construire_graphique_correlation(df_corr),
+                use_container_width=True,
+            )
+
 
 # ---------------------------------------------------------------------------
 # ONGLET 3 -- Backtest
@@ -790,58 +945,61 @@ with onglet_backtest:
         )
         st.stop()
 
-    # Fusionne geo_score dans le dataset filtre par la periode
+    # Fusionne geo_score dans le dataset filtre
     df_bt = df.copy()
-    df_bt = df_bt.merge(
-        geo_df[["date", "geo_score"]], on="date", how="left"
-    )
+    df_bt = df_bt.merge(geo_df[["date", "geo_score"]], on="date", how="left")
     df_bt["geo_score"] = df_bt["geo_score"].fillna(0.0)
 
-    # Applique la regle de trading avec le seuil courant de la sidebar
+    # Applique la regle (look-ahead corrige + position sizing)
     strat = Strategy(base_dir=RACINE, seuil_geo=seuil_geo)
     df_bt = strat.apply(df_bt)
 
-    # Backtest
-    bh, gq = run_backtest(df_bt, price_col=col_prix)
+    # Backtest complet (avec couts et taux sans risque)
+    bh, gq = run_backtest(df_bt, price_col=col_prix,
+                          costs_bps=float(costs_bps),
+                          risk_free_annual=risk_free)
 
     # ── En-tete ──────────────────────────────────────────────────────────────
     st.subheader("⚔️ Backtest -- Buy & Hold vs GeoQuant")
     st.caption(
-        f"Regle : MA50 > MA200  ET  Geo-Score ≥ {seuil_geo:.2f}  →  Long  |  "
-        f"sinon Cash  •  Periode : {df_bt['date'].iloc[0].date()} → "
-        f"{df_bt['date'].iloc[-1].date()}"
+        f"Regle : MA50 > MA200  ET  Geo-Score[t-1] ≥ {seuil_geo:.2f}  →  Long  |  "
+        f"Couts : {costs_bps} bps/cote  •  Rf : {risk_free_pct:.1f}%  •  "
+        f"Periode : {df_bt['date'].iloc[0].date()} → {df_bt['date'].iloc[-1].date()}"
     )
 
-    # ── Metriques cles (2 x 6) ────────────────────────────────────────────
+    # ── Metriques cles ────────────────────────────────────────────────────
     METRIQUES = [
         ("Rendement total",  bh.total_return, gq.total_return, ".2%", True),
         ("Rend. annualise",  bh.annualised,   gq.annualised,   ".2%", True),
         ("Max Drawdown",     bh.max_drawdown, gq.max_drawdown, ".2%", False),
         ("Sharpe Ratio",     bh.sharpe,       gq.sharpe,       ".2f", True),
         ("Win Rate",         bh.win_rate,     gq.win_rate,     ".1%", True),
-        ("Nb trades",        float(bh.nb_trades), float(gq.nb_trades), ".0f", True),
+        ("Nb trades",        float(bh.nb_trades), float(gq.nb_trades), ".0f", False),
     ]
 
     col_m = st.columns(len(METRIQUES))
     for i, (label, val_bh, val_gq, fmt, higher_better) in enumerate(METRIQUES):
-        better = val_gq > val_bh if higher_better else val_gq > val_bh
         delta_val = val_gq - val_bh
         delta_fmt = f"+{delta_val:{fmt}}" if delta_val >= 0 else f"{delta_val:{fmt}}"
+        # Correction bug : pour drawdown (higher_better=False), un delta negatif est bon
+        if higher_better:
+            d_color = "normal"
+        else:
+            d_color = "inverse"
         col_m[i].metric(
             label=label,
             value=f"{val_gq:{fmt}}",
             delta=f"vs B&H {delta_fmt}",
-            delta_color="normal" if higher_better else "inverse",
+            delta_color=d_color,
         )
 
     st.divider()
 
-    # ── Graphiques ────────────────────────────────────────────────────────
+    # ── Graphiques principaux ─────────────────────────────────────────────
     st.plotly_chart(
         construire_graphique_equity(bh.equity_curve, gq.equity_curve, df_bt["date"]),
         use_container_width=True,
     )
-
     st.plotly_chart(
         construire_graphique_signal(df_bt, col_prix),
         use_container_width=True,
@@ -849,7 +1007,7 @@ with onglet_backtest:
 
     st.divider()
 
-    # ── Tableau comparatif ────────────────────────────────────────────────
+    # ── Tableau comparatif + journal des trades ───────────────────────────
     col_tbl, col_log = st.columns([1, 2])
 
     with col_tbl:
@@ -872,6 +1030,78 @@ with onglet_backtest:
             st.dataframe(log_display, use_container_width=True, hide_index=True)
         else:
             st.info("Aucun trade genere avec ce seuil.")
+
+    st.divider()
+
+    # ── Walk-Forward Test (in-sample 70% / out-of-sample 30%) ────────────
+    st.subheader("Walk-Forward Test -- In-Sample vs Out-of-Sample")
+    st.caption(
+        "Divise la periode en 70% (calibration) et 30% (validation hors-echantillon). "
+        "Si GeoQuant sur-performe aussi en OOS, les resultats sont plus credibles."
+    )
+
+    split_idx = int(len(df_bt) * 0.70)
+    df_is     = df_bt.iloc[:split_idx].reset_index(drop=True)
+    df_oos    = df_bt.iloc[split_idx:].reset_index(drop=True)
+    split_date = str(df_bt["date"].iloc[split_idx].date())
+
+    bh_is,  gq_is  = run_backtest(df_is,  price_col=col_prix,
+                                   costs_bps=float(costs_bps), risk_free_annual=risk_free)
+    bh_oos, gq_oos = run_backtest(df_oos, price_col=col_prix,
+                                   costs_bps=float(costs_bps), risk_free_annual=risk_free)
+
+    wf_col1, wf_col2 = st.columns(2)
+
+    def _wf_table(bh_r, gq_r, titre):
+        rows = [
+            {"Metrique": "Rendement total",
+             "B&H":      f"{bh_r.total_return:+.2%}",
+             "GeoQuant": f"{gq_r.total_return:+.2%}"},
+            {"Metrique": "Sharpe",
+             "B&H":      f"{bh_r.sharpe:.2f}",
+             "GeoQuant": f"{gq_r.sharpe:.2f}"},
+            {"Metrique": "Max Drawdown",
+             "B&H":      f"{bh_r.max_drawdown:.2%}",
+             "GeoQuant": f"{gq_r.max_drawdown:.2%}"},
+        ]
+        st.markdown(f"**{titre}**")
+        st.dataframe(pd.DataFrame(rows), use_container_width=True, hide_index=True)
+
+    with wf_col1:
+        _wf_table(bh_is, gq_is,
+                  f"In-Sample ({df_is['date'].iloc[0].date()} -> {df_is['date'].iloc[-1].date()})")
+    with wf_col2:
+        _wf_table(bh_oos, gq_oos,
+                  f"Out-of-Sample ({df_oos['date'].iloc[0].date()} -> {df_oos['date'].iloc[-1].date()})")
+
+    # Courbe equity IS + OOS combinee avec ligne de separation
+    bh_full = pd.concat([bh_is.equity_curve, bh_oos.equity_curve * bh_is.equity_curve.iloc[-1]],
+                        ignore_index=True)
+    gq_full = pd.concat([gq_is.equity_curve, gq_oos.equity_curve * gq_is.equity_curve.iloc[-1]],
+                        ignore_index=True)
+    st.plotly_chart(
+        construire_graphique_equity(bh_full, gq_full, df_bt["date"], label_split=split_date),
+        use_container_width=True,
+    )
+
+    st.divider()
+
+    # ── Analyse de sensibilite ────────────────────────────────────────────
+    st.subheader("Analyse de sensibilite -- Robustesse du seuil")
+    st.caption(
+        "Si la courbe est plate autour du seuil choisi, la strategie est robuste. "
+        "Un pic isole suggere du sur-ajustement."
+    )
+    with st.spinner("Calcul en cours..."):
+        # Utilise le dataset complet (non filtre par periode) pour la sensibilite
+        df_sens = df_complet.copy()
+        df_sens = df_sens.merge(geo_df[["date", "geo_score"]], on="date", how="left")
+        df_sens["geo_score"] = df_sens["geo_score"].fillna(0.0)
+        st.plotly_chart(
+            construire_graphique_sensibilite(df_sens, seuil_geo,
+                                             float(costs_bps), risk_free),
+            use_container_width=True,
+        )
 
 
 # ---------------------------------------------------------------------------

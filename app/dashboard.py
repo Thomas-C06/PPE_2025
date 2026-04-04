@@ -1302,6 +1302,27 @@ with onglet_paper:
                 if auto_execute:
                     portfolio, action_msg = trader.execute_signal(snapshot, portfolio)
                     trader.save_portfolio(portfolio)
+
+                # ── Notification pop-up si le signal a change ─────────────
+                from alert_manager import AlertManager
+                mgr = AlertManager(RACINE)
+                if mgr.signal_changed(ticker_pt, snapshot.signal):
+                    if snapshot.signal == 1:
+                        st.toast(
+                            f"🟢 Signal LONG sur {ticker_pt} — "
+                            f"Geo-Score {snapshot.geo_score:+.2f} | "
+                            f"Confiance {snapshot.confidence:.0%}",
+                            icon="🟢",
+                        )
+                    else:
+                        st.toast(
+                            f"🔴 Signal CASH sur {ticker_pt} — "
+                            f"Geo-Score {snapshot.geo_score:+.2f} | "
+                            f"Sortie du marche",
+                            icon="🔴",
+                        )
+                    mgr.save_signal(ticker_pt, snapshot.signal)
+
             except Exception as e:
                 st.error(f"Erreur lors du refresh : {e}")
 
@@ -1486,41 +1507,36 @@ with onglet_paper:
     else:
         st.info("Aucun trade execute pour l'instant.")
 
-    # ── Alertes email ─────────────────────────────────────────────────────
+    # ── Alertes ───────────────────────────────────────────────────────────
     st.divider()
-    st.markdown("### 📧 Alertes email")
+    st.markdown("### 🔔 Alertes")
     st.caption(
-        "Recevez un email automatique quand le signal change (LONG → CASH ou CASH → LONG). "
-        "Compatible Gmail (port 465) et Outlook (port 587)."
+        "Une notification pop-up s'affiche automatiquement dans l'app quand "
+        "le signal change (LONG ↔ CASH). Vous pouvez aussi activer un email."
     )
 
-    with st.expander("Configurer les alertes email", expanded=False):
+    with st.expander("Configurer les alertes email (optionnel)", expanded=False):
         alert_col1, alert_col2 = st.columns(2)
         with alert_col1:
-            alert_smtp   = st.text_input("Serveur SMTP",    value="smtp.gmail.com",
-                                          placeholder="smtp.gmail.com")
+            alert_smtp   = st.text_input("Serveur SMTP",    value="smtp.gmail.com")
             alert_port   = st.number_input("Port SMTP",     value=465, step=1)
             alert_from   = st.text_input("Email expediteur", placeholder="ton@gmail.com")
         with alert_col2:
             alert_to     = st.text_input("Email destinataire", placeholder="destinataire@email.com")
             alert_pwd    = st.text_input("Mot de passe app", type="password",
-                                          help="Pour Gmail : generer un mot de passe d'application")
-            alerts_on    = st.toggle("Activer les alertes", value=False)
+                                          help="Pour Gmail : generez un mot de passe d'application")
+            alerts_on    = st.toggle("Activer les alertes email", value=False)
 
         if snapshot and alerts_on and alert_from and alert_to and alert_pwd:
             from alert_manager import AlertManager
             mgr = AlertManager(RACINE)
             if mgr.signal_changed(ticker_pt, snapshot.signal):
                 subj, body = AlertManager.build_signal_body(
-                    ticker       = ticker_pt,
-                    signal       = snapshot.signal,
-                    prix         = snapshot.prix_actuel,
-                    geo_score    = snapshot.geo_score,
-                    ma50         = snapshot.ma50,
-                    ma200        = snapshot.ma200,
-                    golden_cross = snapshot.golden_cross,
-                    confidence   = snapshot.confidence,
-                    timestamp    = snapshot.timestamp,
+                    ticker=ticker_pt,        signal=snapshot.signal,
+                    prix=snapshot.prix_actuel, geo_score=snapshot.geo_score,
+                    ma50=snapshot.ma50,      ma200=snapshot.ma200,
+                    golden_cross=snapshot.golden_cross,
+                    confidence=snapshot.confidence, timestamp=snapshot.timestamp,
                 )
                 ok, err = AlertManager.send_email(
                     smtp_server=alert_smtp, smtp_port=int(alert_port),
@@ -1528,12 +1544,11 @@ with onglet_paper:
                     password=alert_pwd,     subject=subj, body=body,
                 )
                 if ok:
-                    mgr.save_signal(ticker_pt, snapshot.signal)
-                    st.success(f"Email envoye a {alert_to}")
+                    st.success(f"✅ Email envoye a {alert_to}")
                 else:
                     st.error(f"Echec envoi email : {err}")
             else:
-                st.info("Pas de changement de signal depuis la derniere alerte.")
+                st.info("Signal inchange depuis la derniere alerte.")
 
     st.divider()
     st.warning(

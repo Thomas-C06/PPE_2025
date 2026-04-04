@@ -1413,9 +1413,9 @@ le capital des investisseurs face aux chocs exogenes.
 | Bloc | Module | Statut |
 |------|--------|--------|
 | **1 -- Data Engineering** | `src/` (loader, merger, news_loader) | ✅ Termine |
-| **2 -- NLP / FinBERT** | `nlp/` (a creer) | ⏳ A venir |
-| **3 -- Strategie** | `strategy/` (a creer) | ⏳ A venir |
-| **4 -- Dashboard** | `app/dashboard.py` | 🔄 En cours |
+| **2 -- NLP / FinBERT** | `src/finbert_sentiment.py`, `src/geo_scorer.py` | ✅ Termine |
+| **3 -- Strategie + Backtest** | `src/strategy.py`, `src/backtest.py` | ✅ Termine |
+| **4 -- Dashboard + Paper Trading** | `app/dashboard.py`, `src/paper_trading.py` | ✅ Termine |
         """)
 
         st.divider()

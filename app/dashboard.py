@@ -634,6 +634,263 @@ def construire_graphique_sensibilite(
     return fig
 
 
+def construire_graphique_contribution_nlp(
+    df: pd.DataFrame,
+    seuil_geo: float,
+    costs_bps: float,
+    risk_free: float,
+) -> go.Figure:
+    """
+    Compare 3 strategies sur la meme periode :
+      - Buy & Hold
+      - Golden Cross seul (sans Geo-Score)
+      - GeoQuant (Golden Cross + Geo-Score)
+    Isole ainsi la contribution reelle du NLP.
+    """
+    from strategy import Strategy
+    from backtest  import run_backtest
+
+    df2 = df.copy()
+
+    # --- Strategie 1 : Buy & Hold (position = 1 toujours) ---
+    bh, gq = run_backtest(df2, price_col="Adj Close" if "Adj Close" in df2.columns else "Close",
+                          costs_bps=costs_bps, risk_free_annual=risk_free)
+
+    # --- Strategie 2 : Golden Cross seul (geo_score neutralise = toujours >= seuil) ---
+    df_gc = df2.copy()
+    df_gc["geo_score"] = 1.0   # geo_score artificellement positif -> jamais bloquant
+    strat_gc = Strategy(base_dir=RACINE, seuil_geo=seuil_geo)
+    df_gc    = strat_gc.apply(df_gc)
+    _, gc_only = run_backtest(df_gc, price_col="Adj Close" if "Adj Close" in df_gc.columns else "Close",
+                              costs_bps=costs_bps, risk_free_annual=risk_free)
+
+    # --- Strategie 3 : GeoQuant complet ---
+    dates = df2["date"].reset_index(drop=True)
+
+    fig = go.Figure()
+    fig.add_trace(go.Scatter(
+        x=dates, y=bh.equity_curve.values,
+        name="Buy & Hold", line=dict(color="#888", width=1.5, dash="dot"),
+        hovertemplate="<b>%{x|%d %b %Y}</b><br>B&H : %{y:.3f}<extra></extra>",
+    ))
+    fig.add_trace(go.Scatter(
+        x=dates, y=gc_only.equity_curve.values,
+        name="Golden Cross seul (sans NLP)",
+        line=dict(color="#ff7f0e", width=2),
+        hovertemplate="<b>%{x|%d %b %Y}</b><br>GC : %{y:.3f}<extra></extra>",
+    ))
+    fig.add_trace(go.Scatter(
+        x=dates, y=gq.equity_curve.values,
+        name="GeoQuant (Golden Cross + Geo-Score)",
+        line=dict(color="#2ca02c", width=2.5),
+        hovertemplate="<b>%{x|%d %b %Y}</b><br>GeoQuant : %{y:.3f}<extra></extra>",
+    ))
+
+    # Annotation delta NLP
+    delta_nlp = gq.total_return - gc_only.total_return
+    fig.add_annotation(
+        text=f"Apport du NLP : {delta_nlp:+.1%}",
+        x=0.01, y=0.99, xref="paper", yref="paper",
+        showarrow=False,
+        font=dict(color="#2ca02c" if delta_nlp >= 0 else "#d62728", size=13),
+        align="left", bgcolor="rgba(14,17,23,0.7)",
+    )
+
+    fig.update_layout(
+        title="<b>Contribution isolee du NLP</b> -- Buy & Hold vs Golden Cross vs GeoQuant",
+        yaxis=dict(title="Valeur normalisee (base 1)", gridcolor="#1e1e2e"),
+        xaxis=dict(gridcolor="#1e1e2e"),
+        plot_bgcolor="#0e1117", paper_bgcolor="#0e1117",
+        font=dict(color="#fafafa"),
+        height=380, margin=dict(t=50, b=20, l=10, r=10),
+        legend=dict(orientation="h", y=-0.15),
+    )
+    return fig
+
+
+def construire_stress_test(
+    df: pd.DataFrame,
+    seuil_geo: float,
+    costs_bps: float,
+    risk_free: float,
+    fenetre: int = 30,
+) -> go.Figure:
+    """
+    Pour chaque evenement geopolitique cle, compare le rendement cumulatif
+    GeoQuant vs Buy & Hold sur les `fenetre` jours suivants.
+    Montre si GeoQuant etait en CASH au moment du choc.
+    """
+    from strategy import Strategy
+    from backtest  import run_backtest
+
+    df2 = df.copy()
+    strat = Strategy(base_dir=RACINE, seuil_geo=seuil_geo)
+    df2   = strat.apply(df2)
+    _, gq = run_backtest(df2, price_col="Adj Close" if "Adj Close" in df2.columns else "Close",
+                         costs_bps=costs_bps, risk_free_annual=risk_free)
+
+    col_prix  = "Adj Close" if "Adj Close" in df2.columns else "Close"
+    rows_evt  = []
+    fig = go.Figure()
+
+    colors_gq = "#2ca02c"
+    colors_bh = "#d62728"
+
+    for date_str, label, _ in EVENEMENTS_CLES:
+        evt = pd.Timestamp(date_str)
+        idx_list = df2.index[df2["date"] >= evt].tolist()
+        if not idx_list:
+            continue
+        idx_start = idx_list[0]
+        idx_end   = min(idx_start + fenetre, len(df2) - 1)
+
+        window    = df2.iloc[idx_start:idx_end + 1].copy()
+        if len(window) < 5:
+            continue
+
+        prix_debut = float(window[col_prix].iloc[0])
+        bh_perf    = (window[col_prix] / prix_debut - 1) * 100
+
+        # Signal GeoQuant au debut de l'evenement
+        signal_evt = int(window["signal"].iloc[0])
+        position_evt = float(window["position"].iloc[0])
+        gq_daily   = window["Returns"] * window["position"].shift(1).fillna(0)
+        gq_perf    = ((1 + gq_daily).cumprod() - 1) * 100
+
+        bh_fin  = float(bh_perf.iloc[-1])
+        gq_fin  = float(gq_perf.iloc[-1])
+
+        rows_evt.append({
+            "Evenement":      label,
+            "Date":           date_str,
+            "Signal au choc": "LONG" if signal_evt == 1 else "CASH",
+            "Position":       f"{position_evt:.0%}",
+            f"B&H J+{fenetre}": f"{bh_fin:+.1f}%",
+            f"GeoQuant J+{fenetre}": f"{gq_fin:+.1f}%",
+            "Avantage GeoQuant": f"{gq_fin - bh_fin:+.1f}%",
+        })
+
+        x_axis = list(range(len(window)))
+        fig.add_trace(go.Scatter(
+            x=x_axis, y=bh_perf.values,
+            name=f"{label} B&H", legendgroup=label,
+            line=dict(color=colors_bh, width=1.2, dash="dot"),
+            opacity=0.6,
+            hovertemplate=f"<b>{label}</b><br>J+%{{x}} B&H : %{{y:.1f}}%<extra></extra>",
+        ))
+        fig.add_trace(go.Scatter(
+            x=x_axis, y=gq_perf.values,
+            name=f"{label} GeoQuant", legendgroup=label,
+            line=dict(width=2),
+            hovertemplate=f"<b>{label}</b><br>J+%{{x}} GeoQuant : %{{y:.1f}}%<extra></extra>",
+        ))
+
+    fig.add_hline(y=0, line_color="#555", line_width=0.8, line_dash="dash")
+    fig.update_layout(
+        title=f"<b>Stress Test</b> -- Performance cumulee J+{fenetre} apres chaque choc",
+        yaxis=dict(title="Rendement cumule (%)", gridcolor="#1e1e2e", ticksuffix="%"),
+        xaxis=dict(title=f"Jours apres le choc", gridcolor="#1e1e2e"),
+        plot_bgcolor="#0e1117", paper_bgcolor="#0e1117",
+        font=dict(color="#fafafa"),
+        height=420, margin=dict(t=50, b=20, l=10, r=10),
+        legend=dict(orientation="h", y=-0.25, font=dict(size=9)),
+    )
+
+    return fig, pd.DataFrame(rows_evt)
+
+
+def construire_correlation_vix(
+    df: pd.DataFrame,
+    start_date: str,
+    end_date: str,
+) -> go.Figure:
+    """
+    Superpose le Geo-Score et le VIX (telecharge en live).
+    Si le Geo-Score anticipe les pics de VIX, le modele capte quelque chose de reel.
+    """
+    import yfinance as yf
+
+    if "geo_score" not in df.columns:
+        return go.Figure()
+
+    try:
+        vix = yf.download("^VIX", start=start_date, end=end_date,
+                          progress=False, auto_adjust=False)
+        if vix is None or vix.empty:
+            return go.Figure()
+        if isinstance(vix.columns, pd.MultiIndex):
+            vix.columns = [c[0] for c in vix.columns]
+        col_v = "Adj Close" if "Adj Close" in vix.columns else "Close"
+        vix_s = vix[col_v].reset_index()
+        vix_s.columns = ["date", "vix"]
+        vix_s["date"] = pd.to_datetime(vix_s["date"]).dt.tz_localize(None)
+    except Exception:
+        return go.Figure()
+
+    merged = df[["date", "geo_score"]].merge(vix_s, on="date", how="inner").dropna()
+    if merged.empty:
+        return go.Figure()
+
+    # Correlation glissante 30j entre Geo-Score inverse et VIX
+    # On inverse le Geo-Score car peur (score bas) <-> VIX haut
+    merged["geo_inv"] = -merged["geo_score"]
+    rolling_corr = merged["geo_inv"].rolling(30).corr(merged["vix"])
+    overall_corr = float(merged["geo_inv"].corr(merged["vix"]))
+
+    fig = make_subplots(
+        rows=3, cols=1, shared_xaxes=True,
+        vertical_spacing=0.06,
+        row_heights=[0.35, 0.35, 0.30],
+        subplot_titles=(
+            "Geo-Score (inverse = peur) vs VIX",
+            "VIX -- Indice de peur officiel de Wall Street",
+            f"Correlation glissante 30j (globale : {overall_corr:.2f})",
+        ),
+    )
+
+    # Geo-Score inverse
+    fig.add_trace(go.Scatter(
+        x=merged["date"], y=merged["geo_inv"],
+        name="-Geo-Score (peur NLP)",
+        line=dict(color="#9467bd", width=1.8),
+        hovertemplate="<b>%{x|%d %b %Y}</b><br>Peur NLP : %{y:.3f}<extra></extra>",
+    ), row=1, col=1)
+    fig.add_hline(y=0, line_color="#555", line_width=0.8, row=1, col=1)
+
+    # VIX
+    fig.add_trace(go.Scatter(
+        x=merged["date"], y=merged["vix"],
+        name="VIX",
+        line=dict(color="#d62728", width=1.8),
+        fill="tozeroy", fillcolor="rgba(214,39,40,0.08)",
+        hovertemplate="<b>%{x|%d %b %Y}</b><br>VIX : %{y:.1f}<extra></extra>",
+    ), row=2, col=1)
+    fig.add_hline(y=20, line_color="#ff7f0e", line_width=0.8, line_dash="dash",
+                  annotation_text="VIX 20 (seuil panique)", annotation_font_color="#ff7f0e",
+                  row=2, col=1)
+
+    # Correlation glissante
+    fig.add_trace(go.Scatter(
+        x=merged["date"], y=rolling_corr,
+        name="Corr. 30j",
+        line=dict(color="#00b4d8", width=1.5),
+        fill="tozeroy", fillcolor="rgba(0,180,216,0.08)",
+        hovertemplate="<b>%{x|%d %b %Y}</b><br>Corr : %{y:.3f}<extra></extra>",
+    ), row=3, col=1)
+    fig.add_hline(y=0, line_color="#555", line_width=0.8, row=3, col=1)
+
+    fig.update_layout(
+        title="<b>Geo-Score vs VIX</b> -- Le NLP anticipe-t-il la peur du marche ?",
+        plot_bgcolor="#0e1117", paper_bgcolor="#0e1117",
+        font=dict(color="#fafafa"),
+        showlegend=False,
+        height=560, margin=dict(t=60, b=20, l=10, r=10),
+    )
+    fig.update_xaxes(gridcolor="#1e1e2e")
+    fig.update_yaxes(gridcolor="#1e1e2e")
+    return fig
+
+
 def construire_graphique_correlation(df: pd.DataFrame) -> go.Figure:
     """
     Correlation glissante 60 jours entre geo_score[t-1] et Returns[t].
@@ -967,6 +1224,30 @@ with onglet_nlp:
                 use_container_width=True,
             )
 
+        # ── Correlation Geo-Score vs VIX ─────────────────────────────────
+        st.divider()
+        st.subheader("Geo-Score vs VIX -- Validation externe du modele")
+        st.caption(
+            "Le VIX est l'indice de peur officiel de Wall Street. "
+            "Si le Geo-Score (inverse) est correle au VIX, cela prouve que "
+            "le modele NLP capte bien la peur reelle du marche."
+        )
+        geo_df_vix = charger_geo_scores()
+        if geo_df_vix is not None:
+            df_vix = df.copy()
+            if "geo_score" in df_vix.columns:
+                df_vix = df_vix.drop(columns=["geo_score"])
+            df_vix = df_vix.merge(geo_df_vix[["date", "geo_score"]], on="date", how="left")
+            df_vix["geo_score"] = df_vix["geo_score"].fillna(0.0)
+            start_str = str(df_vix["date"].min().date())
+            end_str   = str(df_vix["date"].max().date())
+            with st.spinner("Telechargement VIX..."):
+                fig_vix = construire_correlation_vix(df_vix, start_str, end_str)
+            if fig_vix.data:
+                st.plotly_chart(fig_vix, use_container_width=True)
+            else:
+                st.info("Impossible de telecharger le VIX. Verifiez votre connexion.")
+
 
 # ---------------------------------------------------------------------------
 # ONGLET 3 -- Backtest
@@ -1145,6 +1426,48 @@ with onglet_backtest:
                                              float(costs_bps), risk_free),
             use_container_width=True,
         )
+
+    st.divider()
+
+    # ── Contribution isolee du NLP ────────────────────────────────────────
+    st.subheader("Contribution isolee du NLP")
+    st.caption(
+        "Compare 3 strategies : Buy & Hold, Golden Cross seul (sans NLP) et "
+        "GeoQuant (Golden Cross + Geo-Score). L'ecart entre la courbe orange et "
+        "la courbe verte mesure la valeur ajoutee reelle du NLP."
+    )
+    with st.spinner("Calcul de la contribution NLP..."):
+        st.plotly_chart(
+            construire_graphique_contribution_nlp(
+                df_bt, seuil_geo, float(costs_bps), risk_free
+            ),
+            use_container_width=True,
+        )
+
+    st.divider()
+
+    # ── Stress Test par evenement ─────────────────────────────────────────
+    st.subheader("Stress Test -- Resilience face aux chocs historiques")
+    st.caption(
+        "Pour chaque choc geopolitique majeur, compare les performances "
+        "GeoQuant vs Buy & Hold sur les 30 jours suivants. "
+        "Montre si GeoQuant etait en CASH au moment du choc."
+    )
+
+    fenetre_stress = st.slider("Fenetre d'observation (jours)", 10, 60, 30, step=5)
+
+    with st.spinner("Calcul du stress test..."):
+        fig_stress, df_stress = construire_stress_test(
+            df_bt, seuil_geo, float(costs_bps), risk_free, fenetre=fenetre_stress
+        )
+
+    if not df_stress.empty:
+        # Tableau synthetique
+        st.dataframe(df_stress, use_container_width=True, hide_index=True)
+        # Graphique
+        st.plotly_chart(fig_stress, use_container_width=True)
+    else:
+        st.info("Aucun evenement dans la periode selectionnee.")
 
     st.divider()
 
@@ -1506,49 +1829,6 @@ with onglet_paper:
                 st.plotly_chart(fig_pt, use_container_width=True)
     else:
         st.info("Aucun trade execute pour l'instant.")
-
-    # ── Alertes ───────────────────────────────────────────────────────────
-    st.divider()
-    st.markdown("### 🔔 Alertes")
-    st.caption(
-        "Une notification pop-up s'affiche automatiquement dans l'app quand "
-        "le signal change (LONG ↔ CASH). Vous pouvez aussi activer un email."
-    )
-
-    with st.expander("Configurer les alertes email (optionnel)", expanded=False):
-        alert_col1, alert_col2 = st.columns(2)
-        with alert_col1:
-            alert_smtp   = st.text_input("Serveur SMTP",    value="smtp.gmail.com")
-            alert_port   = st.number_input("Port SMTP",     value=465, step=1)
-            alert_from   = st.text_input("Email expediteur", placeholder="ton@gmail.com")
-        with alert_col2:
-            alert_to     = st.text_input("Email destinataire", placeholder="destinataire@email.com")
-            alert_pwd    = st.text_input("Mot de passe app", type="password",
-                                          help="Pour Gmail : generez un mot de passe d'application")
-            alerts_on    = st.toggle("Activer les alertes email", value=False)
-
-        if snapshot and alerts_on and alert_from and alert_to and alert_pwd:
-            from alert_manager import AlertManager
-            mgr = AlertManager(RACINE)
-            if mgr.signal_changed(ticker_pt, snapshot.signal):
-                subj, body = AlertManager.build_signal_body(
-                    ticker=ticker_pt,        signal=snapshot.signal,
-                    prix=snapshot.prix_actuel, geo_score=snapshot.geo_score,
-                    ma50=snapshot.ma50,      ma200=snapshot.ma200,
-                    golden_cross=snapshot.golden_cross,
-                    confidence=snapshot.confidence, timestamp=snapshot.timestamp,
-                )
-                ok, err = AlertManager.send_email(
-                    smtp_server=alert_smtp, smtp_port=int(alert_port),
-                    email_from=alert_from,  email_to=alert_to,
-                    password=alert_pwd,     subject=subj, body=body,
-                )
-                if ok:
-                    st.success(f"✅ Email envoye a {alert_to}")
-                else:
-                    st.error(f"Echec envoi email : {err}")
-            else:
-                st.info("Signal inchange depuis la derniere alerte.")
 
     st.divider()
     st.warning(

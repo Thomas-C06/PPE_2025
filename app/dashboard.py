@@ -1617,6 +1617,21 @@ with onglet_paper:
     # ── Snapshot live ─────────────────────────────────────────────────────
     snapshot = None
     action_msg = None
+    vix_live = None
+
+    if refresh_clicked:
+        # VIX live — recupere en parallele du snapshot principal
+        try:
+            import yfinance as yf
+            _vix = yf.download("^VIX", period="5d", interval="1d",
+                               progress=False, auto_adjust=False)
+            if _vix is not None and not _vix.empty:
+                if isinstance(_vix.columns, pd.MultiIndex):
+                    _vix.columns = [c[0] for c in _vix.columns]
+                _col_v = "Adj Close" if "Adj Close" in _vix.columns else "Close"
+                vix_live = float(_vix[_col_v].dropna().iloc[-1])
+        except Exception:
+            vix_live = None
 
     if refresh_clicked:
         with st.spinner("Recuperation du prix et des news en cours..."):
@@ -1709,17 +1724,54 @@ with onglet_paper:
 </div>""", unsafe_allow_html=True)
 
             st.markdown("")
-            st.dataframe(pd.DataFrame({
-                "Indicateur": ["Prix actuel", "MA 50", "MA 200",
-                               "Golden Cross", "Geo-Score", "News analysees"],
-                "Valeur": [
+
+            # VIX live avec interpretation
+            if vix_live is not None:
+                if vix_live < 15:
+                    vix_label, vix_color = "Calme", "#2ca02c"
+                elif vix_live < 20:
+                    vix_label, vix_color = "Normal", "#aaa"
+                elif vix_live < 30:
+                    vix_label, vix_color = "Tension", "#ff7f0e"
+                else:
+                    vix_label, vix_color = "PANIQUE", "#d62728"
+
+                vix_alerte = (
+                    snapshot.signal == 1 and vix_live >= 25
+                )
+                vix_str = f"{vix_live:.1f} — {vix_label}"
+                vix_indicateurs = ["Prix actuel", "MA 50", "MA 200",
+                                   "Golden Cross", "Geo-Score",
+                                   "VIX (peur marche)", "News analysees"]
+                vix_valeurs = [
+                    f"{snapshot.prix_actuel:,.2f}",
+                    f"{snapshot.ma50:,.2f}",
+                    f"{snapshot.ma200:,.2f}",
+                    "✅ Oui" if snapshot.golden_cross else "❌ Non",
+                    f"{snapshot.geo_score:+.3f}",
+                    vix_str,
+                    str(snapshot.nb_news),
+                ]
+                if vix_alerte:
+                    st.warning(
+                        f"⚠️ VIX elevé ({vix_live:.1f}) — Signal LONG actif "
+                        f"mais marche en tension. Prudence."
+                    )
+            else:
+                vix_indicateurs = ["Prix actuel", "MA 50", "MA 200",
+                                   "Golden Cross", "Geo-Score", "News analysees"]
+                vix_valeurs = [
                     f"{snapshot.prix_actuel:,.2f}",
                     f"{snapshot.ma50:,.2f}",
                     f"{snapshot.ma200:,.2f}",
                     "✅ Oui" if snapshot.golden_cross else "❌ Non",
                     f"{snapshot.geo_score:+.3f}",
                     str(snapshot.nb_news),
-                ],
+                ]
+
+            st.dataframe(pd.DataFrame({
+                "Indicateur": vix_indicateurs,
+                "Valeur":     vix_valeurs,
             }), hide_index=True, use_container_width=True)
 
         with sig_col2:

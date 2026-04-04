@@ -44,22 +44,86 @@ def fetch_yahoo_news_rss(symbol: str, count: int = 20, region: str = "US", lang:
     return out
 
 
+def _fetch_rss_generic(url: str, count: int, publisher: str) -> List[Dict[str, Any]]:
+    """
+    Recupere les news depuis n’importe quel flux RSS standard.
+    """
+    headers = {"User-Agent": "Mozilla/5.0 trading-ia-sentiment/1.0"}
+    try:
+        r = requests.get(url, headers=headers, timeout=15)
+        r.raise_for_status()
+        root = ET.fromstring(r.text)
+        channel = root.find("channel")
+        if channel is None:
+            return []
+        items = channel.findall("item")
+        out = []
+        for it in items[:count]:
+            title    = (it.findtext("title") or "").strip()
+            pub_date = (it.findtext("pubDate") or "").strip()
+            desc     = (it.findtext("description") or "").strip()
+            link     = (it.findtext("link") or "").strip()
+            if title:
+                out.append({"title": title, "published": pub_date,
+                            "summary": desc, "link": link, "publisher": publisher})
+        return out
+    except Exception:
+        return []
+
+
+def fetch_reuters_news(count: int = 15) -> List[Dict[str, Any]]:
+    """
+    Recupere les news financieres depuis le flux RSS Reuters Business.
+    """
+    url = "https://feeds.reuters.com/reuters/businessNews"
+    return _fetch_rss_generic(url, count, "Reuters")
+
+
+def fetch_google_finance_news(query: str = "stock market", count: int = 15) -> List[Dict[str, Any]]:
+    """
+    Recupere les news financieres depuis Google News RSS.
+    """
+    url = f"https://news.google.com/rss/search?q={query}+finance&hl=en-US&gl=US&ceid=US:en"
+    return _fetch_rss_generic(url, count, "Google News")
+
+
 def fetch_yahoo_news(symbol: str, count: int = 20) -> List[Dict[str, Any]]:
     """
-    Point d’entrée unique. Pour l’instant on utilise RSS (le plus robuste).
+    Point d’entree unique. Combine Yahoo Finance RSS + Reuters + Google Finance.
+    Retourne jusqu’a `count` articles dedupliques par titre.
     """
-    # petit retry simple
+    all_news: List[Dict[str, Any]] = []
+
+    # 1. Yahoo Finance RSS (source principale)
     last_err = None
     for _ in range(2):
         try:
             news = fetch_yahoo_news_rss(symbol, count=count)
             if news:
-                return news
+                all_news.extend(news)
+                break
         except Exception as e:
             last_err = e
-            time.sleep(0.7)
-    # si échec: retourne vide (ou tu peux raise last_err)
-    return []
+            time.sleep(0.5)
+
+    # 2. Reuters Business RSS (source complementaire)
+    reuters = fetch_reuters_news(count=10)
+    all_news.extend(reuters)
+
+    # 3. Google Finance RSS (source complementaire)
+    google = fetch_google_finance_news(count=10)
+    all_news.extend(google)
+
+    # Dedupliquer par titre (insensible a la casse)
+    seen_titles: set = set()
+    unique_news: List[Dict[str, Any]] = []
+    for item in all_news:
+        key = (item.get("title") or "").lower().strip()
+        if key and key not in seen_titles:
+            seen_titles.add(key)
+            unique_news.append(item)
+
+    return unique_news[:count]
 
 
 def news_to_text(item: Dict[str, Any]) -> str:

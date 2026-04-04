@@ -135,6 +135,42 @@ def charger_geo_scores() -> Optional[pd.DataFrame]:
     return geo.sort_values("date").reset_index(drop=True)
 
 
+@st.cache_data(ttl=3600)
+def charger_donnees_multi_actifs(
+    tickers: tuple,
+    start_date: str,
+    end_date:   str,
+) -> dict:
+    """
+    Telecharge les prix pour plusieurs tickers via yfinance.
+    Retourne un dict {ticker: DataFrame avec date, Returns, MA50, MA200}.
+    Cache 1h pour eviter les appels repetes.
+    """
+    import yfinance as yf
+    result = {}
+    for ticker in tickers:
+        try:
+            hist = yf.download(ticker, start=start_date, end=end_date,
+                               progress=False, auto_adjust=False)
+            if hist is None or hist.empty:
+                continue
+            if isinstance(hist.columns, pd.MultiIndex):
+                hist.columns = [col[0] for col in hist.columns]
+            col = "Adj Close" if "Adj Close" in hist.columns else "Close"
+            df_t = hist[[col]].copy()
+            df_t.columns = ["price"]
+            df_t.index.name = "date"
+            df_t = df_t.reset_index()
+            df_t["date"]    = pd.to_datetime(df_t["date"]).dt.tz_localize(None)
+            df_t["Returns"] = df_t["price"].pct_change()
+            df_t["MA50"]    = df_t["price"].rolling(50,  min_periods=1).mean()
+            df_t["MA200"]   = df_t["price"].rolling(200, min_periods=1).mean()
+            result[ticker]  = df_t
+        except Exception:
+            continue
+    return result
+
+
 # ===========================================================================
 # Construction des graphiques Plotly
 # ===========================================================================
@@ -1110,6 +1146,102 @@ with onglet_backtest:
             use_container_width=True,
         )
 
+    st.divider()
+
+    # ── Universalite du signal -- Comparaison multi-actifs ────────────────
+    st.subheader("Universalite du signal -- Comparaison multi-actifs")
+    st.caption(
+        "Le meme signal Geo-Score (calcule sur les news S&P 500) applique a "
+        "differentes classes d'actifs. Montre que le sentiment geopolitique "
+        "affecte l'ensemble des marches simultanement."
+    )
+
+    MULTI_TICKERS = {
+        "^GSPC":  "S&P 500",
+        "^FCHI":  "CAC 40",
+        "GC=F":   "Or",
+        "CL=F":   "Petrole WTI",
+        "BTC-USD": "Bitcoin",
+    }
+    date_min_str = str(df_bt["date"].min().date())
+    date_max_str = str(df_bt["date"].max().date())
+
+    with st.spinner("Telechargement des donnees multi-actifs..."):
+        multi_data = charger_donnees_multi_actifs(
+            tickers=tuple(MULTI_TICKERS.keys()),
+            start_date=date_min_str,
+            end_date=date_max_str,
+        )
+
+    if multi_data:
+        from strategy import Strategy
+        from backtest  import run_backtest as _run_bt
+
+        rows_multi = []
+        equity_traces = {}
+
+        for ticker, nom in MULTI_TICKERS.items():
+            if ticker not in multi_data:
+                continue
+            df_m = multi_data[ticker].copy()
+            # Fusionner avec geo_scores
+            if geo_df is not None:
+                if "geo_score" in df_m.columns:
+                    df_m = df_m.drop(columns=["geo_score"])
+                df_m = df_m.merge(geo_df[["date", "geo_score"]], on="date", how="left")
+            df_m["geo_score"] = df_m.get("geo_score", pd.Series(0.0, index=df_m.index)).fillna(0.0)
+
+            # Appliquer la regle Golden Cross + Geo-Score
+            strat_m = Strategy(base_dir=RACINE, seuil_geo=seuil_geo)
+            df_m    = strat_m.apply(df_m)
+
+            try:
+                bh_m, gq_m = _run_bt(df_m, price_col="price",
+                                      costs_bps=float(costs_bps),
+                                      risk_free_annual=risk_free)
+                rows_multi.append({
+                    "Actif":           nom,
+                    "Ticker":          ticker,
+                    "Rend. B&H":       f"{bh_m.total_return:+.2%}",
+                    "Rend. GeoQuant":  f"{gq_m.total_return:+.2%}",
+                    "Sharpe B&H":      f"{bh_m.sharpe:.2f}",
+                    "Sharpe GeoQuant": f"{gq_m.sharpe:.2f}",
+                    "MaxDD GeoQuant":  f"{gq_m.max_drawdown:.2%}",
+                    "MaxDD B&H":       f"{bh_m.max_drawdown:.2%}",
+                })
+                equity_traces[nom] = (bh_m.equity_curve, gq_m.equity_curve)
+            except Exception:
+                continue
+
+        if rows_multi:
+            st.dataframe(pd.DataFrame(rows_multi), use_container_width=True, hide_index=True)
+
+            # Graphique comparatif des courbes equity normalisees
+            fig_multi = go.Figure()
+            colors_bh = ["#aaa", "#bbb", "#ccc", "#ddd", "#eee"]
+            colors_gq = ["#1f77b4", "#2ca02c", "#ff7f0e", "#d62728", "#9467bd"]
+            for i, (nom, (eq_bh, eq_gq)) in enumerate(equity_traces.items()):
+                fig_multi.add_trace(go.Scatter(
+                    y=eq_bh.values, name=f"{nom} B&H",
+                    line=dict(color=colors_bh[i % len(colors_bh)], dash="dot", width=1),
+                    opacity=0.5,
+                ))
+                fig_multi.add_trace(go.Scatter(
+                    y=eq_gq.values, name=f"{nom} GeoQuant",
+                    line=dict(color=colors_gq[i % len(colors_gq)], width=2),
+                ))
+            fig_multi.update_layout(
+                title="<b>Performance comparee (base = 1)</b> -- GeoQuant vs Buy & Hold",
+                yaxis=dict(title="Valeur normalisee", gridcolor="#1e1e2e"),
+                plot_bgcolor="#0e1117", paper_bgcolor="#0e1117",
+                font=dict(color="#fafafa"),
+                height=380, margin=dict(t=50, b=30, l=10, r=10),
+                legend=dict(orientation="h", y=-0.2),
+            )
+            st.plotly_chart(fig_multi, use_container_width=True)
+    else:
+        st.info("Impossible de telecharger les donnees multi-actifs. Verifiez votre connexion.")
+
 
 # ---------------------------------------------------------------------------
 # ONGLET 4 -- Paper Trading
@@ -1248,7 +1380,39 @@ with onglet_paper:
 
         with sig_col2:
             st.markdown(f"**Actualites analysees** ({snapshot.timestamp})")
-            if snapshot.headlines:
+
+            # Barre de confiance du signal
+            conf_color = "#2ca02c" if snapshot.signal == 1 else "#d62728"
+            conf_label = "Confiance du signal"
+            st.markdown(
+                f"<div style='margin-bottom:8px'>"
+                f"<span style='color:#aaa;font-size:0.85rem;'>{conf_label}</span> "
+                f"<span style='color:{conf_color};font-weight:700'>{snapshot.confidence:.0%}</span>"
+                f"</div>"
+                f"<div style='background:#222;border-radius:6px;height:10px;width:100%'>"
+                f"<div style='background:{conf_color};border-radius:6px;height:10px;"
+                f"width:{snapshot.confidence*100:.0f}%'></div></div>",
+                unsafe_allow_html=True,
+            )
+            st.markdown("")
+
+            # Headlines avec scores individuels si FinBERT actif
+            if snapshot.headlines_with_scores:
+                st.markdown("**Scores par actualite (FinBERT)**")
+                for titre, score in snapshot.headlines_with_scores:
+                    if score >= 0.1:
+                        couleur, icone = "#2ca02c", "🟢"
+                    elif score <= -0.1:
+                        couleur, icone = "#d62728", "🔴"
+                    else:
+                        couleur, icone = "#aaa", "⚪"
+                    st.markdown(
+                        f"<div style='margin:3px 0;font-size:0.85rem;'>"
+                        f"{icone} <span style='color:{couleur};font-weight:600'>"
+                        f"{score:+.2f}</span>&nbsp; {titre}</div>",
+                        unsafe_allow_html=True,
+                    )
+            elif snapshot.headlines:
                 for i, h in enumerate(snapshot.headlines, 1):
                     st.markdown(f"{i}. {h}")
             else:
@@ -1321,6 +1485,55 @@ with onglet_paper:
                 st.plotly_chart(fig_pt, use_container_width=True)
     else:
         st.info("Aucun trade execute pour l'instant.")
+
+    # ── Alertes email ─────────────────────────────────────────────────────
+    st.divider()
+    st.markdown("### 📧 Alertes email")
+    st.caption(
+        "Recevez un email automatique quand le signal change (LONG → CASH ou CASH → LONG). "
+        "Compatible Gmail (port 465) et Outlook (port 587)."
+    )
+
+    with st.expander("Configurer les alertes email", expanded=False):
+        alert_col1, alert_col2 = st.columns(2)
+        with alert_col1:
+            alert_smtp   = st.text_input("Serveur SMTP",    value="smtp.gmail.com",
+                                          placeholder="smtp.gmail.com")
+            alert_port   = st.number_input("Port SMTP",     value=465, step=1)
+            alert_from   = st.text_input("Email expediteur", placeholder="ton@gmail.com")
+        with alert_col2:
+            alert_to     = st.text_input("Email destinataire", placeholder="destinataire@email.com")
+            alert_pwd    = st.text_input("Mot de passe app", type="password",
+                                          help="Pour Gmail : generer un mot de passe d'application")
+            alerts_on    = st.toggle("Activer les alertes", value=False)
+
+        if snapshot and alerts_on and alert_from and alert_to and alert_pwd:
+            from alert_manager import AlertManager
+            mgr = AlertManager(RACINE)
+            if mgr.signal_changed(ticker_pt, snapshot.signal):
+                subj, body = AlertManager.build_signal_body(
+                    ticker       = ticker_pt,
+                    signal       = snapshot.signal,
+                    prix         = snapshot.prix_actuel,
+                    geo_score    = snapshot.geo_score,
+                    ma50         = snapshot.ma50,
+                    ma200        = snapshot.ma200,
+                    golden_cross = snapshot.golden_cross,
+                    confidence   = snapshot.confidence,
+                    timestamp    = snapshot.timestamp,
+                )
+                ok, err = AlertManager.send_email(
+                    smtp_server=alert_smtp, smtp_port=int(alert_port),
+                    email_from=alert_from,  email_to=alert_to,
+                    password=alert_pwd,     subject=subj, body=body,
+                )
+                if ok:
+                    mgr.save_signal(ticker_pt, snapshot.signal)
+                    st.success(f"Email envoye a {alert_to}")
+                else:
+                    st.error(f"Echec envoi email : {err}")
+            else:
+                st.info("Pas de changement de signal depuis la derniere alerte.")
 
     st.divider()
     st.warning(

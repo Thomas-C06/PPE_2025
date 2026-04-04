@@ -55,6 +55,8 @@ class LiveSnapshot:
     signal:       int          # 1 = Long, 0 = Cash
     position:     float        # 0.0 a 1.0
     seuil_geo:    float
+    headlines_with_scores: List[Any] = field(default_factory=list)  # [(titre, score), ...]
+    confidence:   float = 0.0  # distance normalisee entre geo_score et seuil [0, 1]
 
 
 @dataclass
@@ -147,16 +149,16 @@ def _news_live(ticker: str = "^GSPC", count: int = 30) -> List[Dict[str, Any]]:
 def _geo_score_live(
     headlines: List[str],
     cache_path: Path,
-) -> float:
+) -> tuple:
     """
     Calcule le Geo-Score moyen sur une liste de titres avec FinBERT.
     Utilise le cache existant pour eviter les re-calculs.
 
     Returns:
-        Geo-Score moyen dans [-1, +1], ou 0.0 si aucun titre.
+        (avg_score, [(titre, score), ...]) — avg_score dans [-1, +1].
     """
     if not headlines:
-        return 0.0
+        return 0.0, []
 
     from finbert_sentiment import FinBertSentiment
     from sentiment_cache import load_cache, save_cache
@@ -173,13 +175,16 @@ def _geo_score_live(
         save_cache(cache, cache_path)
 
     scores = []
+    scored = []
     for h in headlines:
         if h in cache:
             row   = cache[h]
             score = float(row.get("p_positive", 0)) - float(row.get("p_negative", 0))
             scores.append(score)
+            scored.append((h, score))
 
-    return float(np.mean(scores)) if scores else 0.0
+    avg = float(np.mean(scores)) if scores else 0.0
+    return avg, scored
 
 
 def _position_sizing(geo_score: float, seuil_geo: float, sizing_range: float = 0.5) -> float:
@@ -249,15 +254,19 @@ class PaperTrader:
 
         # 3. Geo-Score
         if use_finbert and headlines:
-            geo_score = _geo_score_live(headlines, self._cache_path)
+            geo_score, scored_headlines = _geo_score_live(headlines, self._cache_path)
         else:
             geo_score = 0.0
+            scored_headlines = []
 
         # 4. Signal
         golden_cross = market["ma50"] > market["ma200"]
         geo_ok       = geo_score >= self.seuil_geo
         signal       = 1 if (golden_cross and geo_ok) else 0
         position     = _position_sizing(geo_score, self.seuil_geo) if signal == 1 else 0.0
+
+        # 5. Confiance : distance normalisee entre geo_score et seuil
+        confidence = float(np.clip(abs(geo_score - self.seuil_geo) / 0.5, 0.0, 1.0))
 
         return LiveSnapshot(
             timestamp    = datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
@@ -268,10 +277,12 @@ class PaperTrader:
             golden_cross = golden_cross,
             geo_score    = geo_score,
             nb_news      = len(headlines),
-            headlines    = headlines[:10],  # afficher les 10 premiers
+            headlines    = headlines[:10],
             signal       = signal,
             position     = position,
             seuil_geo    = self.seuil_geo,
+            headlines_with_scores = scored_headlines[:10],
+            confidence   = confidence,
         )
 
     # ── Execution du signal ───────────────────────────────────────────────────

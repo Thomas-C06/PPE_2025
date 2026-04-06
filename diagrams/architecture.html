@@ -1,0 +1,460 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <title>GeoQuant AI — Architecture Logicielle</title>
+  <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      background: #0e1117;
+      color: #e0e0e0;
+      font-family: 'Segoe UI', sans-serif;
+      padding: 40px 60px;
+    }
+    h1 {
+      text-align: center;
+      font-size: 2rem;
+      background: linear-gradient(90deg, #1f77b4, #00d4ff);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      margin-bottom: 10px;
+    }
+    .subtitle {
+      text-align: center;
+      color: #888;
+      font-size: 0.95rem;
+      margin-bottom: 50px;
+    }
+    .section {
+      margin-bottom: 60px;
+      background: #161b22;
+      border: 1px solid #30363d;
+      border-radius: 14px;
+      padding: 30px 40px;
+    }
+    .section h2 {
+      font-size: 1.3rem;
+      color: #1f77b4;
+      border-left: 4px solid #1f77b4;
+      padding-left: 12px;
+      margin-bottom: 24px;
+    }
+    .mermaid {
+      display: flex;
+      justify-content: center;
+    }
+    .mermaid svg {
+      max-width: 100%;
+    }
+  </style>
+</head>
+<body>
+
+<h1>GeoQuant AI — Architecture Logicielle</h1>
+<p class="subtitle">Système de trading algorithmique · NLP · Paper Trading temps réel</p>
+
+<!-- ────────────────── DIAGRAMME 1 ────────────────── -->
+<div class="section">
+  <h2>1 · Vue globale — Pipeline en 4 blocs</h2>
+  <div class="mermaid">
+flowchart LR
+    subgraph EXT["Sources externes"]
+        YF["Yahoo Finance\n(yfinance)"]
+        RSS["Yahoo RSS\n(actualités)"]
+        HF["Hugging Face\nFinBERT"]
+        CSV["CSV Kaggle\nS&P 500 News"]
+    end
+
+    subgraph B1["BLOC 1 · Data Engineering"]
+        direction TB
+        PL["PriceLoader\nloader.py"]
+        NL["NewsLoader\nnews_loader.py"]
+        DM["DataMerger\nmerger.py"]
+        DV["DataVisualizer\nvisualizer.py"]
+        PL --> DM
+        NL --> DM
+        DM --> DV
+    end
+
+    subgraph B2["BLOC 2 · NLP & Géo-Score"]
+        direction TB
+        FB["FinBertSentiment\nfinbert_sentiment.py"]
+        SC["SentimentCache\nsentiment_cache.py"]
+        GS["GeoScorer\ngeo_scorer.py"]
+        FB --> GS
+        SC --> GS
+    end
+
+    subgraph B3["BLOC 3 · Stratégie & Backtest"]
+        direction TB
+        ST["Strategy\nstrategy.py"]
+        BT["BacktestEngine\nbacktest.py"]
+        ST --> BT
+    end
+
+    subgraph B4["BLOC 4 · Dashboard & Paper Trading"]
+        direction TB
+        PT["PaperTrader\npaper_trading.py"]
+        AM["AlertManager\nalert_manager.py"]
+        DB["Dashboard Streamlit\napp/dashboard.py"]
+        PT --> DB
+        AM --> DB
+    end
+
+    YF --> PL
+    CSV --> NL
+    HF --> FB
+    RSS --> PT
+    YF --> PT
+
+    B1 -->|dataset_final.csv| B2
+    B2 -->|geo_scores.csv| B3
+    B3 -->|BacktestResult| B4
+
+    style EXT fill:#1a1a2e,stroke:#444,color:#aaa
+    style B1 fill:#0d2137,stroke:#1f77b4,color:#cde
+    style B2 fill:#0d2d1a,stroke:#2ca02c,color:#cec
+    style B3 fill:#2d1a0d,stroke:#ff7f0e,color:#fed
+    style B4 fill:#2d0d1a,stroke:#d62728,color:#fcc
+  </div>
+</div>
+
+<!-- ────────────────── DIAGRAMME 2 ────────────────── -->
+<div class="section">
+  <h2>2 · Flux de données détaillé</h2>
+  <div class="mermaid">
+flowchart TD
+    A1["Yahoo Finance\nyfinance.download()"] -->|OHLCV 2022–2024| A2
+    A3["Kaggle CSV\nsample_news.csv"] -->|titres bruts| A4
+
+    subgraph BLOC1["BLOC 1 · Data Engineering"]
+        A2["PriceLoader\n→ Returns, Log_Returns"]
+        A4["NewsLoader\n→ nettoyage, agrégation/jour"]
+        A5["DataMerger\n→ MA50, MA200, RSI_14,\nVolatility_20, Drawdown"]
+        A6["DataVisualizer\n→ 4 graphiques PNG"]
+        A2 --> A5
+        A4 --> A5
+        A5 --> A6
+    end
+
+    A5 -->|dataset_final.csv| B1
+
+    subgraph BLOC2["BLOC 2 · NLP & Géo-Score"]
+        B1["Lecture titres agrégés"]
+        B2["FinBERT\nProsusAI/finbert\n→ p_pos · p_neu · p_neg"]
+        B3["geo_score = p_pos − p_neg\n∈ [−1 , +1]"]
+        B4["Agrégation quotidienne\n+ lissage rolling(3)"]
+        B1 --> B2 --> B3 --> B4
+        CACHE["sentiment_cache.json\n(évite recalcul)"]
+        B2 <-->|hit/miss| CACHE
+    end
+
+    B4 -->|geo_scores.csv\n+ dataset_final enrichi| C1
+
+    subgraph BLOC3["BLOC 3 · Stratégie & Backtest"]
+        C1["Strategy.apply()\nGolden Cross AND geo_score≥−0.5"]
+        C2["signal ∈ {0, 1}\nposition ∈ [0, 1]"]
+        C3["BacktestEngine\nBuy & Hold vs GeoQuant"]
+        C4["Métriques\nRendement · CAGR · Sharpe\nMax DD · Win Rate"]
+        C1 --> C2 --> C3 --> C4
+    end
+
+    C4 -->|BacktestResult| D1
+
+    subgraph BLOC4["BLOC 4 · Dashboard Streamlit"]
+        D1["Onglet Backtest\n(equity curves, métriques)"]
+        D2["Onglet Analyse Prix\n(charts interactifs Plotly)"]
+        D3["Onglet Signaux\n(timeline signal/position)"]
+        D4["Onglet Paper Trading"]
+        PT1["yfinance → prix temps réel"]
+        PT2["Yahoo RSS → news du jour"]
+        PT3["FinBERT → sentiment live"]
+        PT4["Signal → mise à jour portefeuille"]
+        PT5["portfolio.json\n(persistance)"]
+        PT1 --> D4
+        PT2 --> PT3 --> D4
+        D4 --> PT4 --> PT5
+    end
+
+    style BLOC1 fill:#0d2137,stroke:#1f77b4
+    style BLOC2 fill:#0d2d1a,stroke:#2ca02c
+    style BLOC3 fill:#2d1a0d,stroke:#ff7f0e
+    style BLOC4 fill:#2d0d1a,stroke:#d62728
+  </div>
+</div>
+
+<!-- ────────────────── DIAGRAMME 3 ────────────────── -->
+<div class="section">
+  <h2>3 · Diagramme de classes simplifié</h2>
+  <div class="mermaid">
+classDiagram
+    class PriceLoader {
+        +tickers: list
+        +start: str
+        +end: str
+        +fetch_data() DataFrame
+        +compute_returns() DataFrame
+        +save_data()
+    }
+
+    class NewsLoader {
+        +filepath: str
+        +load_raw() DataFrame
+        +clean() DataFrame
+        +aggregate_by_day() DataFrame
+        +run() DataFrame
+    }
+
+    class DataMerger {
+        +df_prices: DataFrame
+        +df_news: DataFrame
+        +merge() DataFrame
+        +compute_technical_features() DataFrame
+        +save_dataset()
+        +run() DataFrame
+    }
+
+    class FinBertSentiment {
+        -model: AutoModel
+        -tokenizer: AutoTokenizer
+        +predict(texts) List~SentimentResult~
+    }
+
+    class SentimentResult {
+        +label: str
+        +score: float
+        +probs: dict
+    }
+
+    class GeoScorer {
+        -clf: FinBertSentiment
+        -cache: SentimentCache
+        +score_headlines() DataFrame
+        +aggregate_by_day() DataFrame
+        +smooth() DataFrame
+        +inject_scores()
+        +run()
+    }
+
+    class Strategy {
+        +seuil_geo: float
+        +sizing_range: float
+        +load() DataFrame
+        +apply() DataFrame
+        +run() DataFrame
+    }
+
+    class BacktestEngine {
+        +run(prices, signals, positions) BacktestResult
+        -_equity_curve() Series
+        -_max_drawdown() float
+        -_sharpe() float
+    }
+
+    class BacktestResult {
+        +total_return: float
+        +cagr: float
+        +max_drawdown: float
+        +sharpe: float
+        +win_rate: float
+        +nb_trades: int
+        +equity_curve: Series
+        +trade_log: DataFrame
+        +to_dict() dict
+    }
+
+    class LiveSnapshot {
+        +ticker: str
+        +prix_actuel: float
+        +ma50: float
+        +ma200: float
+        +golden_cross: bool
+        +geo_score: float
+        +signal: int
+        +position: float
+        +confidence: float
+        +headlines: list
+    }
+
+    class PortfolioState {
+        +capital_initial: float
+        +capital_cash: float
+        +nb_parts: float
+        +nb_trades: int
+        +historique: list
+        +valeur_totale() float
+        +rendement_total() float
+        +to_dict() dict
+        +from_dict(d)$
+    }
+
+    class AlertManager {
+        +signal_changed(ticker, signal) bool
+        +send_email(subject, body)
+        +save_signal(ticker, signal)
+    }
+
+    PriceLoader --> DataMerger : prix
+    NewsLoader --> DataMerger : news
+    DataMerger --> GeoScorer : dataset_final.csv
+    FinBertSentiment --> GeoScorer
+    GeoScorer --> Strategy : geo_scores
+    Strategy --> BacktestEngine
+    BacktestEngine --> BacktestResult
+    LiveSnapshot --> PortfolioState : signal → trade
+    AlertManager --> LiveSnapshot : signal changed?
+  </div>
+</div>
+
+<!-- ────────────────── DIAGRAMME 4 ────────────────── -->
+<div class="section">
+  <h2>4 · Logique de signal — Golden Cross + Géo-Score</h2>
+  <div class="mermaid">
+flowchart TD
+    START(["Chaque jour t"])
+    C1{"MA50[t] > MA200[t] ?"}
+    C2{"geo_score[t-1] >= −0.5 ?"}
+    S0["signal = 0\nposition = 0.0\n(CASH)"]
+    S1["signal = 1\n(LONG)"]
+    P1["Calcul position\nscale = geo_score−(−0.5) / 0.5\nposition = clip(scale, 0, 1)"]
+    EXEC["Simulation exécution\nBuy / Hold / Sell"]
+
+    START --> C1
+    C1 -- Non --> S0
+    C1 -- Oui --> C2
+    C2 -- Non --> S0
+    C2 -- Oui --> S1
+    S1 --> P1 --> EXEC
+    S0 --> EXEC
+
+    NOTE1["Exemple :\ngeo_score = −0.1\nscale = (−0.1 − (−0.5)) / 0.5 = 0.8\nposition = 80%"]
+
+    P1 -.-> NOTE1
+
+    style S0 fill:#3b0e0e,stroke:#d62728,color:#fcc
+    style S1 fill:#0e3b0e,stroke:#2ca02c,color:#cfc
+    style P1 fill:#0e2040,stroke:#1f77b4,color:#cde
+    style NOTE1 fill:#1a1a2e,stroke:#555,color:#aaa
+  </div>
+</div>
+
+<!-- ────────────────── DIAGRAMME 5 ────────────────── -->
+<div class="section">
+  <h2>5 · Paper Trading — Boucle temps réel</h2>
+  <div class="mermaid">
+sequenceDiagram
+    actor User as Utilisateur
+    participant DB as Dashboard\n(dashboard.py)
+    participant PT as PaperTrader\n(paper_trading.py)
+    participant YF as Yahoo Finance\n(yfinance)
+    participant RSS as Yahoo RSS\n(yahoo_news.py)
+    participant NLP as FinBERT\n(finbert_sentiment.py)
+    participant AM as AlertManager
+    participant FS as Fichiers JSON\n(portfolio, signal)
+
+    User->>DB: Clic "Rafraîchir"
+    DB->>PT: get_live_snapshot()
+
+    PT->>YF: download("^GSPC", period=60d)
+    YF-->>PT: OHLCV + MA50 + MA200
+
+    PT->>RSS: fetch_yahoo_news_rss(ticker)
+    RSS-->>PT: headlines du jour
+
+    PT->>NLP: predict(headlines)
+    NLP-->>PT: SentimentResult[]
+
+    PT->>PT: geo_score = mean(p_pos − p_neg)
+    PT->>PT: golden_cross = MA50 > MA200
+    PT->>PT: signal = GoldenCross AND geo_score ≥ seuil
+
+    PT-->>DB: LiveSnapshot
+
+    DB->>AM: signal_changed(ticker, signal)
+    AM->>FS: lecture last_signal.json
+    FS-->>AM: signal précédent
+    AM-->>DB: True / False
+
+    alt Signal changé
+        DB->>User: st.toast() + email (optionnel)
+        AM->>FS: sauvegarde nouveau signal
+    end
+
+    DB->>PT: execute_signal(snapshot, portfolio)
+    PT->>PT: BUY / HOLD / SELL
+    PT->>FS: sauvegarde portfolio.json
+
+    DB->>User: Affichage snapshot + portefeuille
+  </div>
+</div>
+
+<!-- ────────────────── DIAGRAMME 6 ────────────────── -->
+<div class="section">
+  <h2>6 · Structure des fichiers persistants</h2>
+  <div class="mermaid">
+flowchart LR
+    subgraph DATA["data/"]
+        subgraph RAW["raw/"]
+            R1["^GSPC_raw.csv\n(prix bruts)"]
+            R2["sample_news.csv\n(news Kaggle)"]
+        end
+        subgraph PROC["processed/"]
+            P1["dataset_final.csv\n(dataset principal)"]
+            P2["geo_scores.csv\n(scores NLP par jour)"]
+            P3["news_aggregated.csv\n(news nettoyées)"]
+            P4["sentiment_cache.json\n(prédictions FinBERT)"]
+            P5["paper_portfolio.json\n(état portefeuille)"]
+            P6["last_signal.json\n(signal précédent)"]
+            subgraph PNG["graphiques/"]
+                G1["price_vs_media.png"]
+                G2["drawdown.png"]
+                G3["rsi.png"]
+                G4["returns_distribution.png"]
+            end
+        end
+    end
+
+    B1["BLOC 1"] -->|écrit| R1
+    B1 -->|écrit| P1
+    B1 -->|écrit| P3
+    B1 -->|écrit| PNG
+    B2["BLOC 2"] -->|enrichit| P1
+    B2 -->|écrit| P2
+    B2 -->|écrit| P4
+    B3["BLOC 3"] -->|lit| P1
+    B3 -->|lit| P2
+    B4["BLOC 4 live"] -->|lit/écrit| P5
+    B4 -->|lit/écrit| P6
+
+    style DATA fill:#161b22,stroke:#30363d
+    style RAW fill:#0d2137,stroke:#1f77b4
+    style PROC fill:#0d2d1a,stroke:#2ca02c
+    style PNG fill:#2d1a0d,stroke:#ff7f0e
+  </div>
+</div>
+
+<script>
+  mermaid.initialize({
+    startOnLoad: true,
+    theme: 'dark',
+    themeVariables: {
+      background: '#0e1117',
+      primaryColor: '#1f4068',
+      primaryTextColor: '#e0e0e0',
+      primaryBorderColor: '#1f77b4',
+      lineColor: '#666',
+      secondaryColor: '#0d2d1a',
+      tertiaryColor: '#2d1a0d',
+      edgeLabelBackground: '#161b22',
+      clusterBkg: '#161b22',
+      clusterBorder: '#30363d',
+      titleColor: '#e0e0e0',
+      nodeBorder: '#444',
+      mainBkg: '#1a1a2e',
+    }
+  });
+</script>
+
+</body>
+</html>

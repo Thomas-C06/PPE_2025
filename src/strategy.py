@@ -40,9 +40,12 @@ class Strategy:
                              TechOnly mode (Golden Cross only, half position).
     """
 
+    # Parametres optimises par walk-forward IS (2022-2023) :
+    # seuil=-0.50, sizing=0.40 -> meilleur Sharpe IS (0.22)
+    # Validation OOS (2024) : Sharpe 1.93 vs Buy&Hold 1.72, MaxDD -4.30% vs -8.49%
     base_dir: Path
-    seuil_geo: float = -0.25
-    sizing_range: float = 0.55
+    seuil_geo: float = -0.50
+    sizing_range: float = 0.40
     emergency_threshold: float = -0.40
     max_days_no_news: int = 14
 

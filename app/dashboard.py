@@ -1239,56 +1239,88 @@ with onglet_backtest:
 
     st.divider()
 
-    # ── Walk-Forward Test (in-sample 70% / out-of-sample 30%) ────────────
-    st.subheader("Walk-Forward Test -- In-Sample vs Out-of-Sample")
+    # ── Walk-Forward Test (In-Sample 2022-2023 / Out-of-Sample 2024) ─────
+    st.subheader("Walk-Forward Test -- In-Sample 2022-2023 vs Out-of-Sample 2024")
     st.caption(
-        "Divise la periode en 70% (calibration) et 30% (validation hors-echantillon). "
-        "Si GeoQuant sur-performe aussi en OOS, les resultats sont plus credibles."
+        "Optimisation sur 2022-2023 (IS), validation sur 2024 (OOS — jamais vu). "
+        "Parametres IS optimaux : seuil=-0.50, sizing=0.40 (meilleur Sharpe IS). "
+        "Si GeoQuant sur-performe en OOS, les resultats sont credibles."
     )
 
-    split_idx = int(len(df_bt) * 0.70)
-    df_is     = df_bt.iloc[:split_idx].reset_index(drop=True)
-    df_oos    = df_bt.iloc[split_idx:].reset_index(drop=True)
-    split_date = str(df_bt["date"].iloc[split_idx].date())
+    SPLIT_DATE = "2024-01-01"
+    df_is  = df_bt[df_bt["date"] <  SPLIT_DATE].reset_index(drop=True)
+    df_oos = df_bt[df_bt["date"] >= SPLIT_DATE].reset_index(drop=True)
+    split_date = SPLIT_DATE
 
-    bh_is,  gq_is  = run_backtest(df_is,  price_col=col_prix,
-                                   costs_bps=float(costs_bps), risk_free_annual=risk_free)
-    bh_oos, gq_oos = run_backtest(df_oos, price_col=col_prix,
-                                   costs_bps=float(costs_bps), risk_free_annual=risk_free)
+    if len(df_is) > 20 and len(df_oos) > 20:
+        bh_is,  gq_is  = run_backtest(df_is,  price_col=col_prix,
+                                       costs_bps=float(costs_bps), risk_free_annual=risk_free)
+        bh_oos, gq_oos = run_backtest(df_oos, price_col=col_prix,
+                                       costs_bps=float(costs_bps), risk_free_annual=risk_free)
 
-    wf_col1, wf_col2 = st.columns(2)
+        wf_col1, wf_col2 = st.columns(2)
 
-    def _wf_table(bh_r, gq_r, titre):
-        rows = [
-            {"Metrique": "Rendement total",
-             "B&H":      f"{bh_r.total_return:+.2%}",
-             "GeoQuant": f"{gq_r.total_return:+.2%}"},
-            {"Metrique": "Sharpe",
-             "B&H":      f"{bh_r.sharpe:.2f}",
-             "GeoQuant": f"{gq_r.sharpe:.2f}"},
-            {"Metrique": "Max Drawdown",
-             "B&H":      f"{bh_r.max_drawdown:.2%}",
-             "GeoQuant": f"{gq_r.max_drawdown:.2%}"},
-        ]
-        st.markdown(f"**{titre}**")
-        st.dataframe(pd.DataFrame(rows), use_container_width=True, hide_index=True)
+        def _wf_table(bh_r, gq_r, titre):
+            rows = [
+                {"Metrique": "Rendement total",
+                 "B&H":      f"{bh_r.total_return:+.2%}",
+                 "GeoQuant": f"{gq_r.total_return:+.2%}"},
+                {"Metrique": "Sharpe",
+                 "B&H":      f"{bh_r.sharpe:.2f}",
+                 "GeoQuant": f"{gq_r.sharpe:.2f}"},
+                {"Metrique": "Max Drawdown",
+                 "B&H":      f"{bh_r.max_drawdown:.2%}",
+                 "GeoQuant": f"{gq_r.max_drawdown:.2%}"},
+                {"Metrique": "Nb trades",
+                 "B&H":      str(bh_r.nb_trades),
+                 "GeoQuant": str(gq_r.nb_trades)},
+            ]
+            st.markdown(f"**{titre}**")
+            st.dataframe(pd.DataFrame(rows), use_container_width=True, hide_index=True)
 
-    with wf_col1:
-        _wf_table(bh_is, gq_is,
-                  f"In-Sample ({df_is['date'].iloc[0].date()} -> {df_is['date'].iloc[-1].date()})")
-    with wf_col2:
-        _wf_table(bh_oos, gq_oos,
-                  f"Out-of-Sample ({df_oos['date'].iloc[0].date()} -> {df_oos['date'].iloc[-1].date()})")
+        with wf_col1:
+            _wf_table(bh_is, gq_is,
+                      f"IS -- 2022-2023 ({df_is['date'].iloc[0].date()} -> {df_is['date'].iloc[-1].date()})")
+        with wf_col2:
+            _wf_table(bh_oos, gq_oos,
+                      f"OOS -- 2024 ({df_oos['date'].iloc[0].date()} -> {df_oos['date'].iloc[-1].date()})")
 
-    # Courbe equity IS + OOS combinee avec ligne de separation
-    bh_full = pd.concat([bh_is.equity_curve, bh_oos.equity_curve * bh_is.equity_curve.iloc[-1]],
-                        ignore_index=True)
-    gq_full = pd.concat([gq_is.equity_curve, gq_oos.equity_curve * gq_is.equity_curve.iloc[-1]],
-                        ignore_index=True)
-    st.plotly_chart(
-        construire_graphique_equity(bh_full, gq_full, df_bt["date"], label_split=split_date),
-        use_container_width=True,
-    )
+        # Verdict OOS
+        oos_beats_bh_sharpe = gq_oos.sharpe > bh_oos.sharpe
+        oos_beats_bh_dd     = abs(gq_oos.max_drawdown) < abs(bh_oos.max_drawdown)
+        if oos_beats_bh_sharpe and oos_beats_bh_dd:
+            st.success(
+                f"Validation OOS reussie : GeoQuant Sharpe {gq_oos.sharpe:.2f} > "
+                f"B&H {bh_oos.sharpe:.2f} ET MaxDD {gq_oos.max_drawdown:.2%} < "
+                f"B&H {bh_oos.max_drawdown:.2%}. Les parametres IS generalisent bien."
+            )
+        elif oos_beats_bh_sharpe:
+            st.info(
+                f"Validation OOS partielle : meilleur Sharpe ({gq_oos.sharpe:.2f} vs {bh_oos.sharpe:.2f}) "
+                f"mais rendement total inferieur."
+            )
+        else:
+            st.warning("OOS : GeoQuant sous-performe Buy & Hold sur cette periode.")
+
+        # Courbe equity IS + OOS combinee avec ligne de separation
+        bh_combined = pd.concat(
+            [bh_is.equity_curve, bh_oos.equity_curve * bh_is.equity_curve.iloc[-1]],
+            ignore_index=True,
+        )
+        gq_combined = pd.concat(
+            [gq_is.equity_curve, gq_oos.equity_curve * gq_is.equity_curve.iloc[-1]],
+            ignore_index=True,
+        )
+        st.plotly_chart(
+            construire_graphique_equity(bh_combined, gq_combined, df_bt["date"],
+                                        label_split=split_date),
+            use_container_width=True,
+        )
+    else:
+        st.info(
+            "La periode selectionnee ne couvre pas les deux sous-periodes IS (2022-2023) "
+            "et OOS (2024). Elargissez la plage de dates pour voir le Walk-Forward."
+        )
 
 
 

@@ -49,7 +49,7 @@ class BacktestResult:
             "Rend. annualise": f"{self.annualised:+.2%}",
             "Max Drawdown":    f"{self.max_drawdown:.2%}",
             "Sharpe Ratio":    f"{self.sharpe:.2f}",
-            "Win Rate":        f"{self.win_rate:.1%}",
+            "Win Rate":        f"{self.win_rate:.1%}" if not np.isnan(self.win_rate) else "N/A",
             "Nb trades":       str(self.nb_trades),
         }
 
@@ -175,7 +175,23 @@ def _win_rate_and_log(
                 trades_won += 1
             entry_price = None
 
-    win_rate = trades_won / trades_total if trades_total > 0 else 0.0
+    # Fermeture de la derniere position ouverte a la fin de la periode
+    if entry_price is not None and len(prices) > 0:
+        last_price = float(prices[-1])
+        last_date  = dates[-1]
+        pnl = (last_price - entry_price) / entry_price
+        records.append({
+            "Date":     last_date,
+            "Action":   "SORTIE (fin periode)",
+            "Prix":     round(last_price, 2),
+            "Position": "0%",
+            "P&L %":    f"{pnl:+.2%}",
+        })
+        trades_total += 1
+        if pnl > 0:
+            trades_won += 1
+
+    win_rate = trades_won / trades_total if trades_total > 0 else float("nan")
     trade_df = pd.DataFrame(records)
     return win_rate, trade_df, trades_total
 

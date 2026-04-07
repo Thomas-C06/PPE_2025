@@ -6,7 +6,7 @@ Usage:
 
 Prerequisites:
     1. News CSV must exist:
-       py -3 src/news_main.py          (generates news_financial_news_processed.csv)
+       py -3 src/news_main.py          (generates news_sp500_news_2024_processed.csv)
     2. (Optional) dataset_final.csv must exist to enable geo_score injection:
        py -3 src/main.py               (Bloc 1 -- run from DataFMat branch)
 
@@ -57,6 +57,7 @@ def main() -> None:
           f"({(daily_df['geo_score'] < 0).mean():.0%})")
     print()
     print("  Output files:")
+    print("    data/processed/news_scored.csv         <- article-level FinBERT scores")
     print("    data/processed/geo_scores.csv         <- daily Geo-Score")
     print("    data/processed/sentiment_cache.json   <- FinBERT cache")
     print("    data/processed/dataset_final.csv      <- updated with geo_score")

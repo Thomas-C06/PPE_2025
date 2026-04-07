@@ -1,4 +1,4 @@
-"""News data loader for GeoQuant AI -- Bloc 1 Data Engineering."""
+"""News data loader for GeoQuant AI -- unified historical news source."""
 
 from __future__ import annotations
 
@@ -9,29 +9,24 @@ from typing import Optional
 
 import pandas as pd
 
+from config import NEWS_AGGREGATED_FILE, NEWS_PROCESSED_FILE
+
 
 @dataclass
 class NewsLoader:
     """
-    Load, clean, and aggregate financial/geopolitical news data.
+    Load, clean, and aggregate the historical news source used by GeoQuant AI.
 
-    Supports a local sample CSV and is designed to accommodate Kaggle
-    datasets with automatic column detection.
-
-    Attributes:
-        base_dir: Base directory of the GeoQuant AI project.
-        news_file: Path to the input CSV (absolute, or relative to base_dir).
-                   Defaults to data/raw/sample_news.csv.
-        date_col: Name of the date column in the source CSV.
-        title_col: Name of the title/headline column in the source CSV.
+    By default, Bloc 1 now reads the processed Kaggle S&P 500 headlines file
+    so that the historical chain is fully aligned:
+        news -> Geo-Score -> strategy -> backtest -> dashboard
     """
 
     base_dir: Path
     news_file: Optional[Path] = None
     date_col: str = "date"
-    title_col: str = "title"
+    title_col: str = "headline"
 
-    # Listes des noms de colonnes candidats pour la détection automatique
     _KNOWN_DATE_COLS: list[str] = field(
         default_factory=lambda: [
             "date", "Date", "published", "publishedAt",
@@ -40,37 +35,24 @@ class NewsLoader:
     )
     _KNOWN_TITLE_COLS: list[str] = field(
         default_factory=lambda: [
-            "title", "Title", "headline", "Headline",
+            "headline", "Headline", "title", "Title",
             "text", "Text", "content", "Content", "description",
         ]
     )
 
-    # ── Helpers ───────────────────────────────────────────────────────────────
-
     def _default_news_path(self) -> Path:
-        """Return the default sample news CSV path."""
-        return self.base_dir / "data" / "raw" / "sample_news.csv"
+        """Return the default processed Kaggle news CSV path."""
+        return self.base_dir / "data" / "processed" / NEWS_PROCESSED_FILE
 
     def _resolve_path(self) -> Path:
-        """Return the resolved (absolute) path to the news file."""
+        """Return the resolved absolute path to the news file."""
         if self.news_file is None:
             return self._default_news_path()
-        p = Path(self.news_file)
-        return p if p.is_absolute() else self.base_dir / p
+        path = Path(self.news_file)
+        return path if path.is_absolute() else self.base_dir / path
 
     def _detect_columns(self, df: pd.DataFrame) -> tuple[str, str]:
-        """
-        Auto-detect date and title columns from a DataFrame.
-
-        Args:
-            df: Source DataFrame.
-
-        Returns:
-            Tuple (date_col, title_col) of detected column names.
-
-        Raises:
-            ValueError: If a required column cannot be auto-detected.
-        """
+        """Auto-detect date and headline columns from the source DataFrame."""
         date_col: Optional[str] = None
         title_col: Optional[str] = None
 
@@ -86,39 +68,26 @@ class NewsLoader:
 
         if date_col is None:
             raise ValueError(
-                f"Cannot auto-detect date column. "
-                f"Available columns: {list(df.columns)}"
+                f"Cannot auto-detect date column. Available columns: {list(df.columns)}"
             )
         if title_col is None:
             raise ValueError(
-                f"Cannot auto-detect title column. "
-                f"Available columns: {list(df.columns)}"
+                f"Cannot auto-detect title column. Available columns: {list(df.columns)}"
             )
 
         return date_col, title_col
 
-    # ── Public API ────────────────────────────────────────────────────────────
-
     def load_raw(self) -> pd.DataFrame:
-        """
-        Load raw news CSV from disk.
-
-        Returns:
-            Raw DataFrame as read from the CSV file.
-
-        Raises:
-            FileNotFoundError: If the news file does not exist.
-        """
+        """Load the news CSV from disk."""
         path = self._resolve_path()
         if not path.exists():
             raise FileNotFoundError(
                 f"News file not found: {path}\n"
-                "Place a CSV at data/raw/sample_news.csv or pass news_file= to NewsLoader."
+                "Run `python src/news_main.py` first or pass news_file= to NewsLoader."
             )
 
         df = pd.read_csv(path, encoding="utf-8")
 
-        # Auto-détection des colonnes si les noms configurés sont absents
         if self.date_col not in df.columns or self.title_col not in df.columns:
             detected_date, detected_title = self._detect_columns(df)
             print(
@@ -132,29 +101,21 @@ class NewsLoader:
 
     def clean(self, df: pd.DataFrame) -> pd.DataFrame:
         """
-        Clean raw news data.
+        Clean and standardise the news table.
 
-        Drops rows with invalid dates, empty titles, and exact duplicates.
-        Normalises the date column to midnight (no time component).
-
-        Args:
-            df: Raw news DataFrame.
-
-        Returns:
-            Cleaned DataFrame with standardised 'date' (datetime) and 'title' columns.
+        Returns a DataFrame with at least:
+            date | headline
         """
         df = df.copy()
 
-        # Renomme vers les noms standardisés
         rename_map: dict[str, str] = {}
         if self.date_col != "date":
             rename_map[self.date_col] = "date"
-        if self.title_col != "title":
-            rename_map[self.title_col] = "title"
+        if self.title_col != "headline":
+            rename_map[self.title_col] = "headline"
         if rename_map:
             df = df.rename(columns=rename_map)
 
-        # Parse dates -- les valeurs invalides deviennent NaT
         with warnings.catch_warnings():
             warnings.simplefilter("ignore")
             df["date"] = pd.to_datetime(df["date"], errors="coerce")
@@ -165,65 +126,47 @@ class NewsLoader:
         if dropped_dates:
             print(f"  [NewsLoader] Dropped {dropped_dates} rows with invalid dates.")
 
-        # Supprime les titres vides ou manquants
-        df["title"] = df["title"].astype(str).str.strip()
-        df = df[~df["title"].isin(["", "nan", "NaN", "None"])]
+        df["headline"] = df["headline"].astype(str).str.strip()
+        df = df[~df["headline"].isin(["", "nan", "NaN", "None"])]
         dropped_titles = (before - dropped_dates) - len(df)
         if dropped_titles:
             print(f"  [NewsLoader] Dropped {dropped_titles} rows with empty titles.")
 
-        # Supprime les doublons (même date + même titre)
         before_dedup = len(df)
-        df = df.drop_duplicates(subset=["date", "title"])
+        df = df.drop_duplicates(subset=["date", "headline"])
         dropped_dedup = before_dedup - len(df)
         if dropped_dedup:
             print(f"  [NewsLoader] Dropped {dropped_dedup} duplicate rows.")
 
-        # Normalise à la date (sans heure)
         df["date"] = df["date"].dt.normalize()
-
         df = df.sort_values("date").reset_index(drop=True)
         return df
 
     def aggregate_by_day(self, df: pd.DataFrame) -> pd.DataFrame:
         """
-        Aggregate news by calendar day.
+        Aggregate cleaned headlines by day for the historical market dataset.
 
-        For each day, computes the number of articles and concatenates
-        all headlines into a single string separated by ' | '.
-
-        Args:
-            df: Cleaned news DataFrame with 'date' and 'title' columns.
-
-        Returns:
-            DataFrame with columns: date, nb_articles, titles.
+        Output columns:
+            date | nb_articles | titles | news
         """
         grouped = (
             df.groupby("date")
             .agg(
-                nb_articles=("title", "count"),
-                titles=("title", lambda x: " | ".join(x)),
+                nb_articles=("headline", "count"),
+                titles=("headline", lambda x: " | ".join(x)),
             )
             .reset_index()
         )
+        grouped["news"] = grouped["titles"]
         grouped = grouped.sort_values("date").reset_index(drop=True)
         return grouped
 
     def save_aggregated(
         self,
         df: pd.DataFrame,
-        filename: str = "news_aggregated.csv",
+        filename: str = NEWS_AGGREGATED_FILE,
     ) -> Path:
-        """
-        Save aggregated news to data/processed/.
-
-        Args:
-            df: Aggregated news DataFrame.
-            filename: Output filename (default: news_aggregated.csv).
-
-        Returns:
-            Absolute path to the saved file.
-        """
+        """Persist the aggregated daily news table."""
         processed_dir = self.base_dir / "data" / "processed"
         processed_dir.mkdir(parents=True, exist_ok=True)
         output_path = processed_dir / filename
@@ -232,15 +175,8 @@ class NewsLoader:
         return output_path
 
     def run(self) -> pd.DataFrame:
-        """
-        Execute the full news loading pipeline.
-
-        Steps: load_raw -> clean -> aggregate_by_day -> save_aggregated.
-
-        Returns:
-            Aggregated news DataFrame (date, nb_articles, titles).
-        """
-        print("[NewsLoader] Loading raw news...")
+        """Execute load -> clean -> aggregate -> save."""
+        print("[NewsLoader] Loading historical news source...")
         raw = self.load_raw()
         print(f"  Loaded {len(raw)} raw articles.")
 

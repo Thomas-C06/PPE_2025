@@ -3,9 +3,11 @@
 from __future__ import annotations
 
 # ── Fichiers de donnees (noms relatifs a data/processed/) ─────────────────────
-DATASET_FINAL_FILE:  str = "dataset_final.csv"
-GEO_SCORES_FILE:     str = "geo_scores.csv"
-NEWS_PROCESSED_FILE: str = "news_sp500_news_2024_processed.csv"
+DATASET_FINAL_FILE:   str = "dataset_final.csv"
+GEO_SCORES_FILE:      str = "geo_scores.csv"
+NEWS_PROCESSED_FILE:  str = "news_sp500_news_2024_processed.csv"
+NEWS_AGGREGATED_FILE: str = "news_aggregated.csv"
+NEWS_SCORED_FILE:     str = "news_scored.csv"
 
 # ── Tickers ───────────────────────────────────────────────────────────────────
 TICKERS: list[str] = [

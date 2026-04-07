@@ -16,7 +16,7 @@ class DataMerger:
     Merge price data with aggregated news and compute technical indicators.
 
     The merge is a left join on the price calendar (trading days only).
-    Days without news receive nb_articles=0 and an empty titles string.
+    Days without fresh headlines receive nb_articles=0 and empty text fields.
 
     Technical indicators added:
         - MA20, MA50, MA200  : Simple moving averages
@@ -118,6 +118,10 @@ class DataMerger:
         # Remplit les jours sans news
         merged["nb_articles"] = merged["nb_articles"].fillna(0).astype(int)
         merged["titles"] = merged["titles"].fillna("")
+        if "news" not in merged.columns:
+            merged["news"] = merged["titles"]
+        else:
+            merged["news"] = merged["news"].fillna("")
 
         merged = merged.sort_values("date").reset_index(drop=True)
         return merged
@@ -139,6 +143,7 @@ class DataMerger:
         df = df.copy()
         price_col = self._price_column(df)
         prices = df[price_col]
+        df["price"] = prices
 
         # ── Moving averages ───────────────────────────────────────────────────
         df["MA20"]  = prices.rolling(window=20,  min_periods=1).mean()

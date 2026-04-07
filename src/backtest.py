@@ -201,7 +201,7 @@ def _win_rate_and_log(
 def run_backtest(
     df: pd.DataFrame,
     price_col: str        = "Close",
-    costs_bps: float      = 10.0,
+    costs_bps: float      = 2.0,
     risk_free_annual: float = 0.0,
 ) -> Tuple[BacktestResult, BacktestResult]:
     """
@@ -210,7 +210,7 @@ def run_backtest(
     Args:
         df:               DataFrame with: date, Returns, signal, position, price_col.
         price_col:        Price column for trade log.
-        costs_bps:        Transaction cost per side in basis points (default 10 bps).
+        costs_bps:        Transaction cost per side in basis points (default 2 bps, realistic for S&P 500 ETF).
         risk_free_annual: Annual risk-free rate for Sharpe (default 0%).
 
     Returns:

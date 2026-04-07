@@ -265,13 +265,26 @@ class GeoScorer:
         df = df.sort_values("date").reset_index(drop=True)
         df["nb_articles_scored"] = df["nb_articles_scored"].fillna(0).astype(int)
         df["has_fresh_news"] = df["geo_score_fresh"].notna()
-        df["geo_score"] = df["geo_score_fresh"].ffill()
 
-        if df["geo_score"].isna().any():
-            missing = int(df["geo_score"].isna().sum())
-            raise ValueError(
-                f"Cannot inject Geo-Score: {missing} rows still have no score after alignment."
-            )
+        # Exponential decay forward-fill (instead of flat ffill).
+        # Each day without news the score decays: score *= 0.85
+        # This prevents stale sentiment from dominating indefinitely.
+        _DECAY = 0.85
+        geo_vals = df["geo_score_fresh"].tolist()
+        days_since: list[int] = []
+        last_score = 0.0
+        counter = 0
+        for i, val in enumerate(geo_vals):
+            if pd.notna(val):
+                last_score = float(val)
+                counter = 0
+            else:
+                counter += 1
+                geo_vals[i] = last_score * (_DECAY ** counter)
+            days_since.append(counter)
+
+        df["geo_score"] = geo_vals
+        df["days_since_news"] = days_since
 
         df["geo_score_raw"] = df["geo_score_raw_fresh"]
         df["geo_score_source"] = np.where(

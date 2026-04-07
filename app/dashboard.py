@@ -897,8 +897,8 @@ with st.sidebar:
     )
     costs_bps = st.slider(
         "Couts de transaction (bps / cote)",
-        min_value=0, max_value=50, value=10, step=5,
-        help="10 bps = 0.10% par entree OU sortie.",
+        min_value=0, max_value=50, value=2, step=1,
+        help="2 bps = 0.02% par entree OU sortie (realiste pour un ETF S&P 500).",
     )
     risk_free_pct = st.slider(
         "Taux sans risque annuel (%)",
@@ -1135,12 +1135,19 @@ with onglet_backtest:
         )
         st.stop()
 
-    # Fusionne geo_score dans le dataset filtre
+    # Fusionne geo_score (+ colonnes optionnelles) dans le dataset filtre
     df_bt = df.copy()
-    if "geo_score" in df_bt.columns:
-        df_bt = df_bt.drop(columns=["geo_score"])
-    df_bt = df_bt.merge(geo_df[["date", "geo_score"]], on="date", how="left")
+    for _col in ("geo_score", "days_since_news", "has_fresh_news", "geo_score_source"):
+        if _col in df_bt.columns:
+            df_bt = df_bt.drop(columns=[_col])
+    _geo_cols = ["date", "geo_score"]
+    for _c in ("days_since_news", "has_fresh_news", "is_real_news"):
+        if _c in geo_df.columns:
+            _geo_cols.append(_c)
+    df_bt = df_bt.merge(geo_df[_geo_cols], on="date", how="left")
     df_bt["geo_score"] = df_bt["geo_score"].fillna(0.0)
+    if "days_since_news" not in df_bt.columns:
+        df_bt["days_since_news"] = 0
 
     # Applique la regle (look-ahead corrige + position sizing)
     strat = Strategy(base_dir=RACINE, seuil_geo=seuil_geo)
@@ -1153,10 +1160,13 @@ with onglet_backtest:
 
     # ── En-tete ──────────────────────────────────────────────────────────────
     st.subheader("⚔️ Backtest -- Buy & Hold vs GeoQuant")
+    _n_urgence   = int((df_bt.get("decision", pd.Series(dtype=str)) == "URGENCE").sum())
+    _n_techonly  = int((df_bt.get("news_mode", pd.Series(dtype=str)) == "TechOnly").sum())
     st.caption(
         f"Regle : MA50 > MA200  ET  Geo-Score[t-1] ≥ {seuil_geo:.2f}  →  Long  |  "
         f"Couts : {costs_bps} bps/cote  •  Rf : {risk_free_pct:.1f}%  •  "
-        f"Periode : {df_bt['date'].iloc[0].date()} → {df_bt['date'].iloc[-1].date()}"
+        f"Periode : {df_bt['date'].iloc[0].date()} → {df_bt['date'].iloc[-1].date()}  •  "
+        f"Urgences : {_n_urgence}j  •  TechOnly (news >14j) : {_n_techonly}j"
     )
 
     # ── Metriques cles ────────────────────────────────────────────────────

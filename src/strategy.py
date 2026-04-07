@@ -33,8 +33,9 @@ class Strategy:
     Attributes:
         seuil_geo:           Geo-Score threshold below which position is reduced.
         sizing_range:        Range over which position scales from 0 to 1.
-        emergency_threshold: If geo_score < this → Cash regardless of trend.
-                             Default -0.7 (strong negative signal = exit now).
+        emergency_threshold: If last REAL geo_score (before decay) < this
+                             -> Cash immediately, even in TechOnly mode.
+                             Default -0.40 (top 2% most negative readings).
         max_days_no_news:    After this many days without news, switch to
                              TechOnly mode (Golden Cross only, half position).
     """
@@ -42,7 +43,7 @@ class Strategy:
     base_dir: Path
     seuil_geo: float = -0.25
     sizing_range: float = 0.55
-    emergency_threshold: float = -0.7
+    emergency_threshold: float = -0.40
     max_days_no_news: int = 14
 
     _dataset_path: Path = field(init=False, repr=False)
@@ -100,12 +101,21 @@ class Strategy:
             else pd.Series(0, index=df.index)
         )
 
+        # Règle d'urgence sur le DERNIER SCORE RÉEL (avant decay).
+        # En mode TechOnly le score décroît vers 0 et ne reflète plus le sentiment
+        # original. On utilise donc geo_score_fresh (score du dernier vrai jour de news)
+        # pour détecter une urgence même quand les news sont anciennes.
+        if "geo_score_fresh" in df.columns:
+            last_fresh_lag = df["geo_score_fresh"].ffill().shift(1).fillna(0.0)
+        else:
+            last_fresh_lag = geo_lag.fillna(0.0)
+
         golden_cross = df["MA50"] > df["MA200"]
         scale = ((geo_lag - self.seuil_geo) / max(self.sizing_range, 1e-9)).clip(0.0, 1.0)
 
         valid_signal    = geo_lag.notna() & df["MA200"].notna()
         news_fresh      = days_lag <= self.max_days_no_news
-        emergency_exit  = geo_lag < self.emergency_threshold
+        emergency_exit  = last_fresh_lag < self.emergency_threshold
 
         # ── Calcul de position selon le mode ─────────────────────────────────
         trend_multiplier = np.where(golden_cross, 1.0, 0.35)

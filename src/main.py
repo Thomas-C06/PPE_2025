@@ -36,15 +36,14 @@ def main() -> None:
     news_start = pd.Timestamp(news_agg["date"].min()).normalize()
     news_end = pd.Timestamp(news_agg["date"].max()).normalize()
 
-    # Start at news coverage start; end at config END_DATE (not news_end).
-    # Days after the last news article will be handled by exponential decay
-    # in geo_scorer.py (TechOnly mode kicks in after max_days_no_news days).
+    # Keep only the historically validated overlap between market prices
+    # and the news source used by the scoring pipeline.
     effective_start = max(pd.Timestamp(START_DATE), news_start)
-    effective_end = pd.Timestamp(END_DATE)
+    effective_end = min(pd.Timestamp(END_DATE), news_end)
 
     print()
     print("=" * 60)
-    print("STEP 2 -- Downloading market prices (full configured period)")
+    print("STEP 2 -- Downloading market prices on validated overlap")
     print("=" * 60)
     print(
         f"  News coverage : {news_start.date()} -> {news_end.date()}"

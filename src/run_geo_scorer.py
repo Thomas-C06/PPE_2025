@@ -8,7 +8,7 @@ Prerequisites:
     1. News CSV must exist:
        py -3 src/news_main.py          (generates news_sp500_news_2024_processed.csv)
     2. (Optional) dataset_final.csv must exist to enable geo_score injection:
-       py -3 src/main.py               (Bloc 1 -- run from DataFMat branch)
+       py -3 src/main.py
 
 On first run, FinBERT (~500 MB) is downloaded automatically from Hugging Face.
 Subsequent runs reuse the local cache and skip already-scored headlines.

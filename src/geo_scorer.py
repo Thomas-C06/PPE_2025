@@ -2,7 +2,7 @@
 Geo-Score engine for GeoQuant AI -- unified historical NLP pipeline.
 
 This module now keeps one coherent lineage:
-    processed Kaggle news -> article scores -> daily Geo-Score
+    processed validated historical news -> article scores -> daily Geo-Score
     -> aligned market dataset -> strategy -> backtest -> dashboard
 """
 
@@ -28,7 +28,7 @@ from sentiment_cache import load_cache, save_cache
 @dataclass
 class GeoScorer:
     """
-    Compute a daily Geo-Score from the unified historical news source.
+    Compute a daily Geo-Score from the unified validated historical news source.
 
     The article-level score is:
         geo_score_article = p_positive - p_negative
@@ -224,10 +224,14 @@ class GeoScorer:
         daily = daily_df.copy()
         daily["date"] = pd.to_datetime(daily["date"]).dt.normalize()
         coverage_start = daily["date"].min()
+        coverage_end = daily["date"].max()
 
-        # Keep the full price dataset (up to END_DATE), not just news coverage.
-        # Days after the last news article are handled by exponential decay below.
-        df = df[df["date"] >= coverage_start].copy()
+        # Keep only the historically validated overlap between prices and scored
+        # news. We do not extend the historical dataset beyond the last reliable
+        # news date.
+        df = df[
+            (df["date"] >= coverage_start) & (df["date"] <= coverage_end)
+        ].copy()
 
         for col in (
             "geo_score",

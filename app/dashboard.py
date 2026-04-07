@@ -4,7 +4,9 @@ Lancement depuis la racine du projet :
     /c/Users/mathi/anaconda3/python.exe -m streamlit run app/dashboard.py
 
 Ce fichier constitue l'interface principale du projet GeoQuant AI.
-Il lit uniquement le dataset S&P 500 (dataset_final.csv) produit par le Bloc 1.
+Il lit le dataset historique aligne (`dataset_final.csv`), les news reellement
+scorees (`news_scored.csv`) et separe explicitement l'historique du paper
+trading live.
 """
 
 from __future__ import annotations
@@ -23,10 +25,10 @@ import streamlit as st
 # ---------------------------------------------------------------------------
 # Chemins
 # ---------------------------------------------------------------------------
-RACINE         = Path(__file__).resolve().parents[1]
-CHEMIN_DATASET = RACINE / "data" / "processed" / "dataset_final.csv"
-CHEMIN_NEWS    = RACINE / "data" / "raw" / "sample_news.csv"
-CHEMIN_GEO     = RACINE / "data" / "processed" / "geo_scores.csv"
+RACINE              = Path(__file__).resolve().parents[1]
+CHEMIN_DATASET      = RACINE / "data" / "processed" / "dataset_final.csv"
+CHEMIN_NEWS_SCORED  = RACINE / "data" / "processed" / "news_scored.csv"
+CHEMIN_GEO          = RACINE / "data" / "processed" / "geo_scores.csv"
 
 # Rend les modules src/ importables depuis app/
 sys.path.insert(0, str(RACINE / "src"))
@@ -113,16 +115,22 @@ def charger_dataset() -> Optional[pd.DataFrame]:
 
 
 @st.cache_data
-def charger_news_brutes() -> Optional[pd.DataFrame]:
+def charger_news_scorees() -> Optional[pd.DataFrame]:
     """
-    Charge les actualites individuelles depuis data/raw/sample_news.csv.
+    Charge les actualites individuelles reellement scorees par FinBERT.
 
-    Utilise pour afficher le tableau des dernieres actualites dans l'onglet NLP.
+    Source :
+        data/processed/news_scored.csv
     """
-    if not CHEMIN_NEWS.exists():
+    if not CHEMIN_NEWS_SCORED.exists():
         return None
-    df = pd.read_csv(CHEMIN_NEWS, parse_dates=["date"])
-    df = df.sort_values("date", ascending=False).reset_index(drop=True)
+    parse_cols = ["date"]
+    if "published_at" in pd.read_csv(CHEMIN_NEWS_SCORED, nrows=0).columns:
+        parse_cols.append("published_at")
+    df = pd.read_csv(CHEMIN_NEWS_SCORED, parse_dates=parse_cols)
+    if "source" in df.columns:
+        df["source"] = df["source"].fillna("Source non renseignee")
+    df = df.sort_values(["date", "geo_score_article"], ascending=[False, True]).reset_index(drop=True)
     return df
 
 
@@ -914,7 +922,7 @@ with st.sidebar:
 
     # Bouton d'actualisation (vide le cache)
     st.divider()
-    if st.button("Actualiser les donnees", use_container_width=True):
+    if st.button("Actualiser les donnees", width="stretch"):
         st.cache_data.clear()
         st.rerun()
 
@@ -927,6 +935,33 @@ with st.sidebar:
     _b3 = "badge-fait" if CHEMIN_GEO.exists() else "badge-attente"
     st.markdown(f'<span class="{_b3}">BLOC 3</span> Strategie + Paper Trading', unsafe_allow_html=True)
     st.markdown('<span class="badge-fait">BLOC 4</span> Dashboard',         unsafe_allow_html=True)
+
+    st.divider()
+    st.markdown("**Transparence des donnees**")
+    geo_sidebar = charger_geo_scores()
+    if geo_sidebar is not None and len(geo_sidebar) > 0:
+        date_fiable = pd.to_datetime(geo_sidebar["date"].max()).strftime("%d/%m/%Y")
+        max_geo_date = pd.to_datetime(geo_sidebar["date"].max()).normalize()
+        if max_geo_date > pd.Timestamp("2024-03-04"):
+            source_text = (
+                "Historique score : Kaggle S&P 500 jusqu'au 04/03/2024 + "
+                "Google News RSS historique avec pubDate reel du 05/03/2024 "
+                "au 31/12/2024."
+            )
+        else:
+            source_text = "Historique score : news Kaggle + FinBERT."
+        st.caption(
+            f"Historique score fiable jusqu'au **{date_fiable}**.\n\n"
+            f"{source_text}\n\n"
+            "Carried forward : uniquement entre deux seances sans news a l'interieur "
+            "de la couverture historique.\n\n"
+            "Paper trading : flux live separe, sans execution reelle."
+        )
+    else:
+        st.caption(
+            "Historique score indisponible pour le moment.\n\n"
+            "Paper trading : flux live separe, sans execution reelle."
+        )
 
 
 # ===========================================================================
@@ -1010,7 +1045,7 @@ with onglet_marche:
     st.divider()
     st.plotly_chart(
         construire_graphique_prix(df, afficher_mm, afficher_evenements),
-        use_container_width=True,
+        width="stretch",
     )
 
 
@@ -1022,11 +1057,29 @@ with onglet_nlp:
     geo_score_present = "geo_score" in df.columns and df["geo_score"].notna().any()
 
     if geo_score_present:
-        derniere_ligne = df[df["geo_score"].notna()].iloc[-1]
+        lignes_scorees = df[df["geo_score"].notna()].copy()
+        dernier_fresh = None
+        if "geo_score_source" in lignes_scorees.columns:
+            fresh = lignes_scorees[lignes_scorees["geo_score_source"] == "fresh_news"]
+            if len(fresh) > 0:
+                dernier_fresh = fresh.iloc[-1]
+        derniere_ligne = dernier_fresh if dernier_fresh is not None else lignes_scorees.iloc[-1]
         score_actuel = float(derniere_ligne["geo_score"])
         date_score = pd.to_datetime(derniere_ligne["date"]).strftime("%d/%m/%Y") if "date" in df.columns else "date inconnue"
         st.subheader("Geo-Score -- Sentiment du marche")
-        st.caption(f":warning: Score historique — derniere donnee : **{date_score}** (non mis a jour en temps reel)")
+        st.caption(
+            f":warning: Historique score fiable jusqu'au **{date_score}**. "
+            "Cette section montre uniquement le pipeline historique score. "
+            "Source : Kaggle S&P 500 puis Google News RSS historique avec pubDate reel. "
+            "Le paper trading live reste separe."
+        )
+        if "geo_score_source" in lignes_scorees.columns:
+            nb_fresh = int((lignes_scorees["geo_score_source"] == "fresh_news").sum())
+            nb_carried = int((lignes_scorees["geo_score_source"] == "carried_forward").sum())
+            st.info(
+                f"Couverture du dataset filtre : **{nb_fresh} jours fresh_news** | "
+                f"**{nb_carried} jours carried_forward**"
+            )
 
         col_jauge, col_timeline = st.columns([1, 2])
 
@@ -1044,7 +1097,7 @@ with onglet_nlp:
                 value=score_actuel,
                 domain=dict(x=[0, 1], y=[0, 1]),
                 title=dict(
-                    text=f"Geo-Score du jour<br>"
+                    text=f"Dernier Geo-Score historique<br>"
                          f"<span style='color:{couleur_jauge}'>{libelle_jauge}</span>",
                     font=dict(size=14),
                 ),
@@ -1069,12 +1122,12 @@ with onglet_nlp:
                 paper_bgcolor="#0e1117", font=dict(color="#fafafa"),
                 height=280, margin=dict(t=30, b=10, l=20, r=20),
             )
-            st.plotly_chart(fig_jauge, use_container_width=True)
+            st.plotly_chart(fig_jauge, width="stretch")
 
         with col_timeline:
             st.plotly_chart(
                 construire_graphique_geo_score(df, seuil_geo),
-                use_container_width=True,
+                width="stretch",
             )
 
     else:
@@ -1086,7 +1139,7 @@ with onglet_nlp:
     sur les titres de news de chaque journee.</p>
     <p>La colonne <code>geo_score</code> sera ajoutee a
     <code>dataset_final.csv</code> apres execution de
-    <code>nlp/geo_scorer.py</code>.</p>
+    <code>src/run_geo_scorer.py</code>.</p>
     <br>
     <table style="margin:0 auto; text-align:left; color:#aaa; font-size:0.85rem;">
         <tr><td>Modele prevu</td><td>&nbsp; FinBERT (ProsusAI/finbert)</td></tr>
@@ -1095,10 +1148,14 @@ with onglet_nlp:
     </table>
 </div>""", unsafe_allow_html=True)
 
-    # Tableau des dernieres actualites
+    # Tableau des actualites reellement scorees
     st.divider()
-    st.subheader("Dernieres actualites")
-    news_df = charger_news_brutes()
+    st.subheader("Actualites reellement scorees")
+    st.caption(
+        "Ce tableau affiche uniquement les news historiques utilisees dans le scoring "
+        "FinBERT. Les actualites live du paper trading n'y apparaissent pas."
+    )
+    news_df = charger_news_scorees()
 
     if news_df is not None and len(news_df) > 0:
         # Filtre sur la periode selectionnee
@@ -1108,14 +1165,32 @@ with onglet_nlp:
                 & (news_df["date"] <= pd.Timestamp(plage_dates[1]))
             ]
 
-        colonnes = [c for c in ["date", "title", "source", "category"] if c in news_df.columns]
+        colonnes = [
+            c for c in ["date", "published_at", "headline", "geo_score_article", "source"]
+            if c in news_df.columns
+        ]
         affichage = news_df[colonnes].head(15).copy()
         if "date" in affichage.columns:
             affichage["date"] = affichage["date"].dt.strftime("%d %b %Y")
+        if "published_at" in affichage.columns:
+            affichage["published_at"] = pd.to_datetime(
+                affichage["published_at"], errors="coerce"
+            ).dt.strftime("%d %b %Y %H:%M")
+        if "geo_score_article" in affichage.columns:
+            affichage["geo_score_article"] = affichage["geo_score_article"].map(lambda x: f"{x:+.3f}")
+        affichage = affichage.rename(
+            columns={
+                "date": "Date",
+                "published_at": "Publication",
+                "headline": "Actualite",
+                "geo_score_article": "Score article",
+                "source": "Source",
+            }
+        )
 
-        st.dataframe(affichage, use_container_width=True, hide_index=True)
+        st.dataframe(affichage, width="stretch", hide_index=True)
     else:
-        st.info("Aucune news disponible. Verifiez `data/raw/sample_news.csv`.")
+        st.info("Aucune news historique scoree disponible. Lancez `python src/run_geo_scorer.py`.")
 
 
 
@@ -1199,11 +1274,11 @@ with onglet_backtest:
     # ── Graphiques principaux ─────────────────────────────────────────────
     st.plotly_chart(
         construire_graphique_equity(bh.equity_curve, gq.equity_curve, df_bt["date"]),
-        use_container_width=True,
+        width="stretch",
     )
     st.plotly_chart(
         construire_graphique_signal(df_bt, col_prix),
-        use_container_width=True,
+        width="stretch",
     )
 
     st.divider()
@@ -1221,7 +1296,7 @@ with onglet_backtest:
                 "Buy & Hold": "N/A" if math.isnan(val_bh) else f"{val_bh:{fmt}}",
                 "GeoQuant":   "N/A" if math.isnan(val_gq) else f"{val_gq:{fmt}}",
             })
-        st.dataframe(pd.DataFrame(rows), use_container_width=True, hide_index=True)
+        st.dataframe(pd.DataFrame(rows), width="stretch", hide_index=True)
 
     with col_log:
         st.markdown("**Journal des trades GeoQuant**")
@@ -1229,7 +1304,7 @@ with onglet_backtest:
             log_display = gq.trade_log.copy()
             if "Date" in log_display.columns:
                 log_display["Date"] = pd.to_datetime(log_display["Date"]).dt.strftime("%d %b %Y")
-            st.dataframe(log_display, use_container_width=True, hide_index=True)
+            st.dataframe(log_display, width="stretch", hide_index=True)
         else:
             st.info("Aucun trade genere avec ce seuil.")
 
@@ -1238,9 +1313,10 @@ with onglet_backtest:
     # ── Walk-Forward Test (In-Sample 2022-2023 / Out-of-Sample 2024) ─────
     st.subheader("Walk-Forward Test -- In-Sample 2022-2023 vs Out-of-Sample 2024")
     st.caption(
-        "Optimisation sur 2022-2023 (IS), validation sur 2024 (OOS — jamais vu). "
-        "Parametres IS optimaux : seuil=-0.50, sizing=0.40 (meilleur Sharpe IS). "
-        "Si GeoQuant sur-performe en OOS, les resultats sont credibles."
+        "Comparaison In-Sample (2022-2023) / Out-of-Sample (2024) avec les "
+        "parametres actuellement choisis dans la barre laterale. "
+        "Lecture attendue : verifier si le comportement observe en 2022-2023 "
+        "reste coherent sur 2024."
     )
 
     SPLIT_DATE = "2024-01-01"
@@ -1272,7 +1348,7 @@ with onglet_backtest:
                  "GeoQuant": str(gq_r.nb_trades)},
             ]
             st.markdown(f"**{titre}**")
-            st.dataframe(pd.DataFrame(rows), use_container_width=True, hide_index=True)
+            st.dataframe(pd.DataFrame(rows), width="stretch", hide_index=True)
 
         with wf_col1:
             _wf_table(bh_is, gq_is,
@@ -1310,7 +1386,7 @@ with onglet_backtest:
         st.plotly_chart(
             construire_graphique_equity(bh_combined, gq_combined, df_bt["date"],
                                         label_split=split_date),
-            use_container_width=True,
+            width="stretch",
         )
     else:
         st.info(
@@ -1329,7 +1405,8 @@ with onglet_paper:
     st.subheader("🟢 Paper Trading -- Simulation en temps reel")
     st.caption(
         "Le portefeuille virtuel applique la meme regle que le backtest "
-        "(Golden Cross + Geo-Score) sur les donnees et actualites du jour. "
+        "(Golden Cross + Geo-Score) sur des prix live yfinance et des news live "
+        "Yahoo RSS. Il reste strictement separe du pipeline historique. "
         "Aucun argent reel n'est engage."
     )
 
@@ -1359,8 +1436,8 @@ with onglet_paper:
 
     # ── Boutons d'action ─────────────────────────────────────────────────
     btn_col1, btn_col2, btn_col3 = st.columns([1, 1, 2])
-    refresh_clicked = btn_col1.button("🔄 Rafraichir le signal", use_container_width=True)
-    reset_clicked   = btn_col2.button("🗑️ Remettre a zero",      use_container_width=True,
+    refresh_clicked = btn_col1.button("🔄 Rafraichir le signal", width="stretch")
+    reset_clicked   = btn_col2.button("🗑️ Remettre a zero",      width="stretch",
                                        type="secondary")
 
     if reset_clicked:
@@ -1526,7 +1603,7 @@ with onglet_paper:
             st.dataframe(pd.DataFrame({
                 "Indicateur": vix_indicateurs,
                 "Valeur":     vix_valeurs,
-            }), hide_index=True, use_container_width=True)
+            }), hide_index=True, width="stretch")
 
         with sig_col2:
             st.markdown(f"**Actualites analysees** ({snapshot.timestamp})")
@@ -1572,7 +1649,7 @@ with onglet_paper:
             st.divider()
             exec_col1, exec_col2 = st.columns([1, 3])
             with exec_col1:
-                if st.button("▶️ Appliquer le signal", use_container_width=True,
+                if st.button("▶️ Appliquer le signal", width="stretch",
                              type="primary"):
                     portfolio, action_msg = trader.execute_signal(snapshot, portfolio)
                     trader.save_portfolio(portfolio)
@@ -1597,7 +1674,7 @@ with onglet_paper:
                                      "pnl_eur", "pnl_pct", "geo_score"] if c in hist_df.columns]
         hist_df = hist_df[cols_display].copy()
         hist_df.columns = [c.replace("_", " ").title() for c in cols_display]
-        st.dataframe(hist_df, use_container_width=True, hide_index=True)
+        st.dataframe(hist_df, width="stretch", hide_index=True)
 
         # Mini courbe d'equity du paper trading
         if len(portfolio.historique) >= 2:
@@ -1632,7 +1709,7 @@ with onglet_paper:
                     font=dict(color="#fafafa"),
                     height=280, margin=dict(t=50, b=20, l=10, r=10),
                 )
-                st.plotly_chart(fig_pt, use_container_width=True)
+                st.plotly_chart(fig_pt, width="stretch")
     else:
         st.info("Aucun trade execute pour l'instant.")
 
@@ -1654,8 +1731,8 @@ with onglet_apropos:
         st.subheader("GeoQuant AI")
         st.markdown("""
 **GeoQuant AI** est une plateforme de _backtesting_ et _paper trading_ qui
-utilise le NLP pour analyser les flux d'actualites geopolitiques et proteger
-le capital des investisseurs face aux chocs exogenes.
+utilise le NLP pour analyser des flux d'actualites geopolitiques et financieres
+et transformer ces informations textuelles en signal quantifie.
 
 **Problematique academique (PPE 2025-2026)**
 
@@ -1695,5 +1772,6 @@ le capital des investisseurs face aux chocs exogenes.
 - **Periode :** {pd.Timestamp(df_complet["date"].min()).strftime("%d %b %Y")} -- {pd.Timestamp(df_complet["date"].max()).strftime("%d %b %Y")}
 - **Jours de trading :** {len(df_complet):,}
 - **Jours avec news :** {nb_jours_news}
+- **Source historique :** Kaggle jusqu'au 04/03/2024, puis Google News RSS historique (pubDate reel)
 - **Max Drawdown :** {float(df_complet["Drawdown"].min()) * 100:.2f}%
             """)

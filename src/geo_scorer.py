@@ -224,9 +224,10 @@ class GeoScorer:
         daily = daily_df.copy()
         daily["date"] = pd.to_datetime(daily["date"]).dt.normalize()
         coverage_start = daily["date"].min()
-        coverage_end = daily["date"].max()
 
-        df = df[(df["date"] >= coverage_start) & (df["date"] <= coverage_end)].copy()
+        # Keep the full price dataset (up to END_DATE), not just news coverage.
+        # Days after the last news article are handled by exponential decay below.
+        df = df[df["date"] >= coverage_start].copy()
 
         for col in (
             "geo_score",
@@ -235,6 +236,7 @@ class GeoScorer:
             "geo_score_raw_fresh",
             "geo_score_source",
             "has_fresh_news",
+            "days_since_news",
             "nb_articles_scored",
             "price",
             "news",

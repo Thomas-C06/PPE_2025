@@ -36,16 +36,21 @@ def main() -> None:
     news_start = pd.Timestamp(news_agg["date"].min()).normalize()
     news_end = pd.Timestamp(news_agg["date"].max()).normalize()
 
+    # Start at news coverage start; end at config END_DATE (not news_end).
+    # Days after the last news article will be handled by exponential decay
+    # in geo_scorer.py (TechOnly mode kicks in after max_days_no_news days).
     effective_start = max(pd.Timestamp(START_DATE), news_start)
-    effective_end = min(pd.Timestamp(END_DATE), news_end)
+    effective_end = pd.Timestamp(END_DATE)
 
     print()
     print("=" * 60)
-    print("STEP 2 -- Downloading market prices on overlapping period")
+    print("STEP 2 -- Downloading market prices (full configured period)")
     print("=" * 60)
     print(
-        f"  Historical overlap used for Bloc 1: "
-        f"{effective_start.date()} -> {effective_end.date()}"
+        f"  News coverage : {news_start.date()} -> {news_end.date()}"
+    )
+    print(
+        f"  Price period  : {effective_start.date()} -> {effective_end.date()}"
     )
 
     loader = PriceLoader(

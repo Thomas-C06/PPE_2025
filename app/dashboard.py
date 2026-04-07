@@ -708,96 +708,6 @@ def construire_graphique_contribution_nlp(
     return fig
 
 
-def construire_stress_test(
-    df: pd.DataFrame,
-    seuil_geo: float,
-    costs_bps: float,
-    risk_free: float,
-    fenetre: int = 30,
-) -> go.Figure:
-    """
-    Pour chaque evenement geopolitique cle, compare le rendement cumulatif
-    GeoQuant vs Buy & Hold sur les `fenetre` jours suivants.
-    Montre si GeoQuant etait en CASH au moment du choc.
-    """
-    from strategy import Strategy
-    from backtest  import run_backtest
-
-    df2 = df.copy()
-    strat = Strategy(base_dir=RACINE, seuil_geo=seuil_geo)
-    df2   = strat.apply(df2)
-    _, gq = run_backtest(df2, price_col="Adj Close" if "Adj Close" in df2.columns else "Close",
-                         costs_bps=costs_bps, risk_free_annual=risk_free)
-
-    col_prix  = "Adj Close" if "Adj Close" in df2.columns else "Close"
-    rows_evt  = []
-    fig = go.Figure()
-
-    colors_gq = "#2ca02c"
-    colors_bh = "#d62728"
-
-    for date_str, label, _ in EVENEMENTS_CLES:
-        evt = pd.Timestamp(date_str)
-        idx_list = df2.index[df2["date"] >= evt].tolist()
-        if not idx_list:
-            continue
-        idx_start = idx_list[0]
-        idx_end   = min(idx_start + fenetre, len(df2) - 1)
-
-        window    = df2.iloc[idx_start:idx_end + 1].copy()
-        if len(window) < 5:
-            continue
-
-        prix_debut = float(window[col_prix].iloc[0])
-        bh_perf    = (window[col_prix] / prix_debut - 1) * 100
-
-        # Signal GeoQuant au debut de l'evenement
-        signal_evt = int(window["signal"].iloc[0])
-        position_evt = float(window["position"].iloc[0])
-        gq_daily   = window["Returns"] * window["position"].shift(1).fillna(0)
-        gq_perf    = ((1 + gq_daily).cumprod() - 1) * 100
-
-        bh_fin  = float(bh_perf.iloc[-1])
-        gq_fin  = float(gq_perf.iloc[-1])
-
-        rows_evt.append({
-            "Evenement":      label,
-            "Date":           date_str,
-            "Signal au choc": "LONG" if signal_evt == 1 else "CASH",
-            "Position":       f"{position_evt:.0%}",
-            f"B&H J+{fenetre}": f"{bh_fin:+.1f}%",
-            f"GeoQuant J+{fenetre}": f"{gq_fin:+.1f}%",
-            "Avantage GeoQuant": f"{gq_fin - bh_fin:+.1f}%",
-        })
-
-        x_axis = list(range(len(window)))
-        fig.add_trace(go.Scatter(
-            x=x_axis, y=bh_perf.values,
-            name=f"{label} B&H", legendgroup=label,
-            line=dict(color=colors_bh, width=1.2, dash="dot"),
-            opacity=0.6,
-            hovertemplate=f"<b>{label}</b><br>J+%{{x}} B&H : %{{y:.1f}}%<extra></extra>",
-        ))
-        fig.add_trace(go.Scatter(
-            x=x_axis, y=gq_perf.values,
-            name=f"{label} GeoQuant", legendgroup=label,
-            line=dict(width=2),
-            hovertemplate=f"<b>{label}</b><br>J+%{{x}} GeoQuant : %{{y:.1f}}%<extra></extra>",
-        ))
-
-    fig.add_hline(y=0, line_color="#555", line_width=0.8, line_dash="dash")
-    fig.update_layout(
-        title=f"<b>Stress Test</b> -- Performance cumulee J+{fenetre} apres chaque choc",
-        yaxis=dict(title="Rendement cumule (%)", gridcolor="#1e1e2e", ticksuffix="%"),
-        xaxis=dict(title=f"Jours apres le choc", gridcolor="#1e1e2e"),
-        plot_bgcolor="#0e1117", paper_bgcolor="#0e1117",
-        font=dict(color="#fafafa"),
-        height=420, margin=dict(t=50, b=20, l=10, r=10),
-        legend=dict(orientation="h", y=-0.25, font=dict(size=9)),
-    )
-
-    return fig, pd.DataFrame(rows_evt)
-
 
 def construire_correlation_vix(
     df: pd.DataFrame,
@@ -1370,30 +1280,6 @@ with onglet_backtest:
         use_container_width=True,
     )
 
-    st.divider()
-
-    # ── Stress Test par evenement ─────────────────────────────────────────
-    st.subheader("Stress Test -- Resilience face aux chocs historiques")
-    st.caption(
-        "Pour chaque choc geopolitique majeur, compare les performances "
-        "GeoQuant vs Buy & Hold sur les 30 jours suivants. "
-        "Montre si GeoQuant etait en CASH au moment du choc."
-    )
-
-    fenetre_stress = st.slider("Fenetre d'observation (jours)", 10, 60, 30, step=5)
-
-    with st.spinner("Calcul du stress test..."):
-        fig_stress, df_stress = construire_stress_test(
-            df_bt, seuil_geo, float(costs_bps), risk_free, fenetre=fenetre_stress
-        )
-
-    if not df_stress.empty:
-        # Tableau synthetique
-        st.dataframe(df_stress, use_container_width=True, hide_index=True)
-        # Graphique
-        st.plotly_chart(fig_stress, use_container_width=True)
-    else:
-        st.info("Aucun evenement dans la periode selectionnee.")
 
 
 # ---------------------------------------------------------------------------

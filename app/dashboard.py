@@ -1126,32 +1126,28 @@ with onglet_backtest:
     from strategy import Strategy
     from backtest import run_backtest
 
-    geo_df = charger_geo_scores()
-
-    if geo_df is None:
+    if charger_geo_scores() is None:
         st.warning(
             "Le fichier `data/processed/geo_scores.csv` est absent. "
             "Lancez `python src/run_geo_scorer.py` pour le generer."
         )
         st.stop()
 
-    # Fusionne geo_score (+ colonnes optionnelles) dans le dataset filtre
-    df_bt = df.copy()
-    for _col in ("geo_score", "days_since_news", "has_fresh_news", "geo_score_source"):
-        if _col in df_bt.columns:
-            df_bt = df_bt.drop(columns=[_col])
-    _geo_cols = ["date", "geo_score"]
-    for _c in ("days_since_news", "has_fresh_news", "is_real_news"):
-        if _c in geo_df.columns:
-            _geo_cols.append(_c)
-    df_bt = df_bt.merge(geo_df[_geo_cols], on="date", how="left")
-    df_bt["geo_score"] = df_bt["geo_score"].fillna(0.0)
-    if "days_since_news" not in df_bt.columns:
-        df_bt["days_since_news"] = 0
-
-    # Applique la regle (look-ahead corrige + position sizing)
+    # Charge le dataset via strategy.load() — inclut geo_score avec decay
+    # exponentiel et days_since_news depuis dataset_final.csv.
+    # On applique ensuite les parametres du slider (seuil_geo choisi par l'utilisateur).
     strat = Strategy(base_dir=RACINE, seuil_geo=seuil_geo)
-    df_bt = strat.apply(df_bt)
+    df_bt_full = strat.load()
+    df_bt_full = strat.apply(df_bt_full)
+
+    # Filtre sur la periode selectionnee dans la barre laterale
+    if plage_dates[0] and plage_dates[1]:
+        df_bt = df_bt_full[
+            (df_bt_full["date"] >= pd.Timestamp(plage_dates[0])) &
+            (df_bt_full["date"] <= pd.Timestamp(plage_dates[1]))
+        ].reset_index(drop=True)
+    else:
+        df_bt = df_bt_full.copy()
 
     # Backtest complet (avec couts et taux sans risque)
     bh, gq = run_backtest(df_bt, price_col=col_prix,

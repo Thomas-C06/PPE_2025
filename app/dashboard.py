@@ -1112,8 +1112,11 @@ with onglet_nlp:
     geo_score_present = "geo_score" in df.columns and df["geo_score"].notna().any()
 
     if geo_score_present:
-        score_actuel = float(df["geo_score"].dropna().iloc[-1])
+        derniere_ligne = df[df["geo_score"].notna()].iloc[-1]
+        score_actuel = float(derniere_ligne["geo_score"])
+        date_score = pd.to_datetime(derniere_ligne["date"]).strftime("%d/%m/%Y") if "date" in df.columns else "date inconnue"
         st.subheader("Geo-Score -- Sentiment du marche")
+        st.caption(f":warning: Score historique — derniere donnee : **{date_score}** (non mis a jour en temps reel)")
 
         col_jauge, col_timeline = st.columns([1, 2])
 

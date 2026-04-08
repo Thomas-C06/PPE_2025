@@ -1418,22 +1418,6 @@ with onglet_backtest:
             "et OOS (2024). Elargissez la plage de dates pour voir le Walk-Forward."
         )
 
-    st.divider()
-
-    # ── Contribution isolee du NLP ────────────────────────────────────────
-    st.subheader("Contribution isolee du NLP")
-    st.caption(
-        "Compare 3 strategies : Buy & Hold, Golden Cross seul (sans NLP) et "
-        "GeoQuant (Golden Cross + Geo-Score). L'ecart entre la courbe orange et "
-        "la courbe verte mesure la valeur ajoutee reelle du NLP."
-    )
-    with st.spinner("Calcul de la contribution NLP..."):
-        st.plotly_chart(
-            construire_graphique_contribution_nlp(
-                df_bt, seuil_geo, float(costs_bps), risk_free
-            ),
-            use_container_width=True,
-        )
 
 
 # ---------------------------------------------------------------------------

@@ -1130,24 +1130,6 @@ with onglet_nlp:
                 width="stretch",
             )
 
-        # ── Correlation Geo-Score -> Rendement J+1 ────────────────────────
-        st.divider()
-        st.subheader("Correlation Geo-Score -> Rendement J+1")
-        st.caption(
-            "Mesure si le Geo-Score d'hier predit le rendement d'aujourd'hui. "
-            "Une correlation positive et stable valide le pouvoir predictif du NLP."
-        )
-        geo_df_corr = charger_geo_scores()
-        if geo_df_corr is not None:
-            df_corr = df.copy()
-            if "geo_score" in df_corr.columns:
-                df_corr = df_corr.drop(columns=["geo_score"])
-            df_corr = df_corr.merge(geo_df_corr[["date", "geo_score"]], on="date", how="left")
-            st.plotly_chart(
-                construire_graphique_correlation(df_corr),
-                use_container_width=True,
-            )
-
         # ── Correlation Geo-Score vs VIX ─────────────────────────────────
         st.divider()
         st.subheader("Geo-Score vs VIX -- Validation externe du modele")

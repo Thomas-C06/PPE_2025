@@ -1130,6 +1130,48 @@ with onglet_nlp:
                 width="stretch",
             )
 
+        # ── Correlation Geo-Score -> Rendement J+1 ────────────────────────
+        st.divider()
+        st.subheader("Correlation Geo-Score -> Rendement J+1")
+        st.caption(
+            "Mesure si le Geo-Score d'hier predit le rendement d'aujourd'hui. "
+            "Une correlation positive et stable valide le pouvoir predictif du NLP."
+        )
+        geo_df_corr = charger_geo_scores()
+        if geo_df_corr is not None:
+            df_corr = df.copy()
+            if "geo_score" in df_corr.columns:
+                df_corr = df_corr.drop(columns=["geo_score"])
+            df_corr = df_corr.merge(geo_df_corr[["date", "geo_score"]], on="date", how="left")
+            st.plotly_chart(
+                construire_graphique_correlation(df_corr),
+                use_container_width=True,
+            )
+
+        # ── Correlation Geo-Score vs VIX ─────────────────────────────────
+        st.divider()
+        st.subheader("Geo-Score vs VIX -- Validation externe du modele")
+        st.caption(
+            "Le VIX est l'indice de peur officiel de Wall Street. "
+            "Si le Geo-Score (inverse) est correle au VIX, cela prouve que "
+            "le modele NLP capte bien la peur reelle du marche."
+        )
+        geo_df_vix = charger_geo_scores()
+        if geo_df_vix is not None:
+            df_vix = df.copy()
+            if "geo_score" in df_vix.columns:
+                df_vix = df_vix.drop(columns=["geo_score"])
+            df_vix = df_vix.merge(geo_df_vix[["date", "geo_score"]], on="date", how="left")
+            df_vix["geo_score"] = df_vix["geo_score"].fillna(0.0)
+            start_str = str(df_vix["date"].min().date())
+            end_str   = str(df_vix["date"].max().date())
+            with st.spinner("Telechargement VIX..."):
+                fig_vix = construire_correlation_vix(df_vix, start_str, end_str)
+            if fig_vix.data:
+                st.plotly_chart(fig_vix, use_container_width=True)
+            else:
+                st.info("Impossible de telecharger le VIX. Verifiez votre connexion.")
+
     else:
         # Placeholder -- Bloc 2 pas encore realise
         st.markdown("""
@@ -1394,6 +1436,22 @@ with onglet_backtest:
             "et OOS (2024). Elargissez la plage de dates pour voir le Walk-Forward."
         )
 
+    st.divider()
+
+    # ── Contribution isolee du NLP ────────────────────────────────────────
+    st.subheader("Contribution isolee du NLP")
+    st.caption(
+        "Compare 3 strategies : Buy & Hold, Golden Cross seul (sans NLP) et "
+        "GeoQuant (Golden Cross + Geo-Score). L'ecart entre la courbe orange et "
+        "la courbe verte mesure la valeur ajoutee reelle du NLP."
+    )
+    with st.spinner("Calcul de la contribution NLP..."):
+        st.plotly_chart(
+            construire_graphique_contribution_nlp(
+                df_bt, seuil_geo, float(costs_bps), risk_free
+            ),
+            use_container_width=True,
+        )
 
 
 # ---------------------------------------------------------------------------
